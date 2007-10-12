@@ -40,6 +40,8 @@ using namespace activemq::concurrent;
 using namespace cms;
 using namespace std;
 
+namespace lsst {
+namespace events {
 class EventReceiver {
 public:
     EventReceiver(Policy* policy);
@@ -171,5 +173,6 @@ private:
     // socket for "standalone mode"
     int _sock;
 };
-
+}
+}
 #endif /*EVENTS_H_*/
