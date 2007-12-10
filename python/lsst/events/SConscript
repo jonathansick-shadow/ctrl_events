@@ -1,8 +1,0 @@
-# -*- python -*-
-Import("env")
-
-env.CheckSwig("python", ilang="c++", includedProducts="mwi")
-#env.LoadableModuleIncomplete("_data", Split("data.i"), LIBS=env.libs["boost"] + ["mwi"])
-#env.LoadableModuleIncomplete("_utils", Split("utils.i"), LIBS=env.libs["boost"] + ["mwi"])
-#env.LoadableModuleIncomplete("_logging", Split("logging.i"), LIBS=env.libs["boost"] + ["mwi"])
-env.LoadableModuleIncomplete("_events", Split("events.i"), LIBS=env.libs["activemqcpp"] + env.libs["boost"] + env.libs["mwi"] + ["events"])
