@@ -1,0 +1,8 @@
+>merge: build
+>merge: core
+>merge: boost
+>merge: swig
+>merge: doxygen
+>merge: activemqcpp
+>self
+

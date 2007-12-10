@@ -1,0 +1,9 @@
+# -*- python -*-
+Import('env')
+
+env.SharedLibrary('events', map(lambda str: "../src/events/" + str,
+                            ["Events.cc",
+                             "EventFormatter.cc",
+                             "EventLog.cc",
+                             "EventSystem.cc",
+                             ]), LIBS=env.libs["boost"]+env.libs["mwi"]+env.libs["activemqcpp"]+env.libs["python"])
