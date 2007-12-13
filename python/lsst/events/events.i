@@ -23,6 +23,7 @@ namespace activemq { namespace core { } }
 namespace activemq { namespace util { } } 
 namespace activemq { namespace concurrent { } } 
 namespace cms { } 
+namespace boost { namespace filesystem {} }
 
 using namespace lsst;
 using namespace lsst::mwi::data;
