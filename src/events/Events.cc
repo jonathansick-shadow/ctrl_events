@@ -281,7 +281,8 @@ std::string EventTransmitter::marshall(const DataProperty::PtrType dpt, int *nTu
 
 std::string EventTransmitter::encode(const DataProperty::PtrType dpt) {
     std::ostringstream strstream;
-    const std::string& child_name = any_cast<const std::string>(dpt->getName());
+//    const std::string& child_name = any_cast<const std::string>(dpt->getName());
+    const std::string& child_name = dpt->getName();
     boost::any val = dpt->getValue();
 
     // this may need to be augmented to handled long double
@@ -307,7 +308,10 @@ std::string EventTransmitter::encode(const DataProperty::PtrType dpt) {
 
     } else if (val.type() == typeid(std::string)) {
         const std::string& value = any_cast<const std::string>(val);
-        strstream << "string||" << child_name << "||" << value << "~~";
+        if (value.size() == 0)
+            strstream << "string||" << child_name << "||null~~";
+        else
+            strstream << "string||" << child_name << "||" << value << "~~";
     }
     return strstream.str();
 }
