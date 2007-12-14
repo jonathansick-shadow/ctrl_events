@@ -22,7 +22,7 @@ if __name__ == "__main__":
     dlog.log(log.Log.WARN, "this is a warning")
 
 #    // now let's create our own root log
-    logger = events.EventLog(1)
+    logger = events.EventLog()
 #    logger = log.ScreenLog(1)
 
 #    // test creation of child log

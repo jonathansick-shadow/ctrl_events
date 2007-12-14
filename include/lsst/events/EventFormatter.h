@@ -34,22 +34,8 @@ public:
     /**
       * \brief Logging formatter for events
       *
-      * \param boolean to indicate this formatter is verbose (when set true)
       */
-    explicit EventFormatter(bool verbose=false)
-        : LogFormatter(), _doAll(verbose)
-    { }
-
-    /**
-      * \brief returns whether this formatter is set for verbose mode or not
-      * \return boolean
-      */
-    bool isVerbose() { return _doAll; }
-
-    /**
-      * \brief sets verbosity value for the formatter
-      */
-    void setVerbose(bool printAll) { _doAll = printAll; }
+    explicit EventFormatter() : LogFormatter() { }
 
     /**
       * \brief writes a record to the event log stream.   This ignores the
@@ -57,10 +43,6 @@ public:
       *        required method
       */
     void write(ostream *os, const LogRecord& rec);
-
-private:
-    // boolean used to store verbosity
-    bool _doAll;
 
 };
 

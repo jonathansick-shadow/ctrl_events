@@ -32,10 +32,10 @@ namespace events {
 class EventLog : public Log {
 public:
     /**
-      * \brief constructor for EventLog.   Defaut values are verbose set to
-      *        false, threshold is Log::INFO, with a null preamble
+      * \brief constructor for EventLog.   Default values are:
+      *        threshold is Log::INFO, with a null preamble
       */
-    EventLog(bool verbose=false, int threshold=Log::INFO, 
+    EventLog(int threshold=Log::INFO, 
              const vector<shared_ptr<DataProperty> > *preamble=0);
 
     virtual ~EventLog();
@@ -56,6 +56,10 @@ public:
     static const std::string getLoggingTopic() {
         return "LSSTLogging";
     }
+
+    static void createDefaultLog(int threshold=Log::INFO, 
+             const vector<shared_ptr<DataProperty> > *preamble=0);
+
 private:
     LogDestination *_log;
     EventFormatter *_formatter;

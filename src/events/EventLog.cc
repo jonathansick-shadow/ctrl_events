@@ -25,10 +25,10 @@ using namespace std;
 namespace lsst {
 namespace events {
 
-EventLog::EventLog(bool verbose, int threshold, const vector<shared_ptr<DataProperty> > *preamble) 
+EventLog::EventLog(int threshold, const vector<shared_ptr<DataProperty> > *preamble) 
     :  Log(threshold)
 {
-    _formatter = new EventFormatter(verbose);
+    _formatter = new EventFormatter();
     shared_ptr<LogFormatter> fmtr(_formatter);
 
     _log = new LogDestination(&clog, fmtr, INHERIT_THRESHOLD);
@@ -37,6 +37,10 @@ EventLog::EventLog(bool verbose, int threshold, const vector<shared_ptr<DataProp
 
     if (preamble != 0) 
         _preamble.insert(_preamble.end(), preamble->begin(), preamble->end());
+}
+
+void EventLog::createDefaultLog(int threshold, const vector<shared_ptr<DataProperty> > *preamble)  {
+    Log::setDefaultLog(new EventLog(threshold, preamble));
 }
 
 EventLog::~EventLog() {
