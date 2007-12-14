@@ -140,8 +140,49 @@ void EventTransmitter::publish(const std::string& type, DataProperty::PtrType dp
     if (_turnEventsOff == true)
         return;
 
-    std::string messageText = marshall(dpt, &nTuples);
-    publish(type, messageText, nTuples);
+    
+    if (dpt->isNode() == true) {
+            DataProperty::PtrType srp(new DataProperty(*dpt));
+            setDate(srp);
+
+            std::string messageText = marshall(srp, &nTuples);
+            publish(type, messageText, nTuples);
+    } else {
+            DataProperty::PtrType root = SupportFactory::createPropertyNode("LSSTroot");
+            
+            DataProperty::PtrType srp(new DataProperty(*dpt));
+            root->addProperty(srp);
+            setDate(root);
+
+            std::string messageText = marshall(root, &nTuples);
+            publish(type, messageText, nTuples);
+    }
+}
+
+void EventTransmitter::setDate(DataProperty::PtrType dpt) {
+    struct timeval tv;
+    struct timezone tz;
+    gettimeofday(&tv,&tz);
+    // _tv.tv_sec = seconds since the epoch
+    // _tv.tv_usec = microseconds since tv.tv_sec
+
+    time_t rawtime;
+    struct tm timeinfo;
+
+    char datestr[40];
+
+    time(&rawtime);
+    gmtime_r(&rawtime,&timeinfo);
+
+    if ( 0 == strftime(datestr,39,"%Y-%m-%dT%H:%M:%S.",&timeinfo)) {
+        // need system exception
+        throw std::runtime_error("Failed to format time successfully");
+    }
+
+    string fulldate(str(format("%s%d") % string(datestr) % tv.tv_usec));
+
+    DataProperty::PtrType timestamp(new DataProperty("LSSTTimestamp", fulldate));
+    dpt->addProperty(timestamp);
 }
 
 void EventTransmitter::publish(const std::string& type, const LogRecord& rec) {

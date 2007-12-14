@@ -291,6 +291,8 @@ private:
     std::string encode(const DataProperty::PtrType dp);
     void publish(const std::string& type, const std::string& messageText, int tuples);
 
+    // timestamp this event
+    void setDate(DataProperty::PtrType dpt);
     // Connection to JMS broker
     Connection* _connection;
 
