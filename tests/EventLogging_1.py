@@ -15,7 +15,7 @@ from lsst.mwi.data import DataProperty
 
 if __name__ == "__main__":
 
-    host = "lsst8.ncsa.uiuc.edu"
+    host = "fester.ncsa.uiuc.edu"
     topic = "LSSTLogging"
     eventSystem = events.EventSystem.getDefaultEventSystem()
     eventSystem.createTransmitter(host,topic)
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     dlog.log(log.Log.WARN, "this is a warning")
 
 #    // now let's create our own root log
-    logger = events.EventLog()
+    logger = events.EventLog("myRunId", 665)
 
 #    // test creation of child log
     tlog = log.Log(logger, "test")

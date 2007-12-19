@@ -23,34 +23,61 @@ using namespace std;
 
 namespace lsst {
 namespace events {
-
+/**
+  * \brief EventSystem object.  This object allows creation of the
+  *        system's event transmitters and receivers, which can be
+  *        specified at the beginning, and later used by specifying
+  *        the topic to receive from or send on.
+  */
 EventSystem::EventSystem() {
 }
 
 EventSystem::~EventSystem() {
 }
-
+/**      
+  * \brief return the default EventSystem object, which can access all 
+  *               previously created Transmitters and receivers
+  * \return The EventSystem object
+  */
 const EventSystem& EventSystem::getDefaultEventSystem() {
     if (defaultEventSystem == 0) defaultEventSystem = new EventSystem();
     return *defaultEventSystem;
 }
 EventSystem *EventSystem::defaultEventSystem = 0;
 
+/**
+  * \brief create an EventTransmitter to send messages to the message broker
+  * \param hostName the location of the message broker to use
+  * \param topicName the topic to transmit events to
+  */ 
 void EventSystem::createTransmitter(const std::string& hostName, const std::string& topicName) {
     shared_ptr<EventTransmitter> transmitter(new EventTransmitter(hostName, topicName));
     _transmitters.push_back(transmitter);
 }
 
+/**
+  * \brief create an EventTransmitter to send messages to the message broker
+  * \param policy the Policy object to use to configure the EventTransmitter
+  */
 void EventSystem::createTransmitter(const Policy& policy) {
     shared_ptr<EventTransmitter> transmitter(new EventTransmitter(policy));
     _transmitters.push_back(transmitter);
 }
 
+/**
+  * \brief create an EventReceiver which will receive message
+  * \param hostName the location of the message broker to use
+  * \param topicName the topic to receive messages from
+  */
 void EventSystem::createReceiver(const std::string& hostName, const std::string& topicName) {
     shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, topicName));
     _receivers.push_back(receiver);
 }
 
+/**      
+  * \brief create an EventReceiver to receive messages from the message broker
+  * \param policy the Policy object to use to configure the EventReceiver
+  */
 void EventSystem::createReceiver(const Policy& policy) {
     shared_ptr<EventReceiver> receiver(new EventReceiver(policy));
     _receivers.push_back(receiver);
@@ -83,11 +110,22 @@ shared_ptr<EventTransmitter> EventSystem::getTransmitter(const std::string& name
 }
 
 
-
+/**
+  * \brief blocking receive for events.  Waits until an event
+  *        is received for the topic specified in the constructor
+  * \return a DataProperty::PtrType object
+  */
 DataProperty::PtrType EventSystem::receive(const std::string& topicName) {
     return receive(topicName, EventReceiver::infiniteTimeout);
 }
 
+/**
+  * \brief blocking receive for events, with timeout (in milliseconds).  
+  *        Waits until an event is received for the topic specified
+  *        in the constructor, or until the timeout expires.      
+  * \return a DataProperty::PtrType object on success, 0 on failure  see note
+  *         in receive()
+  */
 DataProperty::PtrType EventSystem::receive(const std::string& topicName, const long timeout) {
     shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {

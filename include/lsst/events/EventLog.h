@@ -35,9 +35,12 @@ public:
       * \brief constructor for EventLog.   Default values are:
       *        threshold is Log::INFO, with a null preamble
       */
-    EventLog(int threshold=Log::INFO, 
-             const vector<shared_ptr<DataProperty> > *preamble=0);
+    EventLog(const std::string runId, int sliceId, const std::string hostId = "", int threshold=Log::INFO, const list<shared_ptr<DataProperty> > *preamble = 0);
 
+#ifdef NOTDEF
+    EventLog(int threshold=Log::INFO, 
+             const list<shared_ptr<DataProperty> > *preamble=0);
+#endif
     virtual ~EventLog();
 
     /**
@@ -57,12 +60,13 @@ public:
         return "LSSTLogging";
     }
 
-    static void createDefaultLog(int threshold=Log::INFO, 
-             const vector<shared_ptr<DataProperty> > *preamble=0);
+    static void createDefaultLog(const std::string runId, int slideId, const std::string hostId = "", int threshold=Log::INFO, 
+             const list<shared_ptr<DataProperty> > *preamble=0);
 
 private:
     LogDestination *_log;
     EventFormatter *_formatter;
+    void init(int threshold);
 };
 
 }

@@ -50,6 +50,15 @@ EventTransmitter::EventTransmitter( const Policy& policy) {
     init(policy.getString("hostName", ""), policy.getString("topicName"));
 }
 
+/**
+  * \brief Transmits events to the specified host and topic
+  *
+  * \param hostName the machine hosting the message broker
+  * \param topicName the topic to transmit events to
+  *
+  * if the transmitter throws an exception,  calls to
+  * send will silently be ignored
+  */
 EventTransmitter::EventTransmitter( const std::string& hostName,
                                     const std::string& topicName) {
     _turnEventsOff = false;
@@ -121,19 +130,42 @@ void EventTransmitter::init( const std::string& hostName,
         std::cout << e.getMessage() << std::endl;
     }
 }
+
+/**
+  * \brief publish an event
+  *
+  * \param dp The DataProperty to send.
+  */
 void EventTransmitter::publish(DataProperty dp) {
     publish("",dp);
 }
 
+/**
+  * \brief publish an event of "type"        
+  *
+  * \param type type of event ("log", "exception", some custom name)
+  * \param dp The DataProperty to send.
+  */
 void EventTransmitter::publish(const std::string& type, DataProperty dp) {
    DataProperty::PtrType node(new DataProperty(dp));
    publish(type,node);
 }
 
+/**
+  * \brief publish an event
+  *
+  * \param dp The DataProperty::PtrType to send.
+  */
 void EventTransmitter::publish(DataProperty::PtrType dpt) {
     publish("",dpt);
 }
 
+/**
+  * \brief publish an event of "type"        
+  *
+  * \param type type of event ("log", "exception", some custom name)
+  * \param dp The DataProperty::PtrType to send.
+  */
 void EventTransmitter::publish(const std::string& type, DataProperty::PtrType dpt) {
     int nTuples;
 
@@ -181,10 +213,17 @@ void EventTransmitter::setDate(DataProperty::PtrType dpt) {
 
     string fulldate(str(format("%s%d") % string(datestr) % tv.tv_usec));
 
-    DataProperty::PtrType timestamp(new DataProperty("LSSTTimestamp", fulldate));
+    DataProperty::PtrType timestamp(new DataProperty("DATE", fulldate));
     dpt->addProperty(timestamp);
 }
-
+/**
+  * \brief publish an event of "type"        
+  *
+  * \param type type of event ("log", "exception", some custom name)
+  * \param rec The LogRecord to send.  This is used internally by the logging
+  *            subsystem and is exposed here to send LogRecord through event
+  *            channels.
+  */
 void EventTransmitter::publish(const std::string& type, const LogRecord& rec) {
     int nTuples;
 
@@ -316,6 +355,9 @@ std::string EventTransmitter::encode(const DataProperty::PtrType dpt) {
     return strstream.str();
 }
 
+/**
+  * \brief get the topic name of this EventTransmitter
+  */
 std::string EventTransmitter::getTopicName() {
     return _topic;
 }
