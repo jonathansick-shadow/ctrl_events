@@ -5,8 +5,11 @@ import time
 import sys
 
 if __name__ == "__main__":
-    host = sys.argv[1]
-    print "starting...\n"
+    if len(sys.argv) != 2:
+        host = "lsst8.ncsa.uiuc.edu"
+    else:
+        host = sys.argv[1]
+    print "listening on host "+host
     x = events.EventReceiver(host, "LSSTLogging")
     while (True): 
         print "waiting on logging event...\n"
