@@ -1,5 +1,5 @@
 >merge: build
->merge: core
+>merge: mwi
 >merge: boost
 >merge: swig
 >merge: doxygen
