@@ -45,7 +45,7 @@ import lsst.mwi.policy
 %import "lsst/mwi/policy/Policy.h"
 %import "lsst/mwi/data/DataProperty.h"
 %import "lsst/mwi/exceptions.h"
-%include "lsst/mwi/logging/Log.h"
+%import "lsst/mwi/logging/Log.h"
 %import "lsst/mwi/logging/LogRecord.h"
 %include "lsst/events/Events.h"
 %include "lsst/events/EventLog.h"
