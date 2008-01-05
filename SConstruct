@@ -6,7 +6,7 @@ import glob, os.path, re, os
 import lsst.SConsUtils as scons
 
 env = scons.makeEnv("events",
-                    r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/events/trunk/SConstruct $",
+                    r"$HeadURL$",
                     [["boost", "boost/version.hpp", "boost_filesystem:C++"],
                      ["boost", "boost/regex.hpp", "boost_regex:C++"],
                      ["activemqcpp", "activemq/util/Number.h", "activemq-cpp:C++"],
