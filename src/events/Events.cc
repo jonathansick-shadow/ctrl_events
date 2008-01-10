@@ -127,7 +127,7 @@ void EventTransmitter::init( const std::string& hostName,
         _producer = _session->createProducer( _destination );
         _producer->setDeliveryMode( DeliveryMode::NON_PERSISTENT );
     } catch ( CMSException& e ) {
-        std::cout << e.getMessage() << std::endl;
+        throw Runtime(e.getMessage());
     }
 }
 
@@ -274,6 +274,8 @@ void EventTransmitter::publish(const std::string& type, const std::string& messa
         }
         return;
     }
+    if (_session == 0)
+        throw Runtime("Not connected to event server");
 
     // Sending the message to the ActiveMQ server
     TextMessage* message = _session->createTextMessage();

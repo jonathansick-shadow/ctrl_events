@@ -15,7 +15,7 @@ from lsst.mwi.data import DataProperty
 
 if __name__ == "__main__":
 
-    host = "fester.ncsa.uiuc.edu"
+    host = "lsst8.ncsa.uiuc.edu"
     topic = "LSSTLogging"
     eventSystem = events.EventSystem.getDefaultEventSystem()
     eventSystem.createTransmitter(host,topic)
