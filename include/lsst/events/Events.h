@@ -30,8 +30,6 @@
 #include "lsst/mwi/utils/Utils.h"
 #include "lsst/mwi/data/DataProperty.h"
 
-#include "lsst/events/exceptions.h"
-
 using lsst::mwi::data::DataProperty;
 using lsst::mwi::logging::LogRecord;
 

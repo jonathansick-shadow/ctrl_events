@@ -64,6 +64,14 @@ void EventSystem::createTransmitter(const Policy& policy) {
     _transmitters.push_back(transmitter);
 }
 
+void EventSystem::createLocalTransmitter(const std::string& topicName) {
+    Policy policy;
+    policy.set("useLocalSockets", true);
+    policy.set("topicName", topicName);
+    shared_ptr<EventTransmitter> transmitter(new EventTransmitter(policy));
+    _transmitters.push_back(transmitter);
+}
+
 /**
   * \brief create an EventReceiver which will receive message
   * \param hostName the location of the message broker to use
@@ -79,6 +87,14 @@ void EventSystem::createReceiver(const std::string& hostName, const std::string&
   * \param policy the Policy object to use to configure the EventReceiver
   */
 void EventSystem::createReceiver(const Policy& policy) {
+    shared_ptr<EventReceiver> receiver(new EventReceiver(policy));
+    _receivers.push_back(receiver);
+}
+
+void EventSystem::createLocalReceiver(const std::string& topicName) {
+    Policy policy;
+    policy.set("useLocalSockets", true);
+    policy.set("topicName", topicName);
     shared_ptr<EventReceiver> receiver(new EventReceiver(policy));
     _receivers.push_back(receiver);
 }

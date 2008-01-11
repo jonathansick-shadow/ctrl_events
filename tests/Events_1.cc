@@ -11,10 +11,8 @@
 
 using namespace std;
 using lsst::mwi::policy::Policy;
-using lsst::events::TopicNotSpecified;
-using lsst::events::HostNotSpecified;
-using lsst::events::CouldNotConnect;
 using lsst::mwi::exceptions::NotFound;
+using lsst::mwi::exceptions::Runtime;
 
 using lsst::events::EventTransmitter;
 
@@ -50,7 +48,7 @@ int main() {
     p.set("useLocalSockets", true);
     try {
         EventTransmitter et3(p);
-    } catch (CouldNotConnect&) { 
+    } catch (Runtime&) { 
     } 
 
     EventTransmitter et4("lsst8.ncsa.uiuc.edu", "Events_1_test");

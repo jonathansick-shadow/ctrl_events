@@ -9,11 +9,9 @@
 #include "lsst/mwi/exceptions.h"
 using namespace std;
 using lsst::mwi::policy::Policy;
-using lsst::events::TopicNotSpecified;
-using lsst::events::HostNotSpecified;
-using lsst::events::CouldNotConnect;
 
 using lsst::mwi::exceptions::NotFound;
+using lsst::mwi::exceptions::Runtime;
 
 using lsst::events::EventReceiver;
 
@@ -43,7 +41,7 @@ int main() {
     p.set("useLocalSockets", false);
     try {
         EventReceiver er2(p);
-    } catch (HostNotSpecified&) { 
+    } catch (Runtime&) { 
     } 
 
 

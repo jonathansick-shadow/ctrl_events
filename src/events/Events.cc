@@ -86,7 +86,7 @@ void EventTransmitter::init( const std::string& hostName,
 
         _sock = socket(AF_UNIX, SOCK_STREAM, 0);
         if (_sock == -1) {
-            throw SocketFailed();
+            throw Runtime("failed to open local socket");
         }
         remote.sun_family = AF_UNIX;
         std::string unix_socket = "/tmp/"+_topic;
@@ -94,7 +94,7 @@ void EventTransmitter::init( const std::string& hostName,
         len = strlen(remote.sun_path)+sizeof(remote.sun_family)+1;
 
         if (connect(_sock, (struct sockaddr *)&remote, len) == -1) {
-            throw CouldNotConnect();
+            throw Runtime("could not connect to local socket");
         }
 
         return;
@@ -425,7 +425,7 @@ EventReceiver::EventReceiver(const Policy& policy) {
     _useLocalSockets = policy.getBool("useLocalSockets", false);
     if (_useLocalSockets == false) {
         if (!policy.exists("hostName")) {
-            throw HostNotSpecified();
+            throw Runtime("hostName was not specified in policy file");
         }
     }
 

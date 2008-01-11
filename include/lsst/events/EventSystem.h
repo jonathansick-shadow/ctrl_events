@@ -63,6 +63,8 @@ public:
       */
     void createTransmitter(const Policy& policy);
 
+    void createLocalTransmitter(const std::string& topicName);
+
     /**
       * \brief create an EventReceiver which will receive message
       * \param hostName the location of the message broker to use
@@ -74,6 +76,8 @@ public:
       * \param policy the Policy object to use to configure the EventReceiver
       */
     void createReceiver(const Policy& policy);
+
+    void createLocalReceiver(const std::string& topicName);
 
     void publish(const std::string& topicName, const DataProperty::PtrType dpt);
 
