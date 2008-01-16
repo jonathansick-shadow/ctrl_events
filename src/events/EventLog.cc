@@ -1,9 +1,13 @@
 // -*- lsst-c++ -*-
 /** \file EventLog.cc
   *
-  * \brief 
+  * \brief LSST event logging class
   *
-  * Author: Stephen R. Pietrowicz, NCSA
+  * This class supports 
+  *
+  * \ingroup events
+  *
+  * \author Stephen R. Pietrowicz, NCSA
   *
   */
 #include <iomanip>
@@ -25,13 +29,13 @@ using namespace std;
 
 namespace lsst {
 namespace events {
-/**
-  * \brief constructor for EventLog.   
+
+/** \brief constructor for EventLog.   
   * \param runId name of the run
   * \param sliceId the current slice id
-  * \param hostId the identifier for this host.  Default is 0
+  * \param hostId the name for this host.
   * \param threshold threshold  of this log. Default is threshold is Log::INFO
-  * \param preamble a list of DataProperty to include in each log message.  Default is 0
+  * \param preamble a list of DataProperty to include in each log message.
   */
 EventLog::EventLog(const std::string runId, int sliceId, const std::string hostId, int threshold, const list<shared_ptr<DataProperty> > *preamble) 
 
@@ -40,6 +44,7 @@ EventLog::EventLog(const std::string runId, int sliceId, const std::string hostI
     init(threshold);
     char host[HOST_NAME_MAX];
 
+    // if there is no host name specified, make "unknown host" the name
     if (hostId.size() == 0) {
         if (gethostname(host, HOST_NAME_MAX) < 0)
             strcpy(host, "unknown host");
@@ -60,16 +65,8 @@ EventLog::EventLog(const std::string runId, int sliceId, const std::string hostI
                   DataProperty::PtrType(new DataProperty("sliceId", sliceId)));
 }
 
-#ifdef NOTDEF
-EventLog::EventLog(int threshold, const list<shared_ptr<DataProperty> > *preamble) 
-    :  Log(threshold)
-{
-    init(threshold);
-    if (preamble != 0) 
-        _preamble.insert(_preamble.end(), preamble->begin(), preamble->end());
-}
-#endif
-
+/** private method to initialize the logging mechanism
+  */
 void EventLog::init(int threshold)
 {
     _formatter = new EventFormatter();
@@ -80,10 +77,19 @@ void EventLog::init(int threshold)
     _destinations.push_back(dest);
 }
 
+/** \brief creates a default log
+  * \param runId name of the run
+  * \param sliceId the current slice id
+  * \param hostId the name of this host
+  * \param threshold the logging threshold to observe when sending log messages
+  * \param preamble a list of DataPropertys to include in each log message.
+  */
 void EventLog::createDefaultLog(const std::string runId, int sliceId, const std::string hostId, int threshold, const list<shared_ptr<DataProperty> > *preamble)  {
     Log::setDefaultLog(new EventLog(runId, sliceId, hostId, threshold, preamble));
 }
 
+/** \brief destructor
+  */
 EventLog::~EventLog() {
 }
 

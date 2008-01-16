@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+#
+# logwatcher.py - watches for logging events, and prints them
+#
+#
 import lsst.mwi.data as datap
 import lsst.events as events
 import time

@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+#
+# EventListener - This utility prints out events, given a host name and 
+#                 topic.  This allows you to keep an eye on events while
+#                 they are happening for debugging.
+#
+#
 import lsst.mwi.data as datap
 import lsst.events as events
 import lsst.mwi.logging as logging

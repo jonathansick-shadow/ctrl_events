@@ -3,7 +3,9 @@
   *
   * \brief Objects to send and receive Events to the specified event bus
   *
-  * Author: Stephen R. Pietrowicz, NCSA
+  * \ingroup events
+  *
+  * \author Stephen R. Pietrowicz, NCSA
   *
   */
 #include <iomanip>
@@ -35,12 +37,43 @@ using namespace std;
 namespace lsst {
 namespace events {
 
+/** \brief Configures an EventTransmitter based on Policy contents.
+  *
+  * The Policy object is checked for four keywords:
+  *
+  * topicName - the name of the topic to send to       
+  * useLocalSockets - use UNIX domain sockets, instead of the JMS daemon
+  * hostname - the name of the host hosting the JMS daemon
+  * turnEventsOff - turn off event transmission
+  *
+  * Defaults are:
+  *
+  * useLocalSockets = false
+  * turnEventsOff = false
+  * 
+  * The dependencies for these keywords are as follows:
+  *
+  * 1) If turnEventsOff is specified as true, no further checking is done, and 
+  * no events will be transmitted.
+  *
+  * 2) If no topicName is specified, a NotFound exception is thrown
+  *
+  * 3) If useLocalSockets is false, and no hostName is specified, a
+  * NotFound exception is thrown
+  *
+  * \param policy the policy object to use when building the receiver
+  * \throw throws NotFound if expected keywords are missing in Policy object
+  * \throw throws Runtime if connection to transport mechanism fails
+  */
 EventTransmitter::EventTransmitter( const Policy& policy) {
+    _turnEventsOff = policy.getBool("turnEventsoff", false);
+    if (_turnEventsOff == true)
+        return;
+
     if (!policy.exists("topicName")) {
         throw NotFound("topicName not found in policy");
     }
 
-    _turnEventsOff = policy.getBool("turnEventsoff", false);
     _useLocalSockets = policy.getBool("useLocalSockets", false);
     if (_useLocalSockets == false) {
         if (!policy.exists("hostName")) {
@@ -50,14 +83,13 @@ EventTransmitter::EventTransmitter( const Policy& policy) {
     init(policy.getString("hostName", ""), policy.getString("topicName"));
 }
 
-/**
-  * \brief Transmits events to the specified host and topic
+/** \brief Transmits events to the specified host and topic
   *
   * \param hostName the machine hosting the message broker
   * \param topicName the topic to transmit events to
-  *
-  * if the transmitter throws an exception,  calls to
-  * send will silently be ignored
+  * \throw throws Runtime exception if local socket can't be created
+  * \throw throws Runtime exception if connect to local socket fails
+  * \throw throws Runtime exception if connect to remote JMS host fails
   */
 EventTransmitter::EventTransmitter( const std::string& hostName,
                                     const std::string& topicName) {
@@ -66,6 +98,8 @@ EventTransmitter::EventTransmitter( const std::string& hostName,
     init(hostName, topicName);
 }
 
+/** private initialization method for configuring EventTransmitter
+  */
 void EventTransmitter::init( const std::string& hostName,
                                     const std::string& topicName) {
     _connection = NULL;
@@ -131,40 +165,40 @@ void EventTransmitter::init( const std::string& hostName,
     }
 }
 
-/**
-  * \brief publish an event
+/** \brief publish an event
   *
   * \param dp The DataProperty to send.
+  * \throw throws Runtime exception if publish fails
   */
 void EventTransmitter::publish(DataProperty dp) {
     publish("",dp);
 }
 
-/**
-  * \brief publish an event of "type"        
+/** \brief publish an event of "type"        
   *
   * \param type type of event ("log", "exception", some custom name)
   * \param dp The DataProperty to send.
+  * \throw throws Runtime exception if publish fails
   */
 void EventTransmitter::publish(const std::string& type, DataProperty dp) {
    DataProperty::PtrType node(new DataProperty(dp));
    publish(type,node);
 }
 
-/**
-  * \brief publish an event
+/** \brief publish an event
   *
   * \param dp The DataProperty::PtrType to send.
+  * \throw throws Runtime exception if publish fails
   */
 void EventTransmitter::publish(DataProperty::PtrType dpt) {
     publish("",dpt);
 }
 
-/**
-  * \brief publish an event of "type"        
+/** \brief publish an event of "type"        
   *
   * \param type type of event ("log", "exception", some custom name)
   * \param dp The DataProperty::PtrType to send.
+  * \throw throws Runtime exception if publish fails
   */
 void EventTransmitter::publish(const std::string& type, DataProperty::PtrType dpt) {
     int nTuples;
@@ -191,6 +225,8 @@ void EventTransmitter::publish(const std::string& type, DataProperty::PtrType dp
     }
 }
 
+/** private method for adding a DATE DataProperty to a DataProperty list
+  */
 void EventTransmitter::setDate(DataProperty::PtrType dpt) {
     struct timeval tv;
     struct timezone tz;
@@ -216,13 +252,14 @@ void EventTransmitter::setDate(DataProperty::PtrType dpt) {
     DataProperty::PtrType timestamp(new DataProperty("DATE", fulldate));
     dpt->addProperty(timestamp);
 }
-/**
-  * \brief publish an event of "type"        
+
+/** \brief publish an event of "type"        
   *
   * \param type type of event ("log", "exception", some custom name)
   * \param rec The LogRecord to send.  This is used internally by the logging
   *            subsystem and is exposed here to send LogRecord through event
   *            channels.
+  * \throw throws Runtime exception if publish fails
   */
 void EventTransmitter::publish(const std::string& type, const LogRecord& rec) {
     int nTuples;
@@ -250,6 +287,8 @@ void EventTransmitter::publish(const std::string& type, const LogRecord& rec) {
     }
 }
 
+/** private method used to send event out on the wire.
+  */
 void EventTransmitter::publish(const std::string& type, const std::string& messageText, int nTuples) {
 
     // send the marshalled message to the local socket
@@ -260,17 +299,17 @@ void EventTransmitter::publish(const std::string& type, const std::string& messa
 
         // number of tuples
         if (send(_sock, &nTuples, 4, 0) == -1) {
-            perror("send");
+            throw Runtime("couldn't send message on local socket");
         }
 
         // length of buffer
         if (send(_sock, &str_len, 4, 0) == -1) {
-            perror("send");
+            throw Runtime("couldn't send message on local socket");
         }
 
         // buffer
         if (send(_sock, str.c_str(), str_len, 0) == -1) {
-            perror("send");
+            throw Runtime("couldn't send message on local socket");
         }
         return;
     }
@@ -288,6 +327,9 @@ void EventTransmitter::publish(const std::string& type, const std::string& messa
     delete message;
 }
 
+/** private method to marshall data from a DataProperty list to a string. This
+  * supports nested DataProperty lists.
+  */
 std::string EventTransmitter::marshall(const DataProperty::PtrType dpt, int *nTuples) {
     *nTuples = 0;
     std::ostringstream strstream;
@@ -320,6 +362,9 @@ std::string EventTransmitter::marshall(const DataProperty::PtrType dpt, int *nTu
     return strstream.str();
 }
 
+/** private method to marshall a single DataProperty into a string.  Used
+  * by the marshall() method of this object.
+  */
 std::string EventTransmitter::encode(const DataProperty::PtrType dpt) {
     std::ostringstream strstream;
 //    const std::string& child_name = any_cast<const std::string>(dpt->getName());
@@ -357,13 +402,14 @@ std::string EventTransmitter::encode(const DataProperty::PtrType dpt) {
     return strstream.str();
 }
 
-/**
-  * \brief get the topic name of this EventTransmitter
+/** \brief get the topic name of this EventTransmitter
   */
 std::string EventTransmitter::getTopicName() {
     return _topic;
 }
 
+/** \brief Destructor for EventTransmitter
+  */
 EventTransmitter::~EventTransmitter() {
 
     if (_useLocalSockets == true) {
@@ -415,7 +461,18 @@ EventTransmitter::~EventTransmitter() {
     _connection = NULL;
 }
 
+/** \brief Receives events based on Policy file contents
+  *
+  * \param policy the policy object to use when building the receiver
+  * \throw throws NotFound exception if topicName isn't specified
+  * \throw throws NotFound exception if hostName isn't specified
+  * \throw throws Runtime exception if connection fails to initialize
+  */
+
 EventReceiver::EventReceiver(const Policy& policy) {
+    _turnEventsOff = policy.getBool("turnEventsOff", false);
+    if (_turnEventsOff == true)
+        return;
     if (!policy.exists("topicName")) {
         throw NotFound("topicName not found in policy");
     }
@@ -425,7 +482,7 @@ EventReceiver::EventReceiver(const Policy& policy) {
     _useLocalSockets = policy.getBool("useLocalSockets", false);
     if (_useLocalSockets == false) {
         if (!policy.exists("hostName")) {
-            throw Runtime("hostName was not specified in policy file");
+            throw NotFound("hostName was not specified in policy file");
         }
     }
 
@@ -433,11 +490,11 @@ EventReceiver::EventReceiver(const Policy& policy) {
     init(policy.getString("hostName", "non"), topicName);
 }
 
-/** Create an EventReceiver listening for messages from
-  * the message bus on hostName for topic topicName
+/** \brief Receives events from the specified host and topic
   *
-  * This constructor sets up the necessary connection to
-  * the message bus.
+  * \param hostName the machine hosting the message broker
+  * \param topicName the topic to receive events from
+  * \throw throws Runtime exception if connection fails to initialize
   */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName) {
     _useLocalSockets = false;
@@ -445,6 +502,9 @@ EventReceiver::EventReceiver(const std::string& hostName, const std::string& top
 }
 
 
+/** private method for initialization of EventReceiver.  Sets up use of local
+  * sockets or activemq, depending on how the policy file was configured.  
+  */
 void EventReceiver::init(const std::string& hostName, const std::string& topicName) {
 
     _connection = NULL;
@@ -462,7 +522,7 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
         _useLocalSockets = true;
         _sock = socket(AF_UNIX, SOCK_STREAM, 0);
         if (_sock == -1) {
-            perror("socket");
+            throw Runtime("couldn't create local socket");
         }
 
         bzero(&local, sizeof(local));
@@ -496,11 +556,16 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
 
         _consumer = _session->createConsumer( _destination );
 
-    } catch (CMSException& e) {
+    } catch ( CMSException& e ) {
         e.printStackTrace();
     }
 }
 
+/** \brief blocking receive for events.  Waits until an event
+  *        is received for the topic specified in the constructor
+  * \return a DataProperty::PtrType object
+  * \throw throws Runtime exception if receive fails unexpectedly
+  */
 DataProperty::PtrType EventReceiver::receive() {
     if (_messageCache.size() != 0) {
         DataProperty::PtrType dpt = _messageCache.front();
@@ -522,6 +587,13 @@ DataProperty::PtrType EventReceiver::_receive() {
     }
 }
 
+
+/** \brief blocking receive for events, with timeout (in milliseconds).  
+  *        Waits until an event is received or until the timeout expires.
+  * \return a DataProperty::PtrType object
+  *         in receive()
+  * \throw throws Runtime exception if receive fails unexpectedly
+  */
 DataProperty::PtrType EventReceiver::receive(long timeout) {
     if (_messageCache.size() != 0) {
         DataProperty::PtrType dpt = _messageCache.front();
@@ -533,6 +605,13 @@ DataProperty::PtrType EventReceiver::receive(long timeout) {
     return _receive(timeout);
 }
 
+/** \brief Receives events matching both the name and string value
+  *
+  * \param name the DataProperty name to match
+  * \param value the DataProperty value to match
+  * \return the matching DataProperty::PtrType object
+  * \throw throws Runtime exception if receive fails unexpectedly
+  */
 DataProperty::PtrType EventReceiver::matchingReceive(const std::string& name, boost::any value, long timeout) {
     struct timeval tvStart;
     struct timezone tzStart;
@@ -546,9 +625,10 @@ DataProperty::PtrType EventReceiver::matchingReceive(const std::string& name, bo
     }
 
     /*
-     * Receiving with timeout is slightly more complex when you're matching.  Messages could come
-     * out of order, and if they do, you want to still wait for any time you might have remaining
-     * to be sure the event you want doesn't come in during that time.
+     * Receiving with timeout is slightly more complex when you're matching.  Messages
+     * could come out of order, and if they do, you want to still wait for any time
+     * you might have remaining to be sure the event you want doesn't come in during
+     *  that time.
      */
 
     ret = gettimeofday(&tvStart, &tzStart);
@@ -581,6 +661,9 @@ DataProperty::PtrType EventReceiver::matchingReceive(const std::string& name, bo
     return DataProperty::PtrType();
 }
 
+/** private method that performs a regular (non-matching) receive for all
+  * variations of the public receive methods.
+  */
 DataProperty::PtrType EventReceiver::_receive(long timeout) {
     if (_turnEventsOff == true)
         return DataProperty::PtrType();
@@ -610,8 +693,8 @@ DataProperty::PtrType EventReceiver::_receive(long timeout) {
         if (select_val == 0)
             return DataProperty::PtrType();
         else if (select_val < 0) {
-            perror("select");
-            return DataProperty::PtrType();
+            throw Runtime("error on local socket select");
+            // return DataProperty::PtrType();
         }
 
         if (FD_ISSET(_sock, &readfds)) {
@@ -619,29 +702,60 @@ DataProperty::PtrType EventReceiver::_receive(long timeout) {
             int len = sizeof(struct sockaddr_un);
             int remote_sock = accept(_sock, (struct sockaddr *)&remote, (socklen_t *)&len);
             if (remote_sock < 0)
-                perror("accept");
+                throw Runtime("error on local socket accept");
             return processStandaloneMessage(remote_sock);
         }
         return DataProperty::PtrType();
     }
 }
 
+/** \brief Receives events matching both the name and string value
+  *
+  * \param name the DataProperty name to match
+  * \param value the string value to match
+  * \return the matching DataProperty::PtrType object
+  * \throw throws Runtime exception if receive fails unexpectedly
+  */
 DataProperty::PtrType EventReceiver::matchingReceive(const std::string& name, const std::string& value) {
     return matchingReceive(name, boost::any(value));
 }
 
+/** \brief Receives events matching both the name and int value
+  *
+  * \param name the DataProperty name to match
+  * \param value the int value to match
+  * \return the matching DataProperty::PtrType object
+  * \throw throws Runtime exception if receive fails unexpectedly
+  */
 DataProperty::PtrType EventReceiver::matchingReceive(const std::string& name, int value) {
     return matchingReceive(name, boost::any(value));
 }
 
+/** \brief Receives events matching both the name and float value
+  *
+  * \param name the DataProperty name to match
+  * \param value the float value to match
+  * \return the matching DataProperty::PtrType object
+  * \throw throws Runtime exception if receive fails unexpectedly
+  */
 DataProperty::PtrType EventReceiver::matchingReceive(const std::string& name, float value) {
     return matchingReceive(name, boost::any(value));
 }
 
+/** \brief Receives events matching both the name and double value
+  *
+  * \param name the DataProperty name to match
+  * \param value the double value to match
+  * \return the matching DataProperty::PtrType object
+  * \throw throws Runtime exception if receive fails unexpectedly
+  */
 DataProperty::PtrType EventReceiver::matchingReceive(const std::string& name, double value) {
     return matchingReceive(name, boost::any(value));
 }
 
+/** private method used to perform a matching receive; all public methods for
+  * matchingReceive end up here.
+  */
 DataProperty::PtrType EventReceiver::matchingReceive(const std::string& name, boost::any value) {
 
     // check queue first
@@ -661,22 +775,68 @@ DataProperty::PtrType EventReceiver::matchingReceive(const std::string& name, bo
     return DataProperty::PtrType(); // to make the compiler happy
 }
 
+/** \brief Receives events matching both the name and string value within
+  *        the specified timeout (in milliseconds). Waits until the
+  *        matching event arrives, or until the timeout expires
+  *
+  * \param name the DataProperty name to match
+  * \param value the string value to match
+  * \param timeout the time to wait (in milliseconds)
+  * \return the matching DataProperty::PtrType object, 
+  *         or a null DataProperty::PtrType object on timeout expiration
+  * \throw throws Runtime exception if receive fails unexpectedly
+  */
 DataProperty::PtrType EventReceiver::matchingReceive(const std::string& name, const std::string& value, long timeout) {
     return matchingReceive(name, boost::any(value), timeout);
 }
 
+/** \brief Receives events matching both the name and int value within
+  *        the specified timeout (in milliseconds). Waits until the
+  *        matching event arrives, or until the timeout expires
+  *
+  * \param name the DataProperty name to match
+  * \param value the int value to match
+  * \param timeout the time to wait (in milliseconds)
+  * \return the matching DataProperty::PtrType object, 
+  *         or a null DataProperty::PtrType object on timeout expiration
+  * \throw throws Runtime exception if receive fails unexpectedly
+  */
 DataProperty::PtrType EventReceiver::matchingReceive(const std::string& name, int value, long timeout) {
     return matchingReceive(name, boost::any(value), timeout);
 }
 
+/** \brief Receives events matching both the name and float value within
+  *        the specified timeout (in milliseconds). Waits until the
+  *        matching event arrives, or until the timeout expires
+  *
+  * \param name the DataProperty name to match
+  * \param value the float value to match
+  * \param timeout the time to wait (in milliseconds)
+  * \return the matching DataProperty::PtrType object, 
+  *         or a null DataProperty::PtrType object on timeout expiration
+  * \throw throws Runtime exception if receive fails unexpectedly
+  */
 DataProperty::PtrType EventReceiver::matchingReceive(const std::string& name, float value, long timeout) {
     return matchingReceive(name, boost::any(value), timeout);
 }
 
+/** \brief Receives events matching both the name and double value within
+  *        the specified timeout (in milliseconds). Waits until the
+  *        matching event arrives, or until the timeout expires
+  *
+  * \param name the DataProperty name to match
+  * \param value the double value to match
+  * \param timeout the time to wait (in milliseconds)
+  * \return the matching DataProperty::PtrType object, 
+  *         or a null DataProperty::PtrType object on timeout expiration
+  * \throw throws Runtime exception if receive fails unexpectedly
+  */
 DataProperty::PtrType EventReceiver::matchingReceive(const std::string& name, double value, long timeout) {
     return matchingReceive(name, boost::any(value), timeout);
 }
 
+/** private method to do a very simple equality check on two boost::any values
+  */
 bool EventReceiver::equal(boost::any v1, boost::any v2) {
     if (v1.type() != v2.type())
         return false;
@@ -716,6 +876,9 @@ bool EventReceiver::equal(boost::any v1, boost::any v2) {
     return false;
 }
 
+/** private method to check the internal message cache to be sure that the
+  * message we're looking for hasn't already been received.
+  */
 DataProperty::PtrType EventReceiver::checkMessageCache(const std::string& element, boost::any value) {
     list<DataProperty::PtrType>::iterator it;
     for (it = _messageCache.begin(); it != _messageCache.end(); it++) {
@@ -728,6 +891,8 @@ DataProperty::PtrType EventReceiver::checkMessageCache(const std::string& elemen
     return DataProperty::PtrType();
 }
 
+/** private method to handle reading a local message from a socket
+  */
 DataProperty::PtrType EventReceiver::processStandaloneMessage(int remoteSocket) {
         int nTuples;
         int messageLength;
@@ -746,7 +911,8 @@ DataProperty::PtrType EventReceiver::processStandaloneMessage(int remoteSocket) 
         return retVal;
 }
 
-// unmarshall the DataProperty from the TextMessage
+/** private method unmarshall the DataProperty from the TextMessage
+  */
 DataProperty::PtrType EventReceiver::processTextMessage(
                                         const TextMessage* textMessage) {
     if (textMessage == NULL)
@@ -757,63 +923,8 @@ DataProperty::PtrType EventReceiver::processTextMessage(
     return unmarshall(nTuples, text);
 }
 
-#ifdef NOTDEF
-DataProperty::PtrType EventReceiver::unmarshall(int nTuples, std::string text) {
-    std::vector<string> vec;
-    DataProperty::PtrType root;
-    boost::any value;
-    std::string type;
-    std::string key;
-    std::string val;
-
-
-    splitString(text, "~~", vec);
-
-    for (int i = 0; i < nTuples; i++) {
-        std::string root_name;
-        std::vector<string> vec2;
-        std::string line = vec.at(i);
-        splitString(line, "||", vec2);
-        
-        type = vec2.at(0);
-        key = vec2.at(1);
-        val = vec2.at(2);
-
-        std::istringstream iss(val);
-        if (type == "node") {
-            root_name = key;
-        } else if (type == "int") {
-            int int_value;
-            iss >> int_value;
-            value = boost::any(int_value);
-        } else if (type == "bool") {
-            bool bool_value;
-            iss >> bool_value;
-            value = boost::any(bool_value);
-        } else if (type == "float") {
-            float float_value;
-            iss >> float_value;
-            value = boost::any(float_value);
-        } else if (type == "double") {
-            double double_value;
-            iss >> double_value;
-            value = boost::any(double_value);
-        } else if (type == "string") {
-            value = boost::any(val);
-        }
-            
-        if (root.get() == 0) {
-            root = SupportFactory::createPropertyNode(root_name);
-        } else {
-            DataProperty::PtrType node(new DataProperty(key, value));
-            root->addProperty(node);
-        }
-    } 
-    return root;
-    
-}
-#endif
-
+/** private method unmarshall the DataProperty from a text string
+  */
 DataProperty::PtrType EventReceiver::unmarshall(int nTuples, std::string text) {
     int pos;
     std::vector<string> vec;
@@ -821,14 +932,6 @@ DataProperty::PtrType EventReceiver::unmarshall(int nTuples, std::string text) {
 
     splitString(text, "~~", vec);
 
-/*
-    if (nTuples == 1) {
-        DataProperty::PtrType node(unmarshall(nTuples, vec, pos));
-        return node;
-    }
-*/
-    
-    
     std::string line = vec.at(0);
     splitString(line, "||", vec2);
         
@@ -843,6 +946,9 @@ DataProperty::PtrType EventReceiver::unmarshall(int nTuples, std::string text) {
     return root;
 }
 
+/** private method to unmarshall the DataProperty from a vector; this is
+  * done recursively to re-create the original DataProperty hierarchy
+  */
 DataProperty::PtrType EventReceiver::unmarshall(int nTuples, DataProperty::PtrType root, std::vector<string> vec, int& pos) {
     std::string type;
     std::string key;
@@ -900,6 +1006,9 @@ DataProperty::PtrType EventReceiver::unmarshall(int nTuples, DataProperty::PtrTy
     
 }
 
+/** private method to split a string along it's delimitors and return the
+  * results in a vector
+  */
 void EventReceiver::splitString(std::string str, std::string delim, 
                                 std::vector<std::string>&results) {
     unsigned int cutAt;
@@ -915,10 +1024,14 @@ void EventReceiver::splitString(std::string str, std::string delim,
     }
 }
 
+/** \brief returns the topic for this EventReceiver
+  */
 std::string EventReceiver::getTopicName() {
     return _topic;
 }
 
+/** \brief destructor method
+  */
 EventReceiver::~EventReceiver() {
 
     if (_useLocalSockets == true) {

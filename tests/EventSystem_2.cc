@@ -41,7 +41,7 @@ int main() {
     p.set("useLocalSockets", false);
     try {
         eventSystem.createReceiver(p);
-    } catch (Runtime&) { 
+    } catch (NotFound&) { 
     } 
 
     p.set("useLocalSockets", true);

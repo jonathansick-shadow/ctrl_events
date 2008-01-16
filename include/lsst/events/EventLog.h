@@ -1,9 +1,9 @@
 // -*- lsst-c++ -*-
-/** \file EventFormatter.h
+/** \class EventLog
   *
   * \ingroup events
   *
-  * \brief 
+  * \brief EventLog object used by the LSST logging system
   *
   * \author Stephen Pietrowicz, NCSA
   */
@@ -31,31 +31,17 @@ namespace events {
 
 class EventLog : public Log {
 public:
-    /**
-      * \brief constructor for EventLog.   Default values are:
-      *        threshold is Log::INFO, with a null preamble
-      */
     EventLog(const std::string runId, int sliceId, const std::string hostId = "", int threshold=Log::INFO, const list<shared_ptr<DataProperty> > *preamble = 0);
 
-#ifdef NOTDEF
-    EventLog(int threshold=Log::INFO, 
-             const list<shared_ptr<DataProperty> > *preamble=0);
-#endif
     virtual ~EventLog();
 
-    /**
-      * \brief get the current event threshold
-      * \return the event threshold
-      */
     int getEventThreshold() { return _log->getThreshold(); }
 
-    /**
-      * \brief set the event threshold
-      * \param the threshold to set for the log destination
-      */
     void setEventThreshold(int thres) {_log->setThreshold(thres); }
 
 
+    /** \brief return the static name used as a logging topic
+      */
     static const std::string getLoggingTopic() {
         return "LSSTLogging";
     }

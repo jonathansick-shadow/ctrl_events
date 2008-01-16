@@ -1,9 +1,9 @@
 // -*- lsst-c++ -*-
-/** \file EventFormatter.h
+/** \class EventFormatter
   *
   * \ingroup events
   *
-  * \brief 
+  * \brief EventFormatter object to support the LSST logging mechanism
   *
   * \author Stephen Pietrowicz, NCSA
   */
@@ -31,17 +31,7 @@ namespace events {
 
 class EventFormatter : public LogFormatter {
 public:
-    /**
-      * \brief Logging formatter for events
-      *
-      */
     explicit EventFormatter() : LogFormatter() { }
-
-    /**
-      * \brief writes a record to the event log stream.   This ignores the
-      *        ostream, but this is required because of the signature of this
-      *        required method
-      */
     void write(ostream *os, const LogRecord& rec);
 
 };
