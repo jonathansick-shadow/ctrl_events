@@ -392,6 +392,9 @@ std::string EventTransmitter::encode(const DataProperty::PtrType dpt) {
         float value = any_cast<float>(val);
         strstream << "float||" << child_name << "||" << value << "~~";
 
+    } else if (val.type() == typeid(long)) {
+        long value = any_cast<long>(val);
+        strstream << "long||" << child_name << "||" << value << "~~";
     } else if (val.type() == typeid(std::string)) {
         const std::string& value = any_cast<const std::string>(val);
         if (value.size() == 0)
@@ -866,6 +869,11 @@ bool EventReceiver::equal(boost::any v1, boost::any v2) {
         float value2 = any_cast<float>(v2);
         if (value1 == value2)
             return true;
+    } else if (v1.type() == typeid(long)) {
+        long value1 = any_cast<long>(v1);
+        long value2 = any_cast<long>(v2);
+        if (value1 == value2)
+            return true;
     } else if (v1.type() == typeid(std::string)) {
         std::string value1 = any_cast<std::string>(v1);
         std::string  value2 = any_cast<std::string>(v2);
@@ -986,6 +994,10 @@ DataProperty::PtrType EventReceiver::unmarshall(int nTuples, DataProperty::PtrTy
                 long long longlong_value;
                 iss >> longlong_value;
                 value = boost::any(longlong_value);
+            } else if (type == "long") {
+                long long_value;
+                iss >> long_value;
+                value = boost::any(long_value);
             } else if (type == "float") {
                 float float_value;
                 iss >> float_value;

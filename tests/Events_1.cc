@@ -54,10 +54,13 @@ int main() {
     EventTransmitter et4("lsst8.ncsa.uiuc.edu", "Events_1_test");
 
     // test publish("string", DataProperty)
-    DataProperty dp("test", 12);
+    DataProperty dp("test1", 12);
 
-    DataProperty::PtrType dpt(new DataProperty("test",12));
+    DataProperty::PtrType dpt(new DataProperty("test2",12));
     et4.publish(std::string("test log"), dpt);
+
+    DataProperty::PtrType dpt2(new DataProperty("test3",(long)13));
+    et4.publish(std::string("test log2"), dpt2);
 
     // test publish("string", LogRecord)
     LogRecord lr(-1, 10);
