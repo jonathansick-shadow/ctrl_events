@@ -250,7 +250,11 @@ void EventTransmitter::setDate(DataProperty::PtrType dpt) {
     string fulldate(str(format("%s%d") % string(datestr) % tv.tv_usec));
 
     DataProperty::PtrType timestamp(new DataProperty("DATE", fulldate));
-    dpt->addProperty(timestamp);
+    DataProperty::PtrType dp = dpt->findUnique("DATE");
+    if (dp.get() == 0)
+        dpt->addProperty(timestamp);
+    else
+        dp->setValue(fulldate);
 }
 
 /** \brief publish an event of "type"        
