@@ -27,9 +27,11 @@ using namespace boost;
 
 using namespace std;
 
-// this is to get around a Mac compile error since Mac didn't have HOST_NAME_MAX defined
-// in the standard place
-#define LSST_HOST_NAME_MAX 128
+// this is required because Mac doesn't define this in the standard place
+// (or where they said it was in the man pages)
+#ifndef HOST_NAME_MAX
+#define HOST_NAME_MAX 255
+#endif
 
 namespace lsst {
 namespace events {
@@ -47,11 +49,11 @@ EventLog::EventLog(const std::string runId, int sliceId, const std::string hostI
 {
 
     init(threshold);
-    char host[LSST_HOST_NAME_MAX];
+    char host[HOST_NAME_MAX];
 
     // if there is no host name specified, make "unknown host" the name
     if (hostId.size() == 0) {
-        if (gethostname(host, LSST_HOST_NAME_MAX) < 0)
+        if (gethostname(host, HOST_NAME_MAX) < 0)
             strcpy(host, "unknown host");
     } else
         strcpy(host, hostId.c_str());
