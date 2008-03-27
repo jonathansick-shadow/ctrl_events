@@ -7,10 +7,10 @@ Run with:
 """
 
 import lsst.mwi.tests as tests
-import lsst.mwi.utils as mwiu
-import lsst.mwi.logging as log
+import lsst.pex.utils as mwiu
+import lsst.pex.logging as log
 import lsst.events as events
-from lsst.mwi.data import DataProperty
+from lsst.daf.data import DataProperty
 
 if __name__ == "__main__":
 

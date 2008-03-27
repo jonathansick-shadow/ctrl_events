@@ -12,7 +12,7 @@
 #ifndef EVENTS_H_
 #define EVENTS_H_
 
-#include "lsst/events/EventTransmitter.h"
-#include "lsst/events/EventReceiver.h"
+#include "lsst/ctrl/events/EventTransmitter.h"
+#include "lsst/ctrl/events/EventReceiver.h"
 
 #endif /*EVENTS_H_*/

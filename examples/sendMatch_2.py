@@ -1,6 +1,6 @@
 import time
 import lsst.events as events
-import lsst.mwi.data as datap
+import lsst.daf.data as datap
 
 if __name__ == "__main__":
     x = events.EventTransmitter("lsst8.ncsa.uiuc.edu", "test")

@@ -1,8 +1,13 @@
 setupRequired(scons)
-setupRequired(core)
+setupRequired(base)
 setupRequired(boost)
 setupRequired(activemqcpp)
-setupRequired(mwi)
+setupRequired(policy)
+setupRequired(logging)
+# setupRequired(exceptions)  required by policy
+# setupRequired(data)   required by exceptions
+# setupRequired(utils)  required by logging (Component)
+
 
 setupOptional("swig")
 setupOptional("doxygen")

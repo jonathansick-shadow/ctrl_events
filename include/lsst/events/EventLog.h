@@ -14,16 +14,16 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "lsst/events/EventFormatter.h"
-#include "lsst/mwi/logging/Log.h"
-#include "lsst/mwi/utils/Component.h"
-#include "lsst/mwi/utils/Utils.h"
-#include "lsst/mwi/data/DataProperty.h"
+#include "lsst/ctrl/events/EventFormatter.h"
+#include "lsst/pex/logging/Log.h"
+#include "lsst/pex/utils/Component.h"
+#include "lsst/pex/utils/Utils.h"
+#include "lsst/daf/data/DataProperty.h"
 
-using lsst::mwi::data::DataProperty;
+using lsst::daf::data::DataProperty;
 
-using namespace lsst::mwi::data;
-using namespace lsst::mwi::logging;
+using namespace lsst::daf::data;
+using namespace lsst::pex::logging;
 using namespace std;
 
 namespace lsst {

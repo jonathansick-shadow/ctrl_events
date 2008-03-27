@@ -12,20 +12,20 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "lsst/events/Events.h"
-#include "lsst/mwi/data/DataProperty.h"
-#include "lsst/mwi/data/SupportFactory.h"
-#include "lsst/mwi/exceptions.h"
-#include "lsst/mwi/utils/Component.h"
-#include "lsst/mwi/policy/Policy.h"
-#include "lsst/mwi/logging/LogRecord.h"
+#include "lsst/ctrl/events/Events.h"
+#include "lsst/daf/data/DataProperty.h"
+#include "lsst/daf/data/SupportFactory.h"
+#include "lsst/pex/exceptions.h"
+#include "lsst/pex/utils/Component.h"
+#include "lsst/pex/policy/Policy.h"
+#include "lsst/pex/logging/LogRecord.h"
 #include <sys/socket.h>
 #include <sys/un.h>
 
 #define TUPLECOUNT_PROPERTY "LSSTEVENTTUPLES"
 
-using namespace lsst::mwi::data;
-using namespace lsst::mwi::exceptions;
+using namespace lsst::daf::data;
+using namespace lsst::pex::exceptions;
 using namespace boost;
 
 using namespace activemq::core;

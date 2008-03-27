@@ -1,5 +1,5 @@
 import lsst.events as events
-import lsst.mwi.data as datap
+import lsst.daf.data as datap
 
 if __name__ == "__main__":
 

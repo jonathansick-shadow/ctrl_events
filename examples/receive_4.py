@@ -1,7 +1,7 @@
 import lsst.events as events
 import time
-import lsst.mwi.data as datap
-import lsst.mwi.policy as policy
+import lsst.daf.data as datap
+import lsst.pex.policy as policy
 
 if __name__ == "__main__":
     print "starting...\n"

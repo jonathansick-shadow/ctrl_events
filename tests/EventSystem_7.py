@@ -2,8 +2,8 @@
 
 import threading
 import lsst.events as events
-import lsst.mwi.data as datap;
-import lsst.mwi.exceptions as ex;
+import lsst.daf.data as datap;
+import lsst.pex.exceptions as ex;
 import time
 
 

@@ -2,8 +2,8 @@
 
 import threading
 import lsst.events as events
-import lsst.mwi.data as datap;
-import lsst.mwi.policy as policy;
+import lsst.daf.data as datap;
+import lsst.pex.policy as policy;
 import time
 
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 import lsst.events as events
-import lsst.mwi.data as datap;
-import lsst.mwi.exceptions as ex
-import lsst.mwi.logging as logging
-import lsst.mwi.policy as policy;
+import lsst.daf.data as datap;
+import lsst.pex.exceptions as ex
+import lsst.pex.logging as logging
+import lsst.pex.policy as policy;
 
 
 if __name__ == "__main__":

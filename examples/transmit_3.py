@@ -1,6 +1,6 @@
 import lsst.events as events
-import lsst.mwi.data as datap
-import lsst.mwi.policy as policy
+import lsst.daf.data as datap
+import lsst.pex.policy as policy
 
 if __name__ == "__main__":
     p = policy.Policy.createPolicy("examples/policies/activemq_policy.paf", 1)

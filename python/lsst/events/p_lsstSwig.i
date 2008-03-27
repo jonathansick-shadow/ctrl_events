@@ -39,7 +39,7 @@
 /******************************************************************************/
 
 %{
-#   include "lsst/mwi/exceptions/Exception.h"
+#   include "lsst/pex/exceptions/Exception.h"
 %}
 
 /******************************************************************************/
@@ -75,7 +75,7 @@ namespace boost {
 %exception {
     try {
         $action
-    } catch (lsst::mwi::exceptions::ExceptionStack &e) {
+    } catch (lsst::pex::exceptions::ExceptionStack &e) {
         PyErr_SetString(PyExc_IndexError, e.what());
         return NULL;
     }

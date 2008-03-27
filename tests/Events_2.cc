@@ -5,15 +5,15 @@
  */
 #include <iostream>
 #include <stdexcept>
-#include "lsst/events/Events.h"
-#include "lsst/mwi/exceptions.h"
+#include "lsst/ctrl/events/Events.h"
+#include "lsst/pex/exceptions.h"
 using namespace std;
-using lsst::mwi::policy::Policy;
+using lsst::pex::policy::Policy;
 
-using lsst::mwi::exceptions::NotFound;
-using lsst::mwi::exceptions::Runtime;
+using lsst::pex::exceptions::NotFound;
+using lsst::pex::exceptions::Runtime;
 
-using lsst::events::EventReceiver;
+using lsst::ctrl::events::EventReceiver;
 
 #define Assert(b, m) tattle(b, m, __LINE__)
     

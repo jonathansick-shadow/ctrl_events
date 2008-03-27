@@ -5,9 +5,9 @@
 #                 they are happening for debugging.
 #
 #
-import lsst.mwi.data as datap
+import lsst.daf.data as datap
 import lsst.events as events
-import lsst.mwi.logging as logging
+import lsst.pex.logging as logging
 import time
 import sys
 

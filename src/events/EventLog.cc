@@ -15,14 +15,14 @@
 #include <stdexcept>
 #include <unistd.h>
 
-#include "lsst/events/EventLog.h"
-#include "lsst/events/EventFormatter.h"
-#include "lsst/events/EventSystem.h"
-#include "lsst/mwi/data/DataProperty.h"
-#include "lsst/mwi/data/SupportFactory.h"
-#include "lsst/mwi/utils/Component.h"
+#include "lsst/ctrl/events/EventLog.h"
+#include "lsst/ctrl/events/EventFormatter.h"
+#include "lsst/ctrl/events/EventSystem.h"
+#include "lsst/daf/data/DataProperty.h"
+#include "lsst/daf/data/SupportFactory.h"
+#include "lsst/pex/utils/Component.h"
 
-using namespace lsst::mwi::data;
+using namespace lsst::daf::data;
 using namespace boost;
 
 using namespace std;
@@ -100,4 +100,4 @@ void EventLog::createDefaultLog(const std::string runId, int sliceId, const std:
 EventLog::~EventLog() {
 }
 
-}}  // end lsst::events
+}}  // end lsst::ctrl::events

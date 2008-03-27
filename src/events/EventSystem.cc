@@ -12,16 +12,16 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "lsst/mwi/data/DataProperty.h"
-#include "lsst/mwi/logging/LogRecord.h"
-#include "lsst/mwi/policy/Policy.h"
-#include "lsst/mwi/exceptions.h"
-#include "lsst/events/EventLog.h"
-#include "lsst/events/EventSystem.h"
+#include "lsst/daf/data/DataProperty.h"
+#include "lsst/pex/logging/LogRecord.h"
+#include "lsst/pex/policy/Policy.h"
+#include "lsst/pex/exceptions.h"
+#include "lsst/ctrl/events/EventLog.h"
+#include "lsst/ctrl/events/EventSystem.h"
 
-using namespace lsst::mwi::data;
-using namespace lsst::mwi::logging;
-using namespace lsst::mwi::exceptions;
+using namespace lsst::daf::data;
+using namespace lsst::pex::logging;
+using namespace lsst::pex::exceptions;
 
 using namespace std;
 

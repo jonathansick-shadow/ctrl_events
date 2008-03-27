@@ -2,7 +2,7 @@
 
 import threading
 import lsst.events as events
-import lsst.mwi.data as datap;
+import lsst.daf.data as datap;
 import time
 
 

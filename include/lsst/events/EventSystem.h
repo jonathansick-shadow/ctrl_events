@@ -17,18 +17,18 @@
 #include <list>
 #include <boost/shared_ptr.hpp>
 
-#include "lsst/mwi/policy/Policy.h"
-#include "lsst/mwi/utils/Component.h"
-#include "lsst/mwi/utils/Utils.h"
-#include "lsst/mwi/data/DataProperty.h"
-#include "lsst/mwi/logging/LogRecord.h"
-#include "lsst/events/Events.h"
+#include "lsst/pex/policy/Policy.h"
+#include "lsst/pex/utils/Component.h"
+#include "lsst/pex/utils/Utils.h"
+#include "lsst/daf/data/DataProperty.h"
+#include "lsst/pex/logging/LogRecord.h"
+#include "lsst/ctrl/events/Events.h"
 
-using lsst::mwi::data::DataProperty;
-using lsst::mwi::logging::LogRecord;
+using lsst::daf::data::DataProperty;
+using lsst::pex::logging::LogRecord;
 
-using namespace lsst::mwi::data;
-using namespace lsst::mwi::policy;
+using namespace lsst::daf::data;
+using namespace lsst::pex::policy;
 using namespace std;
 
 namespace lsst {

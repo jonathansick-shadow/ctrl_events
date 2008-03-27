@@ -1,5 +1,6 @@
 >merge: build
->merge: mwi
+>merge: policy
+>merge: logging
 >merge: boost
 >merge: swig
 >merge: doxygen

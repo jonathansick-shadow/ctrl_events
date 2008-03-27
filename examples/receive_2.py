@@ -1,4 +1,4 @@
-import lsst.mwi.data as datap
+import lsst.daf.data as datap
 import lsst.events as events
 import time
 

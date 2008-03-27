@@ -10,7 +10,11 @@ env = scons.makeEnv("events",
                     [["boost", "boost/version.hpp", "boost_filesystem:C++"],
                      ["boost", "boost/regex.hpp", "boost_regex:C++"],
                      ["activemqcpp", "activemq/util/Number.h", "activemq-cpp:C++"],
-                     ["mwi", "lsst/mwi/data/Citizen.h", "mwi:C++"],
+                     ["pex", "lsst/pex/exceptions/exceptions.h", "pex:C++"],
+                     ["pex", "lsst/pex/policy/policy.h", "pex:C++"],
+                     ["pex", "lsst/pex/logging/logging.h", "pex:C++"],
+                     ["daf", "lsst/daf/data/Citizen.h", "daf:C++"],
+                     ["daf", "lsst/daf/utils/Component.h", "daf:C++"],
                      ["python", "Python.h"]
                      ])
 
