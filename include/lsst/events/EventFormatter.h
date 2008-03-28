@@ -16,8 +16,8 @@
 
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/logging/LogFormatter.h"
-#include "lsst/pex/utils/Component.h"
-#include "lsst/pex/utils/Utils.h"
+#include "lsst/pex/logging/Component.h"
+#include "lsst/utils/Utils.h"
 #include "lsst/daf/data/DataProperty.h"
 
 using lsst::daf::data::DataProperty;

@@ -7,7 +7,6 @@ Run with:
 """
 
 import lsst.mwi.tests as tests
-import lsst.pex.utils as mwiu
 import lsst.pex.logging as log
 import lsst.events as events
 from lsst.daf.data import DataProperty

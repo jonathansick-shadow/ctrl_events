@@ -18,8 +18,8 @@
 %}
 
 %inline %{
-namespace lsst { namespace mwi { namespace data { } } } 
-namespace lsst { namespace mwi { namespace policy { } } } 
+namespace lsst { namespace daf { namespace data { } } } 
+namespace lsst { namespace pex { namespace policy { } } } 
 namespace activemq { namespace core { } } 
 namespace activemq { namespace util { } } 
 namespace activemq { namespace concurrent { } } 
@@ -40,8 +40,8 @@ import lsst.pex.policy
 
 %include "std_string.i"
 %include "std_set.i"
-%include "lsst/mwi/p_lsstSwig.i"
-%include "lsst/pex/utils/Utils.h"
+%include "lsst/utils/p_lsstSwig.i"
+%include "lsst/utils/Utils.h"
 %import "lsst/daf/data/Citizen.h"
 %import "lsst/pex/policy/Policy.h"
 %import "lsst/daf/data/DataProperty.h"

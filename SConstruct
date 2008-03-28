@@ -10,11 +10,11 @@ env = scons.makeEnv("events",
                     [["boost", "boost/version.hpp", "boost_filesystem:C++"],
                      ["boost", "boost/regex.hpp", "boost_regex:C++"],
                      ["activemqcpp", "activemq/util/Number.h", "activemq-cpp:C++"],
-                     ["pex", "lsst/pex/exceptions/exceptions.h", "pex:C++"],
-                     ["pex", "lsst/pex/policy/policy.h", "pex:C++"],
-                     ["pex", "lsst/pex/logging/logging.h", "pex:C++"],
-                     ["daf", "lsst/daf/data/Citizen.h", "daf:C++"],
-                     ["daf", "lsst/daf/utils/Component.h", "daf:C++"],
+                     ["pex_exceptions", "lsst/pex/exceptions.h", "pex_exceptions:C++"],
+                     ["pex_policy", "lsst/pex/policy/Policy.h", "pex_policy:C++"],
+                     ["pex_logging", "lsst/pex/logging/Component.h", "pex_logging:C++"],
+                     ["daf_data", "lsst/daf/data/Citizen.h", "daf_data:C++"],
+                     ["utils", "lsst/utils/Utils.h", "utils:C++"],
                      ["python", "Python.h"]
                      ])
 
@@ -54,6 +54,6 @@ if len(filter(lambda t: t == "TAGS", scons.COMMAND_LINE_TARGETS)) > 0:
 
 env.Declare()
 env.Help("""
-LSST FrameWork packages
+LSST Control and Management packages
 """)
 

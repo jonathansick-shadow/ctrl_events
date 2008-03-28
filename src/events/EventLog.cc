@@ -20,7 +20,7 @@
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/daf/data/DataProperty.h"
 #include "lsst/daf/data/SupportFactory.h"
-#include "lsst/pex/utils/Component.h"
+#include "lsst/pex/logging/Component.h"
 
 using namespace lsst::daf::data;
 using namespace boost;

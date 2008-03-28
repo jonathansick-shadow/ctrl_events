@@ -2,12 +2,11 @@ setupRequired(scons)
 setupRequired(base)
 setupRequired(boost)
 setupRequired(activemqcpp)
-setupRequired(policy)
-setupRequired(logging)
-# setupRequired(exceptions)  required by policy
-# setupRequired(data)   required by exceptions
-# setupRequired(utils)  required by logging (Component)
-
+setupRequired(utils)
+setupRequired(pex_data)   
+setupRequired(pex_exceptions)  
+setupRequired(pex_policy)
+setupRequired(pex_logging)
 
 setupOptional("swig")
 setupOptional("doxygen")
@@ -17,5 +16,4 @@ envAppend(DYLD_LIBRARY_PATH, ${PRODUCT_DIR}/lib)
 
 envAppend(PYTHONPATH, ${PRODUCT_DIR}/python)
 envAppend(PATH, ${PRODUCT_DIR}/bin)
-
 
