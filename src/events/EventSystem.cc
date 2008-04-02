@@ -12,14 +12,14 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "lsst/daf/data/DataProperty.h"
+#include "lsst/daf/base/DataProperty.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventSystem.h"
 
-using namespace lsst::daf::data;
+using namespace lsst::daf::base;
 using namespace lsst::pex::logging;
 using namespace lsst::pex::exceptions;
 

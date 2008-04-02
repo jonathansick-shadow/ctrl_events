@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import lsst.events as events
-import lsst.daf.data as datap;
+import lsst.ctrl.events as events
+import lsst.daf.base as datap;
 import lsst.pex.exceptions as ex
 import lsst.pex.logging as logging
 import lsst.pex.policy as policy;
@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     eventSystem.createTransmitter(host, topic)
 
-    root = datap.SupportFactory.createPropertyNode("root")
+    root = datap.DataProperty.createPropertyNode("root")
     test = datap.DataProperty("test", 12)
     root.addProperty(test)
 

@@ -1,10 +1,10 @@
-import lsst.events as events
-import lsst.daf.data as datap
+import lsst.ctrl.events as events
+import lsst.daf.base as datap
 
 if __name__ == "__main__":
     x = events.EventTransmitter("lsst8.ncsa.uiuc.edu", "test_logging")
 
-    root = datap.SupportFactory.createPropertyNode("root");
+    root = datap.DataProperty.createPropertyNode("root");
     date = datap.DataProperty("DATE","2007-07-01T14:28:32.546012")
     pid = datap.DataProperty("PID",200)
     host = datap.DataProperty("HOST","fester.ncsa.uiuc.edu")

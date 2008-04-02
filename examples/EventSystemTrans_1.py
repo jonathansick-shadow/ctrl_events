@@ -1,5 +1,5 @@
-import lsst.daf.data as datap
-import lsst.events as events
+import lsst.daf.base as datap
+import lsst.ctrl.events as events
 
 if __name__ == "__main__":
 
@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     newSystem = events.EventSystem().getDefaultEventSystem()
 
-    root = datap.SupportFactory.createPropertyNode("root");
+    root = datap.DataProperty.createPropertyNode("root");
     date = datap.DataProperty("DATE","2007-07-01T14:28:32.546012")
     pid = datap.DataProperty("PID",200)
     host = datap.DataProperty("HOST","fester.ncsa.uiuc.edu")

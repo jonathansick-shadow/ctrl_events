@@ -1,5 +1,5 @@
-import lsst.daf.data as datap
-import lsst.events as events
+import lsst.daf.base as datap
+import lsst.ctrl.events as events
 import time
 
 if __name__ == "__main__":

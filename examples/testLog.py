@@ -6,10 +6,10 @@ Run with:
    python testLog
 """
 
-import lsst.mwi.tests as tests
+#     import lsst.mwi.tests as tests
 import lsst.pex.logging as log
-import lsst.events as events
-from lsst.daf.data import DataProperty
+import lsst.ctrl.events as events
+from lsst.daf.base import DataProperty
 
 if __name__ == "__main__":
 

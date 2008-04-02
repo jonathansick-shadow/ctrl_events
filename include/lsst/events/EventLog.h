@@ -18,11 +18,11 @@
 #include "lsst/pex/logging/Log.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
-#include "lsst/daf/data/DataProperty.h"
+#include "lsst/daf/base/DataProperty.h"
 
-using lsst::daf::data::DataProperty;
+using lsst::daf::base::DataProperty;
 
-using namespace lsst::daf::data;
+using namespace lsst::daf::base;
 using namespace lsst::pex::logging;
 using namespace std;
 

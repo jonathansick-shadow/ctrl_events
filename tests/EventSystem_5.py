@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import threading
-import lsst.events as events
-import lsst.daf.data as datap;
+import lsst.ctrl.events as events
+import lsst.daf.base as datap;
 import lsst.pex.policy as policy;
 import time
 
@@ -13,7 +13,7 @@ import time
 def sendEvent(topicName, name, value):
     eventSystem = events.EventSystem.getDefaultEventSystem()
     
-    root = datap.SupportFactory.createPropertyNode("root");
+    root = datap.DataProperty.createPropertyNode("root");
     pid = datap.DataProperty(name,value)
     
     root.addProperty(pid);

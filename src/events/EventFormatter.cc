@@ -15,12 +15,12 @@
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventFormatter.h"
-#include "lsst/daf/data/DataProperty.h"
-#include "lsst/daf/data/SupportFactory.h"
+// #include "lsst/daf/base/DataProperty.h"
+// #include "lsst/daf/data/SupportFactory.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/logging/Component.h"
 
-using namespace lsst::daf::data;
+//using namespace lsst::daf::base;
 using namespace lsst::pex::logging;
 
 using namespace std;

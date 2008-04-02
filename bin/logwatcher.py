@@ -3,7 +3,7 @@
 # logwatcher.py - watches for logging events, and prints them
 #
 #
-import lsst.daf.data as datap
+import lsst.daf.base as datap
 import lsst.events as events
 import time
 import sys

@@ -13,8 +13,8 @@
 #include <stdexcept>
 
 #include "lsst/ctrl/events/Events.h"
-#include "lsst/daf/data/DataProperty.h"
-#include "lsst/daf/data/SupportFactory.h"
+#include "lsst/daf/base/DataProperty.h"
+// #include "lsst/daf/data/SupportFactory.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/pex/policy/Policy.h"
@@ -24,7 +24,8 @@
 
 #define TUPLECOUNT_PROPERTY "LSSTEVENTTUPLES"
 
-using namespace lsst::daf::data;
+using namespace lsst::daf::base;
+#  using namespace lsst::daf::data;
 using namespace lsst::pex::exceptions;
 using namespace boost;
 

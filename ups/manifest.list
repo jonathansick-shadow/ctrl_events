@@ -1,9 +1,9 @@
 >merge: build
 >merge: utils
->merge: pex_data
+>merge: daf_base
+>merge: pex_logging
 >merge: pex_exceptions
 >merge: pex_policy
->merge: pex_logging
 >merge: boost
 >merge: swig
 >merge: doxygen

@@ -20,14 +20,14 @@
 #include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
-#include "lsst/daf/data/DataProperty.h"
+#include "lsst/daf/base/DataProperty.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/ctrl/events/Events.h"
 
-using lsst::daf::data::DataProperty;
+using lsst::daf::base::DataProperty;
 using lsst::pex::logging::LogRecord;
 
-using namespace lsst::daf::data;
+using namespace lsst::daf::base;
 using namespace lsst::pex::policy;
 using namespace std;
 
