@@ -1,1 +1,1 @@
-from eventsLib.i import *
+from eventsLib import *
