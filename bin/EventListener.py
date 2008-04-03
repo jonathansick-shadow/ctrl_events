@@ -6,7 +6,7 @@
 #
 #
 import lsst.daf.base as datap
-import lsst.events as events
+import lsst.ctrl.events as events
 import lsst.pex.logging as logging
 import time
 import sys

@@ -4,7 +4,7 @@
 #
 #
 import lsst.daf.base as datap
-import lsst.events as events
+import lsst.ctrl.events as events
 import time
 import sys
 
