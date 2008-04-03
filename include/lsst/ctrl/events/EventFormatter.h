@@ -27,6 +27,7 @@ using namespace lsst::pex::logging;
 using namespace std;
 
 namespace lsst {
+namespace ctrl {
 namespace events {
 
 class EventFormatter : public LogFormatter {
@@ -36,6 +37,7 @@ public:
 
 };
 
+}
 }
 }
 #endif

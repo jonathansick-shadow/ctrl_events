@@ -1,9 +1,9 @@
 # -*- python -*-
 Import('env')
 
-env.SharedLibrary('events', map(lambda str: "../src/events/" + str,
+env.SharedLibrary('ctrl_events', map(lambda str: "../src/events/" + str,
                             ["Events.cc",
                              "EventFormatter.cc",
                              "EventLog.cc",
                              "EventSystem.cc",
-                             ]), LIBS=env.getlibs("boost" "daf_base" "pex_policy" "pex_exceptions" "pex_logging" "activemqcpp" "python") )
+                             ]), LIBS=env.getlibs("boost daf_base pex_policy pex_exceptions pex_logging activemqcpp python") )

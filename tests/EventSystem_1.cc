@@ -12,7 +12,8 @@ using lsst::pex::policy::Policy;
 using lsst::pex::exceptions::NotFound;
 using lsst::pex::exceptions::Runtime;
 
-using lsst::ctrl::events::EventSystem;
+// using namespace lsst::ctrl::events::EventSystem;
+using namespace lsst::ctrl::events;
 
 #define Assert(b, m) tattle(b, m, __LINE__)
     

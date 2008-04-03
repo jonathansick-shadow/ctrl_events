@@ -26,6 +26,7 @@ using namespace lsst::pex::exceptions;
 using namespace std;
 
 namespace lsst {
+namespace ctrl {
 namespace events {
 /** \brief EventSystem object.  This object allows creation of the
   *        system's event transmitters and receivers, which can be
@@ -296,6 +297,7 @@ shared_ptr<EventReceiver> EventSystem::getReceiver(const std::string& name) {
     return shared_ptr<EventReceiver>();
 }
 
+}
 }
 }
 

@@ -18,7 +18,7 @@
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventFormatter.h"
 #include "lsst/ctrl/events/EventSystem.h"
-#include "lsst/daf/data/DataProperty.h"
+#include "lsst/daf/base/DataProperty.h"
 //   #include "lsst/daf/data/SupportFactory.h"
 #include "lsst/pex/logging/Component.h"
 
@@ -34,6 +34,7 @@ using namespace std;
 #endif
 
 namespace lsst {
+namespace ctrl {
 namespace events {
 
 /** \brief constructor for EventLog.   
@@ -100,4 +101,4 @@ void EventLog::createDefaultLog(const std::string runId, int sliceId, const std:
 EventLog::~EventLog() {
 }
 
-}}  // end lsst::ctrl::events
+}}}  // end lsst::ctrl::events

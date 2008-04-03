@@ -27,6 +27,7 @@ using namespace lsst::pex::logging;
 using namespace std;
 
 namespace lsst {
+namespace ctrl {
 namespace events {
 
 class EventLog : public Log {
@@ -55,6 +56,7 @@ private:
     void init(int threshold);
 };
 
+}
 }
 }
 #endif

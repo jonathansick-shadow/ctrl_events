@@ -32,6 +32,7 @@ using namespace lsst::pex::policy;
 using namespace std;
 
 namespace lsst {
+namespace ctrl {
 namespace events {
 class EventSystem {
 public:
@@ -118,6 +119,7 @@ protected:
     list<shared_ptr<EventTransmitter> >_transmitters;
     list<shared_ptr<EventReceiver> >_receivers;
 };
+}
 }
 }
 

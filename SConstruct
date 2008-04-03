@@ -12,9 +12,10 @@ env = scons.makeEnv("events",
                      ["activemqcpp", "activemq/util/Number.h", "activemq-cpp:C++"],
                      ["utils", "lsst/utils/Utils.h", "utils:C++"],
                      ["daf_base", "lsst/daf/base/Citizen.h", "daf_base:C++"],
+                     #["security", "lsst/Security.h", "security:C++"],
                      ["pex_logging", "lsst/pex/logging/Component.h", "pex_logging:C++"],
-                     ["pex_exceptions", "lsst/pex/exceptions.h"],
-                     ["pex_policy", "lsst/pex/policy/Policy.h"],
+                     ["pex_exceptions", "lsst/pex/exceptions.h","pex_exceptions:C++"],
+                     ["pex_policy", "lsst/pex/policy/Policy.h","pex_policy:C++"],
                      ["python", "Python.h"]
                      ])
 
@@ -31,7 +32,7 @@ env = scons.makeEnv("events",
 #
 # Build/install things
 #
-for d in Split("doc lib tests python/lsst/events"):
+for d in Split("doc lib tests python/lsst/ctrl/events"):
     SConscript(os.path.join(d, "SConscript"))
 
 env['IgnoreFiles'] = r"(~$|\.pyc$|^\.svn$|\.o$)"

@@ -44,6 +44,7 @@ using namespace cms;
 using namespace std;
 
 namespace lsst {
+namespace ctrl {
 namespace events { 
 
 
@@ -99,6 +100,7 @@ private:
     // socket for "standalone mode"
     int _sock;
 };
+}
 }
 }
 

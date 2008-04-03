@@ -26,6 +26,7 @@ using namespace lsst::pex::logging;
 using namespace std;
 
 namespace lsst {
+namespace ctrl {
 namespace events {
 
 /** \brief writes a record to the event log stream.   This ignores the
@@ -41,5 +42,6 @@ void EventFormatter::write(ostream *os, const LogRecord& rec) {
     system.publish(EventLog::getLoggingTopic(), rec);
 }
 
+}
 }
 }

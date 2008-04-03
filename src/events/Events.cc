@@ -14,7 +14,6 @@
 
 #include "lsst/ctrl/events/Events.h"
 #include "lsst/daf/base/DataProperty.h"
-// #include "lsst/daf/data/SupportFactory.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/pex/policy/Policy.h"
@@ -25,7 +24,6 @@
 #define TUPLECOUNT_PROPERTY "LSSTEVENTTUPLES"
 
 using namespace lsst::daf::base;
-#  using namespace lsst::daf::data;
 using namespace lsst::pex::exceptions;
 using namespace boost;
 
@@ -36,6 +34,7 @@ using namespace cms;
 using namespace std;
 
 namespace lsst {
+namespace ctrl {
 namespace events {
 
 /** \brief Configures an EventTransmitter based on Policy contents.
@@ -215,7 +214,7 @@ void EventTransmitter::publish(const std::string& type, DataProperty::PtrType dp
             std::string messageText = marshall(srp, &nTuples);
             publish(type, messageText, nTuples);
     } else {
-            DataProperty::PtrType root = SupportFactory::createPropertyNode("LSSTroot");
+            DataProperty::PtrType root = DataProperty::createPropertyNode("LSSTroot");
             
             DataProperty::PtrType srp(new DataProperty(*dpt));
             root->addProperty(srp);
@@ -952,7 +951,7 @@ DataProperty::PtrType EventReceiver::unmarshall(int nTuples, std::string text) {
     std::string key = vec2.at(1);
     std::string val = vec2.at(2);
 
-    DataProperty::PtrType root = SupportFactory::createPropertyNode(key);
+    DataProperty::PtrType root = DataProperty::createPropertyNode(key);
     pos = 1;
     DataProperty::PtrType node(unmarshall(nTuples, root, vec, pos));
     
@@ -981,7 +980,7 @@ DataProperty::PtrType EventReceiver::unmarshall(int nTuples, DataProperty::PtrTy
         if (type == "node") {
             int int_value;
             iss >> int_value;
-            DataProperty::PtrType newroot = SupportFactory::createPropertyNode(key);
+            DataProperty::PtrType newroot = DataProperty::createPropertyNode(key);
             pos++;
             DataProperty::PtrType node(unmarshall(int_value, newroot, vec, pos));
             root->addProperty(newroot);
@@ -1104,5 +1103,6 @@ EventReceiver::~EventReceiver() {
     _connection = NULL;
 }
 
+}
 }
 }

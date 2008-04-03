@@ -1,8 +1,6 @@
 # -*- python -*-
 Import("env")
 
-env.CheckSwig("python", ilang="c++", includedProducts="utils daf_base pex_policy pex_exceptions pex_logging")
-#env.LoadableModuleIncomplete("_data", Split("data.i"), LIBS=env.libs["boost"] + ["mwi"])
-#env.LoadableModuleIncomplete("_utils", Split("utils.i"), LIBS=env.libs["boost"] + ["mwi"])
-#env.LoadableModuleIncomplete("_logging", Split("logging.i"), LIBS=env.libs["boost"] + ["mwi"])
-env.LoadableModuleIncomplete("_events", Split("events.i"), LIBS=env.libs["activemqcpp"] + ["boost"] + ["daf_base"] + ["pex_policy"] + ["pex_exceptions"] + ["pex_logging"] + ["ctrl_events"])
+env.CheckSwig("python", ilang="c++", includedProducts="utils")
+basicLibs = "daf_base pex_exceptions pex_logging pex_policy".split()
+env.LoadableModuleIncomplete("_eventsLib", Split("eventsLib.i"), LIBS=env.libs["activemqcpp"] + basicLibs + ["ctrl_events"])

@@ -44,6 +44,7 @@ using namespace cms;
 using namespace std;
 
 namespace lsst {
+namespace ctrl {
 namespace events { 
 
 class EventReceiver {
@@ -132,6 +133,7 @@ private:
 };
 
 
+}
 }
 }
 
