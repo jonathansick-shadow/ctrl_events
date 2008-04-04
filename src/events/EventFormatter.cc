@@ -15,8 +15,6 @@
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventFormatter.h"
-// #include "lsst/daf/base/DataProperty.h"
-// #include "lsst/daf/data/SupportFactory.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/logging/Component.h"
 
