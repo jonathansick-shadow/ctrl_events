@@ -2,13 +2,12 @@
 
 #
 # This tests the EventLogging mechanism; this is very similar to the testLog.py
-# file in mwi, but uses EventLog instead of ScreenLog.  The events that are
-# sent are retrieved.
+# file in pex_logging, but uses EventLog instead of ScreenLog.  
+# The events that are  sent are retrieved.
 #
 
 
-#import lsst.mwi.tests as tests
-#import lsst.pex.utils as mwiu
+#import lsst.tests as tests
 import lsst.pex.logging as log
 import lsst.ctrl.events as events
 from lsst.daf.base import DataProperty

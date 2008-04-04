@@ -6,7 +6,7 @@ Run with:
    python testLog
 """
 
-#     import lsst.mwi.tests as tests
+#   import lsst.tests as tests
 import lsst.pex.logging as log
 import lsst.ctrl.events as events
 from lsst.daf.base import DataProperty
