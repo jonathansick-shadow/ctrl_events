@@ -106,6 +106,7 @@ void EventSystem::createLocalReceiver(const std::string& topicName) {
 
 /** \brief send an event on a topic
   * \param topicName the topic to send messages to
+  * \param dpt the DataProperty to send
   * \throw Runtime exception if the topic wasn't already registered using 
   *        the createTransmitter method
   */
@@ -119,6 +120,7 @@ void EventSystem::publish(const std::string& topicName, const DataProperty::PtrT
 
 /** \brief send an logging event
   * \param topicName the topic to send messages to
+  * \param rec the LogRecord to send
   * \throw Runtime exception if the topic wasn't already registered using 
   *        the createTransmitter method
   */
@@ -145,6 +147,7 @@ shared_ptr<EventTransmitter> EventSystem::getTransmitter(const std::string& name
 
 /** \brief blocking receive for events.  Waits until an event
   *        is received for the topic specified in the constructor
+  * \param topicName the topic to listen on
   * \return a DataProperty::PtrType object
   */
 DataProperty::PtrType EventSystem::receive(const std::string& topicName) {
@@ -154,6 +157,8 @@ DataProperty::PtrType EventSystem::receive(const std::string& topicName) {
 /** \brief blocking receive for events, with timeout (in milliseconds).  
   *        Waits until an event is received for the topic specified
   *        in the constructor, or until the timeout expires.      
+  * \param topicName the topic to listen on
+  * \param timeout the time in milliseconds to wait before returning
   * \return a DataProperty::PtrType object on success, 0 on failure  see note
   *         in receive()
   */
@@ -167,7 +172,7 @@ DataProperty::PtrType EventSystem::receive(const std::string& topicName, const l
 
 /** \brief Receives events matching both the name and string value
   *             
-  * \param topicName the topic to listen receive messages on
+  * \param topicName the topic to receive messages on
   * \param name the DataProperty name to match
   * \param value the string value to match
   * \return the matching DataProperty::PtrType object
@@ -178,7 +183,7 @@ DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName,
 
 /** \brief Receives events matching both the name and int value
   *             
-  * \param topicName the topic to listen receive messages on
+  * \param topicName the topic to receive messages on
   * \param name the DataProperty name to match
   * \param value the int value to match
   * \return the matching DataProperty::PtrType object
@@ -189,7 +194,7 @@ DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName,
 
 /** \brief Receives events matching both the name and float value
   *             
-  * \param topicName the topic to listen receive messages on
+  * \param topicName the topic to receive messages on
   * \param name the DataProperty name to match
   * \param value the float value to match
   * \return the matching DataProperty::PtrType object
@@ -200,7 +205,7 @@ DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName,
 
 /** \brief Receives events matching both the name and double value
   *             
-  * \param topicName the topic to listen receive messages on
+  * \param topicName the topic to receive messages on
   * \param name the DataProperty name to match
   * \param value the double value to match
   * \return the matching DataProperty::PtrType object
@@ -223,6 +228,7 @@ DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName,
   *        the specified timeout (in milliseconds). Waits until the
   *        matching event arrives, or until the timeout expires
   *  
+  * \param topicName the topic to receive messages on
   * \param name the DataProperty name to match  
   * \param value the string value to match
   * \param timeout the time to wait (in milliseconds)
@@ -237,6 +243,7 @@ DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName,
   *        the specified timeout (in milliseconds). Waits until the
   *        matching event arrives, or until the timeout expires
   *  
+  * \param topicName the topic to receive messages on
   * \param name the DataProperty name to match  
   * \param value the int value to match
   * \param timeout the time to wait (in milliseconds)
@@ -251,6 +258,7 @@ DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName,
   *        the specified timeout (in milliseconds). Waits until the
   *        matching event arrives, or until the timeout expires
   *  
+  * \param topicName the topic to receive messages on
   * \param name the DataProperty name to match  
   * \param value the float value to match
   * \param timeout the time to wait (in milliseconds)
@@ -265,6 +273,7 @@ DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName,
   *        the specified timeout (in milliseconds). Waits until the
   *        matching event arrives, or until the timeout expires
   *  
+  * \param topicName the topic to receive messages on
   * \param name the DataProperty name to match  
   * \param value the double value to match
   * \param timeout the time to wait (in milliseconds)

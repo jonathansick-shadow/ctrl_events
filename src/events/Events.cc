@@ -187,7 +187,7 @@ void EventTransmitter::publish(const std::string& type, DataProperty dp) {
 
 /** \brief publish an event
   *
-  * \param dp The DataProperty::PtrType to send.
+  * \param dpt The DataProperty to send
   * \throw throws Runtime exception if publish fails
   */
 void EventTransmitter::publish(DataProperty::PtrType dpt) {
@@ -197,7 +197,7 @@ void EventTransmitter::publish(DataProperty::PtrType dpt) {
 /** \brief publish an event of "type"        
   *
   * \param type type of event ("log", "exception", some custom name)
-  * \param dp The DataProperty::PtrType to send.
+  * \param dpt The DataProperty to send
   * \throw throws Runtime exception if publish fails
   */
 void EventTransmitter::publish(const std::string& type, DataProperty::PtrType dpt) {
@@ -612,10 +612,11 @@ DataProperty::PtrType EventReceiver::receive(long timeout) {
     return _receive(timeout);
 }
 
-/** \brief Receives events matching both the name and string value
-  *
+/** \brief Receives events matching both the name and string value, with timeout (in milliseconds
+  *        Waits until a matching event is received or until the timeout expires.
   * \param name the DataProperty name to match
   * \param value the DataProperty value to match
+  * \param timeout the time to wait (in milliseconds)
   * \return the matching DataProperty::PtrType object
   * \throw throws Runtime exception if receive fails unexpectedly
   */
