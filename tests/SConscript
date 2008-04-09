@@ -11,7 +11,7 @@ env.Program(["EventSystem_2.cc"], LIBS=env.libs["boost"] + ["daf_base"] + ["pex_
 #
 import lsst.tests
 import os
-env['ENV']['SEAL_PLUGINS'] = os.environ['SEAL_PLUGINS']
+#env['ENV']['SEAL_PLUGINS'] = os.environ['SEAL_PLUGINS']
 
 tests = lsst.tests.Control(env, verbose=True)
 

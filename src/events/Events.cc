@@ -504,6 +504,7 @@ EventReceiver::EventReceiver(const Policy& policy) {
   * \throw throws Runtime exception if connection fails to initialize
   */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName) {
+    _turnEventsOff = false;
     _useLocalSockets = false;
     init(hostName, topicName);
 }
