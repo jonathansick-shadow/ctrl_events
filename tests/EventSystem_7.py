@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 import threading
 import lsst.ctrl.events as events
 import lsst.daf.base as datap;
@@ -8,7 +9,7 @@ import time
 
 
 #
-# Send an event
+# Send an event; if this fails, remove /tmp/test_events_3 and retry.
 #
 def sendEvent(topicName):
     
