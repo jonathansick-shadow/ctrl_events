@@ -1,10 +1,10 @@
 # -*- python -*-
 Import("env")
 
-env.Program(["Events_1.cc"], LIBS=env.libs["boost"] + ["daf_base"] + ["pex_exceptions"] + ["pex_policy"] + ["pex_logging"] + ["ctrl_events"]) 
-env.Program(["Events_2.cc"], LIBS=env.libs["boost"] + ["daf_base"] + ["pex_exceptions"] +  ["pex_policy"] + ["pex_logging"] + ["ctrl_events"]) 
-env.Program(["EventSystem_1.cc"], LIBS=env.libs["boost"] + ["daf_base"] + ["pex_exceptions"] +["pex_policy"] + ["pex_logging"] + ["ctrl_events"]) 
-env.Program(["EventSystem_2.cc"], LIBS=env.libs["boost"] + ["daf_base"] + ["pex_exceptions"] +["pex_policy"] + ["pex_logging"] + ["ctrl_events"]) 
+env.Program(["Events_1.cc"], LIBS=env.libs["boost"] + ["daf_base"] + ["pex_exceptions"] + ["pex_policy"] + ["pex_logging"] + ["utils"] + ["ctrl_events"]) 
+env.Program(["Events_2.cc"], LIBS=env.libs["boost"] + ["daf_base"] + ["pex_exceptions"] +  ["pex_policy"] + ["pex_logging"] + ["utils"] + ["ctrl_events"]) 
+env.Program(["EventSystem_1.cc"], LIBS=env.libs["boost"] + ["daf_base"] + ["pex_exceptions"] +["pex_policy"] + ["pex_logging"] + ["utils"] + ["ctrl_events"]) 
+env.Program(["EventSystem_2.cc"], LIBS=env.libs["boost"] + ["daf_base"] + ["pex_exceptions"] +["pex_policy"] + ["pex_logging"] + ["utils"] + ["ctrl_events"]) 
 
 #
 # Tests
@@ -21,7 +21,6 @@ tests.run("Events_3.py")
 tests.run("Events_4.py")
 tests.run("Events_5.py")
 tests.run("Events_6.py")
-tests.run("Events_7.py")
 tests.run("EventSystem_1.cc")
 tests.run("EventSystem_2.cc")
 tests.run("EventSystem_3.py")
