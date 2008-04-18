@@ -1029,8 +1029,8 @@ DataProperty::PtrType EventReceiver::unmarshall(int nTuples, DataProperty::PtrTy
   */
 void EventReceiver::splitString(std::string str, std::string delim, 
                                 std::vector<std::string>&results) {
-    unsigned int cutAt;
-    int delim_len = delim.length();
+    std::string::size_type cutAt;
+    std::string::size_type delim_len = delim.length();
     while( (cutAt = str.find(delim)) != str.npos ) {
         if(cutAt > 0) {
             results.push_back(str.substr(0,cutAt));
