@@ -7,7 +7,8 @@ import lsst.SConsUtils as scons
 
 env = scons.makeEnv("ctrl_events",
                     r"$HeadURL$",
-                    [["boost", "boost/version.hpp", "boost_filesystem:C++"],
+                    [["boost", "boost/version.hpp", "boost_system:C++"],
+                     ["boost", "boost/version.hpp", "boost_filesystem:C++"],
                      ["boost", "boost/regex.hpp", "boost_regex:C++"],
                      ["activemqcpp", "activemq/util/Number.h", "activemq-cpp:C++"],
                      ["utils", "lsst/utils/Utils.h", "utils:C++"],
