@@ -43,8 +43,8 @@ if __name__ == "__main__":
     # 
     try:
         eventSystem.createLocalTransmitter("moo")
-    except ex.RuntimeErrorException:
-        assert 1
+    except lsst.pex.exceptions.LsstCppException:
+        pass
     #
     # Create a local receiver and sender
     #

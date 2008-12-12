@@ -33,7 +33,7 @@ if __name__ == "__main__":
     sendEvent(host, topic)
 
     val = y.receive()
-#    assert val.get() != None
+    assert val != None
     print val.toString()
 
 
@@ -42,5 +42,5 @@ if __name__ == "__main__":
     # time out and confirm that we didn't get anything
     #
     val = y.receive(100)
-#    assert val == 0
+    assert val == None
 
