@@ -2,7 +2,7 @@
 
 import threading
 import lsst.ctrl.events as events
-import lsst.daf.base as datap;
+import lsst.daf.base as base
 import time
 
 
@@ -11,24 +11,16 @@ import time
 #
 def sendEvent(topicName):
     
-    root = datap.DataProperty.createPropertyNode("root");
-    date = datap.DataProperty("DATE","2007-07-01T14:28:32.546012")
-    pid = datap.DataProperty("PID",200)
-    host = datap.DataProperty("HOST","fester.ncsa.uiuc.edu")
-    ip = datap.DataProperty("IP","141.142.220.44")
-    event = datap.DataProperty("EVNT","test")
-    misc1 = datap.DataProperty("misc1","data 1")
-    misc2 = datap.DataProperty("misc2","data 2")
-    flo = datap.DataProperty("float_value", 3.14)
+    root = base.PropertySet()
+    root.set("DATE","2007-07-01T14:28:32.546012")
+    root.setInt("PID",200)
+    root.set("HOST","fester.ncsa.uiuc.edu")
+    root.set("IP","141.142.220.44")
+    root.set("EVNT","test")
+    root.set("misc1","data 1")
+    root.set("misc2","data 2")
+    root.setFloat("float_value", 3.14)
     
-    root.addProperty(date);
-    root.addProperty(pid);
-    root.addProperty(host);
-    root.addProperty(ip);
-    root.addProperty(event);
-    root.addProperty(misc1);
-    root.addProperty(misc2);
-    root.addProperty(flo);
     eventSystem = events.EventSystem.getDefaultEventSystem()
     eventSystem.publish(topicName, root)
 

@@ -4,7 +4,7 @@ import lsst.ctrl.events as events
 import lsst.daf.base as datap;
 import lsst.pex.exceptions as ex
 import lsst.pex.logging as logging
-import lsst.pex.policy as policy;
+import lsst.pex.policy as policy
 
 
 if __name__ == "__main__":
@@ -16,14 +16,14 @@ if __name__ == "__main__":
     p = policy.Policy()
     try:
         eventSystem.createTransmitter(p)
-    except ex.LsstNotFound:
+    except ex.NotFoundException:
         pass
 
     # host wasn't specified...that's a no-no, since useLocalSockets is false
     p.set("topicName", "EventSystem_test")
     try:
         eventSystem.createTransmitter(p)
-    except ex.LsstNotFound:
+    except ex.NotFoundException:
         pass
 
     # TODO:

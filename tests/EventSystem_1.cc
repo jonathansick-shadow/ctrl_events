@@ -9,8 +9,8 @@
 #include "lsst/pex/exceptions.h"
 using namespace std;
 using lsst::pex::policy::Policy;
-using lsst::pex::exceptions::NotFound;
-using lsst::pex::exceptions::Runtime;
+using lsst::pex::exceptions::NotFoundException;
+using lsst::pex::exceptions::RuntimeErrorException;
 
 // using namespace lsst::ctrl::events::EventSystem;
 using namespace lsst::ctrl::events;
@@ -21,7 +21,7 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
     if (! mustBeTrue) {
         ostringstream msg;
         msg << __FILE__ << ':' << line << ":\n" << failureMsg << ends;
-        throw runtime_error(msg.str());
+        throw LSST_EXCEPT(RuntimeErrorException, msg.str());
     }
 }   
     
@@ -35,29 +35,29 @@ int main() {
     //
     try {
         eventSystem.createTransmitter(p);
-    } catch (NotFound&) { 
+    } catch (NotFoundException&) { 
     } 
 
     p.set("topicName", "EventSystem_1_test");
     p.set("useLocalSockets", false);
     try {
         eventSystem.createTransmitter(p);
-    } catch (NotFound&) { 
+    } catch (NotFoundException&) { 
     } 
 
     p.set("useLocalSockets", true);
     try {
         eventSystem.createTransmitter(p);
-    } catch (Runtime&) { 
+    } catch (RuntimeErrorException&) { 
     } 
 
     eventSystem.createTransmitter("lsst8.ncsa.uiuc.edu", "EventSystem_1_test");
 
     // test publish("string", DataProperty)
-    DataProperty dp("test", 12);
+    PropertySet::Ptr psp(new PropertySet);
+    psp->add("test", 12);
 
-    DataProperty::PtrType dpt(new DataProperty("test",12));
-    eventSystem.publish(std::string("EventSystem_1_test"), dpt);
+    eventSystem.publish("EventSystem_1_test", psp);
 
     // test publish("string", LogRecord)
     LogRecord lr(-1, 10);

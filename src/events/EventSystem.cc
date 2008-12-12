@@ -12,7 +12,7 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "lsst/daf/base/DataProperty.h"
+#include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/exceptions.h"
@@ -106,16 +106,16 @@ void EventSystem::createLocalReceiver(const std::string& topicName) {
 
 /** \brief send an event on a topic
   * \param topicName the topic to send messages to
-  * \param dpt the DataProperty to send
+  * \param psp the PropertySet to send
   * \throw Runtime exception if the topic wasn't already registered using 
   *        the createTransmitter method
   */
-void EventSystem::publish(const std::string& topicName, const DataProperty::PtrType dpt) {
+void EventSystem::publish(const std::string& topicName, const PropertySet::Ptr psp) {
     shared_ptr<EventTransmitter> transmitter;
     if ((transmitter = getTransmitter(topicName)) == 0) {
-    throw Runtime("topic "+ topicName + " is not registered with EventSystem");
+    throw LSST_EXCEPT(RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
     }
-    transmitter->publish("", dpt);
+    transmitter->publish( psp);
 }
 
 /** \brief send an logging event
@@ -127,9 +127,9 @@ void EventSystem::publish(const std::string& topicName, const DataProperty::PtrT
 void EventSystem::publish(const std::string& topicName, const LogRecord& rec) {
     shared_ptr<EventTransmitter> transmitter;
     if ((transmitter = getTransmitter(topicName)) == 0) {
-    throw Runtime("topic "+ topicName + " is not registered with EventSystem");
+    throw LSST_EXCEPT(RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
     }
-    transmitter->publish(EventLog::getLoggingTopic(), rec);
+    transmitter->publish(rec);
 }
 
 
@@ -148,9 +148,9 @@ shared_ptr<EventTransmitter> EventSystem::getTransmitter(const std::string& name
 /** \brief blocking receive for events.  Waits until an event
   *        is received for the topic specified in the constructor
   * \param topicName the topic to listen on
-  * \return a DataProperty::PtrType object
+  * \return a PropertySet::Ptr object
   */
-DataProperty::PtrType EventSystem::receive(const std::string& topicName) {
+PropertySet::Ptr EventSystem::receive(const std::string& topicName) {
     return receive(topicName, EventReceiver::infiniteTimeout);
 }
 
@@ -159,69 +159,79 @@ DataProperty::PtrType EventSystem::receive(const std::string& topicName) {
   *        in the constructor, or until the timeout expires.      
   * \param topicName the topic to listen on
   * \param timeout the time in milliseconds to wait before returning
-  * \return a DataProperty::PtrType object on success, 0 on failure  see note
+  * \return a Property::Ptr object on success, 0 on failure  see note
   *         in receive()
   */
-DataProperty::PtrType EventSystem::receive(const std::string& topicName, const long timeout) {
+PropertySet::Ptr EventSystem::receive(const std::string& topicName, const long timeout) {
     shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
-    throw Runtime("Topic "+ topicName +" is not registered with EventSystem");
+    throw LSST_EXCEPT(RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
     }
     return receiver->receive(timeout);
 }
+// TODO: roll this back into the Template, once the swig stuff is working properly
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const int value) {
+    return _matchingReceive(topicName, name, value);
+}
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const long value) {
+    return _matchingReceive(topicName, name, value);
+}
+
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const float value) {
+    return _matchingReceive(topicName, name, value);
+}
+
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const double value) {
+    return _matchingReceive(topicName, name, value);
+}
+
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const long long value) {
+    return _matchingReceive(topicName, name, value);
+}
+
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const std::string& value) {
+    return _matchingReceive(topicName, name, value);
+}
+
 
 /** \brief Receives events matching both the name and string value
   *             
   * \param topicName the topic to receive messages on
-  * \param name the DataProperty name to match
+  * \param name the Property name to match
   * \param value the string value to match
-  * \return the matching DataProperty::PtrType object
+  * \return the matching PropertySet::Ptr object
   */
-DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const std::string& value) {
-    return matchingReceive(topicName, name, boost::any(value));
-}
-
-/** \brief Receives events matching both the name and int value
-  *             
-  * \param topicName the topic to receive messages on
-  * \param name the DataProperty name to match
-  * \param value the int value to match
-  * \return the matching DataProperty::PtrType object
-  */
-DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName, const std::string& name, int value) {
-    return matchingReceive(topicName, name, boost::any(value));
-}
-
-/** \brief Receives events matching both the name and float value
-  *             
-  * \param topicName the topic to receive messages on
-  * \param name the DataProperty name to match
-  * \param value the float value to match
-  * \return the matching DataProperty::PtrType object
-  */
-DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName, const std::string& name, float value) {
-    return matchingReceive(topicName, name, boost::any(value));
-}
-
-/** \brief Receives events matching both the name and double value
-  *             
-  * \param topicName the topic to receive messages on
-  * \param name the DataProperty name to match
-  * \param value the double value to match
-  * \return the matching DataProperty::PtrType object
-  */
-DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName, const std::string& name, double value) {
-    return matchingReceive(topicName, name, boost::any(value));
-}
-
-/** private common method used by all matchingReceive methods
-  */
-DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName, const std::string& name, boost::any value) {
+template <typename T>
+PropertySet::Ptr EventSystem::_matchingReceive(const std::string& topicName, const std::string& name, const T& value) {
     shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
-    throw Runtime("Topic "+ topicName +" is not registered with EventSystem");
+    throw LSST_EXCEPT(RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
     }
     return receiver->matchingReceive(name, value);
+}
+
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, int value, const long timeout) {
+    return _matchingReceive(topicName, name, value, timeout);
+}
+
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, long value, const long timeout) {
+    return _matchingReceive(topicName, name, value, timeout);
+}
+
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, double value, const long timeout) {
+    return _matchingReceive(topicName, name, value, timeout);
+}
+
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, float value, const long timeout) {
+    return _matchingReceive(topicName, name, value, timeout);
+}
+
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, long long value, const long timeout) {
+    return _matchingReceive(topicName, name, value, timeout);
+}
+
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const std::string& value, const long timeout) {
+    return _matchingReceive(topicName, name, value, timeout);
 }
 
 /** \brief Receives events matching both the name and string value within
@@ -232,65 +242,14 @@ DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName,
   * \param name the DataProperty name to match  
   * \param value the string value to match
   * \param timeout the time to wait (in milliseconds)
-  * \return the matching DataProperty::PtrType object, 
-  *         or a null DataProperty::PtrType object on timeout expiration
+  * \return the matching PropertySet::Ptr object, 
+  *         or a null PropertySet::Ptr object on timeout expiration
   */
-DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const std::string& value, long timeout) {
-    return matchingReceive(topicName, name, boost::any(value), timeout);
-}
-
-/** \brief Receives events matching both the name and int value within
-  *        the specified timeout (in milliseconds). Waits until the
-  *        matching event arrives, or until the timeout expires
-  *  
-  * \param topicName the topic to receive messages on
-  * \param name the DataProperty name to match  
-  * \param value the int value to match
-  * \param timeout the time to wait (in milliseconds)
-  * \return the matching DataProperty::PtrType object, 
-  *         or a null DataProperty::PtrType object on timeout expiration
-  */
-DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName, const std::string& name, int value, long timeout) {
-    return matchingReceive(topicName, name, boost::any(value), timeout);
-}
-
-/** \brief Receives events matching both the name and float value within
-  *        the specified timeout (in milliseconds). Waits until the
-  *        matching event arrives, or until the timeout expires
-  *  
-  * \param topicName the topic to receive messages on
-  * \param name the DataProperty name to match  
-  * \param value the float value to match
-  * \param timeout the time to wait (in milliseconds)
-  * \return the matching DataProperty::PtrType object, 
-  *         or a null DataProperty::PtrType object on timeout expiration
-  */
-DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName, const std::string& name, float value, long timeout) {
-    return matchingReceive(topicName, name, boost::any(value), timeout);
-}
-
-/** \brief Receives events matching both the name and double value within
-  *        the specified timeout (in milliseconds). Waits until the
-  *        matching event arrives, or until the timeout expires
-  *  
-  * \param topicName the topic to receive messages on
-  * \param name the DataProperty name to match  
-  * \param value the double value to match
-  * \param timeout the time to wait (in milliseconds)
-  * \return the matching DataProperty::PtrType object, 
-  *         or a null DataProperty::PtrType object on timeout expiration
-  */
-DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName, const std::string& name, double value, long timeout) {
-    return matchingReceive(topicName, name, boost::any(value), timeout);
-}
-
-/** private common method used by all matchingReceive with timeout methods
-  */
-DataProperty::PtrType EventSystem::matchingReceive(const std::string& topicName, const std::string& name, boost::any value, long timeout){
-
+template <typename T>
+PropertySet::Ptr EventSystem::_matchingReceive(const std::string& topicName, const std::string& name, const T& value, long timeout) {
     shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
-    throw Runtime("Topic "+ topicName +" is not registered with EventSystem");
+    throw LSST_EXCEPT(RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
     }
     return receiver->matchingReceive(name, value, timeout);
 }
@@ -309,4 +268,3 @@ shared_ptr<EventReceiver> EventSystem::getReceiver(const std::string& name) {
 }
 }
 }
-

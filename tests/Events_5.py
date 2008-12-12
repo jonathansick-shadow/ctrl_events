@@ -2,22 +2,27 @@
 
 import threading
 import lsst.ctrl.events as events
-import lsst.daf.base as datap;
-import lsst.pex.policy as policy;
+import lsst.daf.base as base
+import lsst.pex.policy as policy
 import time
 
 
 #
 # sendEvent() - shoot an event to a host on a certain topic
 #
-def sendEvent(hostName, topicName, name, value):
+def sendEvent(hostName, topicName, ps):
     trans = events.EventTransmitter(hostName, topicName)
-    
-    root = datap.DataProperty.createPropertyNode("root");
-    pid = datap.DataProperty(name,value)
-    
-    root.addProperty(pid);
-    trans.publish("log", root)
+    trans.publish(ps)
+
+def createIntProperty(name, value):
+    root = base.PropertySet()
+    root.addInt(name, value)
+    return root
+
+def createStringProperty(name, value):
+    root = base.PropertySet()
+    root.add(name, value)
+    return root
 
 if __name__ == "__main__":
     host = "lsst8.ncsa.uiuc.edu"
@@ -30,13 +35,14 @@ if __name__ == "__main__":
     #
     # send two test events, first PID ==  300, then PID == 200
     #
-    sendEvent(host, topic, "PID", 300)
-    sendEvent(host, topic, "PID", 200)
+    sendEvent(host, topic, createIntProperty("PID", 300))
+    sendEvent(host, topic, createIntProperty("PID", 200))
 
     #
     # shouldn't receive anything
     # 
     val = recv.matchingReceive("PID", 400, 1000)
+    print dir(val)
     assert val.get() == None
 
     #

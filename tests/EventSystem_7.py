@@ -4,7 +4,7 @@
 import threading
 import lsst.ctrl.events as events
 import lsst.daf.base as datap;
-import lsst.pex.exceptions as ex;
+import lsst.pex.exceptions as ex
 import time
 
 
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     # 
     try:
         eventSystem.createLocalTransmitter("moo")
-    except ex.LsstRuntime:
+    except ex.RuntimeErrorException:
         assert 1
     #
     # Create a local receiver and sender

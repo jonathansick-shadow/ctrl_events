@@ -16,7 +16,7 @@ Access to the lsst::ctrl::events classes
 #include "lsst/daf/base/Citizen.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/policy/Policy.h"
-#include "lsst/daf/base/DataProperty.h"
+#include "lsst/daf/base/PropertySet.h"
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/ctrl/events/EventReceiver.h"
 #include "lsst/ctrl/events/EventSystem.h"
@@ -56,16 +56,27 @@ import lsst.ctrl.events
 %include "std_set.i"
 %include "lsst/utils/Utils.h"
 %import "lsst/daf/base/Citizen.h"
-%import "lsst/daf/base/DataProperty.h"
+%import "lsst/daf/base/PropertySet.h"
 %import "lsst/pex/exceptions.h"
 %import "lsst/pex/logging/Log.h"
 %import "lsst/pex/logging/LogRecord.h"
 %import "lsst/pex/policy/Policy.h"
+
+
 %include "lsst/ctrl/events/EventTransmitter.h"
 %include "lsst/ctrl/events/EventReceiver.h"
 %include "lsst/ctrl/events/EventLog.h"
 %include "lsst/ctrl/events/EventFormatter.h"
 %include "lsst/ctrl/events/EventSystem.h"
+/*
+%extend lsst::ctrl::events::EventSystem {
+        %template(matchingReceiveInt) matchingReceive<int>;
+        %template(matchingReceiveDouble) matchingReceive<double>;
+        %template(matchingReceiveFloat) matchingReceive<float>;
+        %template(matchingReceiveString) matchingReceive<std::string>;
+}
+*/
+
 
 
 /******************************************************************************/

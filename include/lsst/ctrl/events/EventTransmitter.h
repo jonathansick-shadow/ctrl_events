@@ -20,6 +20,7 @@
 #include <cms/Connection.h>
 #include <cms/Session.h>
 #include <cms/TextMessage.h>
+#include <cms/MapMessage.h>
 #include <cms/BytesMessage.h>
 
 #include <stdlib.h>
@@ -29,9 +30,9 @@
 #include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
-#include "lsst/daf/base/DataProperty.h"
+#include "lsst/daf/base/PropertySet.h"
 
-using lsst::daf::base::DataProperty;
+using lsst::daf::base::PropertySet;
 using lsst::pex::logging::LogRecord;
 
 using namespace lsst::daf::base;
@@ -56,22 +57,30 @@ public:
     EventTransmitter(const std::string& hostName, const std::string& topicName);
     ~EventTransmitter();
 
-    void publish(DataProperty::PtrType dpt);
-    void publish(DataProperty dp);
+    void publish(const PropertySet::Ptr& psp);
+    void publish(const PropertySet& ps);
 
-    void publish(const std::string& type, DataProperty::PtrType dpt);
-    void publish(const std::string& type, DataProperty dp);
-    void publish(const std::string& type, const LogRecord& rec);
+#ifdef REMOVE_THIS
+    void publish(const std::string& type, PropertySet::Ptr psp);
+    void publish(const std::string& type, PropertySet ps);
+    void publish(const std::string& type, PropertySet ps);
+#endif
+    void publish(const LogRecord& rec);
 
     std::string getTopicName();
 
 private:
     void init( const std::string& hostName, const std::string& topicName);
-    std::string marshall(const DataProperty::PtrType dp, int *cTuples);
-    std::string encode(const DataProperty::PtrType dp);
+#ifdef REMOVE_THIS
+    std::string marshall(const PropertySet::Ptr dp, int *cTuples);
+    std::string encode(const PropertySet::Ptr dp);
     void publish(const std::string& type, const std::string& messageText, int tuples);
 
-    void setDate(DataProperty::PtrType dpt);
+    void setDate(PropertySet::Ptr dpt);
+#endif
+    void publish(const std::string& type, const PropertySet& ps);
+
+    std::string marshall(const PropertySet& ds);
 
     // Connection to JMS broker
     Connection* _connection;

@@ -11,8 +11,8 @@
 
 using namespace std;
 using lsst::pex::policy::Policy;
-using lsst::pex::exceptions::NotFound;
-using lsst::pex::exceptions::Runtime;
+using lsst::pex::exceptions::NotFoundException;
+using lsst::pex::exceptions::RuntimeErrorException;
 
 using lsst::ctrl::events::EventTransmitter;
 
@@ -35,38 +35,38 @@ int main() {
     //
     try {
         EventTransmitter et1(p);
-    } catch (NotFound&) { 
+    } catch (NotFoundException&) { 
     } 
 
     p.set("topicName", "Events_1_test");
     p.set("useLocalSockets", false);
     try {
         EventTransmitter et2(p);
-    } catch (NotFound&) { 
+    } catch (NotFoundException&) { 
     } 
 
     p.set("useLocalSockets", true);
     try {
         EventTransmitter et3(p);
-    } catch (Runtime&) { 
+    } catch (RuntimeErrorException&) { 
     } 
 
     EventTransmitter et4("lsst8.ncsa.uiuc.edu", "Events_1_test");
 
-    // test publish("string", DataProperty)
-    DataProperty dp("test1", 12);
+    // test publish("string", PropertySet)
+    PropertySet::Ptr psp1(new PropertySet);
+    psp1->set("test2",12);
+    et4.publish(psp1);
 
-    DataProperty::PtrType dpt(new DataProperty("test2",12));
-    et4.publish(std::string("test log"), dpt);
-
-    DataProperty::PtrType dpt2(new DataProperty("test3",(long)13));
-    et4.publish(std::string("test log2"), dpt2);
+    PropertySet::Ptr psp2(new PropertySet);
+    psp2->set("test3",(long)13);
+    et4.publish(psp2);
 
     // test publish("string", LogRecord)
     LogRecord lr(-1, 10);
     const char *comment = "a comment";
     lr.addComment(comment);
-    et4.publish("test log", lr);
+    et4.publish(lr);
 
     // test getTopicName();
     std::string topicName = et4.getTopicName();
