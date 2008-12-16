@@ -15,6 +15,6 @@ if __name__ == "__main__":
     try:
         trans = events.EventTransmitter(host, topic)
         assert 0
-    except ex.LsstRuntime:
-        assert 1
+    except ex.LsstCppException, e:
+        pass
     

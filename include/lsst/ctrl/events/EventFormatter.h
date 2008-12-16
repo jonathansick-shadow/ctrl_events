@@ -33,6 +33,7 @@ namespace events {
 class EventFormatter : public LogFormatter {
 public:
     explicit EventFormatter() : LogFormatter() { }
+    virtual ~EventFormatter();
     void write(ostream *os, const LogRecord& rec);
 
 };

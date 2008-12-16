@@ -105,7 +105,6 @@ void EventLog::initThres(int threshold)
   * \param sliceId the current slice id
   * \param hostId the name of this host
   * \param threshold the logging threshold to observe when sending log messages
-  * \param preamble a PropertySet to include in each log message.
   */
 void EventLog::createDefaultLog(const std::string runId, int sliceId, const std::string hostId, int threshold)  {
     PropertySet::Ptr psp;

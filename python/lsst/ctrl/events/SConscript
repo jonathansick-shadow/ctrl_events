@@ -1,6 +1,6 @@
 # -*- python -*-
 Import("env")
 
-env.CheckSwig("python", ilang="c++", includedProducts="utils daf_base pex_exceptions pex_logging")
+env.CheckSwig("python", ilang="c++", includedProducts="utils daf_base pex_exceptions pex_logging pex_policy")
 basicLibs = "pex_exceptions pex_logging pex_policy utils daf_base".split()
 env.LoadableModuleIncomplete("_eventsLib", Split("eventsLib.i"), LIBS=env.libs["activemqcpp"] + basicLibs + ["ctrl_events"])

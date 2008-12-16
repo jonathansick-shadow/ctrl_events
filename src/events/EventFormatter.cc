@@ -27,6 +27,9 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
+EventFormatter::~EventFormatter() {}
+
+
 /** \brief writes a record to the event log stream.   This ignores the
   *        ostream, but this is required because of the signature of this
   *        required method

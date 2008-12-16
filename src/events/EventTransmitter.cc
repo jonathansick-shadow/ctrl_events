@@ -60,8 +60,8 @@ namespace events {
   * NotFound exception is thrown
   *
   * \param policy the policy object to use when building the receiver
-  * \throw throws NotFound if expected keywords are missing in Policy object
-  * \throw throws Runtime if connection to transport mechanism fails
+  * \throw throws NotFoundException if expected keywords are missing in Policy object
+  * \throw throws RuntimeErrorException if connection to transport mechanism fails
   */
 EventTransmitter::EventTransmitter( const Policy& policy) {
     _turnEventsOff = policy.getBool("turnEventsoff", false);
@@ -85,9 +85,9 @@ EventTransmitter::EventTransmitter( const Policy& policy) {
   *
   * \param hostName the machine hosting the message broker
   * \param topicName the topic to transmit events to
-  * \throw throws Runtime exception if local socket can't be created
-  * \throw throws Runtime exception if connect to local socket fails
-  * \throw throws Runtime exception if connect to remote JMS host fails
+  * \throw throws RuntimeErrorException if local socket can't be created
+  * \throw throws RuntimeErrorException if connect to local socket fails
+  * \throw throws RuntimeErrorException if connect to remote ActiveMQ host fails
   */
 EventTransmitter::EventTransmitter( const std::string& hostName,
                                     const std::string& topicName) {

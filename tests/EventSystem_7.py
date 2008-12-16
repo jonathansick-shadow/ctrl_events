@@ -3,7 +3,7 @@
 
 import threading
 import lsst.ctrl.events as events
-import lsst.daf.base as datap;
+import lsst.daf.base as base
 import lsst.pex.exceptions as ex
 import time
 
@@ -13,24 +13,16 @@ import time
 #
 def sendEvent(topicName):
     
-    root = datap.DataProperty.createPropertyNode("root");
-    date = datap.DataProperty("DATE","2007-07-01T14:28:32.546012")
-    pid = datap.DataProperty("PID",200)
-    host = datap.DataProperty("HOST","fester.ncsa.uiuc.edu")
-    ip = datap.DataProperty("IP","141.142.220.44")
-    event = datap.DataProperty("EVNT","test")
-    misc1 = datap.DataProperty("misc1","data 1")
-    misc2 = datap.DataProperty("misc2","data 2")
-    flo = datap.DataProperty("float_value", 3.14)
+    root = base.PropertySet()
+    root.add("DATE","2007-07-01T14:28:32.546012")
+    root.addInt("PID",200)
+    root.add("HOST","fester.ncsa.uiuc.edu")
+    root.add("IP","141.142.220.44")
+    root.add("EVNT","test")
+    root.add("misc1","data 1")
+    root.add("misc2","data 2")
+    root.addFloat("float_value", 3.14)
     
-    root.addProperty(date);
-    root.addProperty(pid);
-    root.addProperty(host);
-    root.addProperty(ip);
-    root.addProperty(event);
-    root.addProperty(misc1);
-    root.addProperty(misc2);
-    root.addProperty(flo);
     eventSystem = events.EventSystem.getDefaultEventSystem()
     eventSystem.publish(topicName, root)
 
@@ -43,7 +35,7 @@ if __name__ == "__main__":
     # 
     try:
         eventSystem.createLocalTransmitter("moo")
-    except lsst.pex.exceptions.LsstCppException:
+    except ex.LsstCppException, e:
         pass
     #
     # Create a local receiver and sender
@@ -58,4 +50,4 @@ if __name__ == "__main__":
     sendEvent(topic1)
 
     val = eventSystem.receive(topic1)
-    assert val.get() != None
+    assert val != None
