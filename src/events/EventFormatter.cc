@@ -18,10 +18,9 @@
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/logging/Component.h"
 
-//using namespace lsst::daf::base;
-using namespace lsst::pex::logging;
 
 using namespace std;
+namespace pexLogging = lsst::pex::logging;
 
 namespace lsst {
 namespace ctrl {
@@ -38,7 +37,7 @@ EventFormatter::~EventFormatter() {}
   *           signature of this method.
   * \param rec the LogRecord to send to the event topic;
   */
-void EventFormatter::write(ostream *os, const LogRecord& rec) {
+void EventFormatter::write(ostream *os, const pexLogging::LogRecord& rec) {
     EventSystem system = EventSystem::getDefaultEventSystem();
     system.publish(EventLog::getLoggingTopic(), rec);
 }

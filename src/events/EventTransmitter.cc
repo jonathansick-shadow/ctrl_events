@@ -12,7 +12,7 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "lsst/ctrl/events/Events.h"
+#include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/logging/Component.h"
@@ -21,14 +21,10 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
-using namespace lsst::daf::base;
-using namespace lsst::pex::exceptions;
-using namespace boost;
+namespace dafBase = lsst::daf::base;
+namespace pexExceptions = lsst::pex::exceptions;
+namespace pexLogging = lsst::pex::logging;
 
-using namespace activemq::core;
-using namespace activemq::util;
-using namespace activemq::concurrent;
-using namespace cms;
 using namespace std;
 
 namespace lsst {
@@ -63,19 +59,19 @@ namespace events {
   * \throw throws NotFoundException if expected keywords are missing in Policy object
   * \throw throws RuntimeErrorException if connection to transport mechanism fails
   */
-EventTransmitter::EventTransmitter( const Policy& policy) {
+EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
     _turnEventsOff = policy.getBool("turnEventsoff", false);
     if (_turnEventsOff == true)
         return;
 
     if (!policy.exists("topicName")) {
-        throw LSST_EXCEPT(NotFoundException, "topicName not found in policy");
+        throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName not found in policy");
     }
 
     _useLocalSockets = policy.getBool("useLocalSockets", false);
     if (_useLocalSockets == false) {
         if (!policy.exists("hostName")) {
-            throw LSST_EXCEPT(NotFoundException, "hostname must be specified with 'useLocalSockets' is false");
+            throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostname must be specified with 'useLocalSockets' is false");
         }
     }
     init(policy.getString("hostName", ""), policy.getString("topicName"));
@@ -118,7 +114,7 @@ void EventTransmitter::init( const std::string& hostName,
 
         _sock = socket(AF_UNIX, SOCK_STREAM, 0);
         if (_sock == -1) {
-            throw LSST_EXCEPT(RuntimeErrorException, "failed to open local socket");
+            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "failed to open local socket");
         }
         remote.sun_family = AF_UNIX;
         std::string unix_socket = "/tmp/"+_topic;
@@ -126,7 +122,7 @@ void EventTransmitter::init( const std::string& hostName,
         len = strlen(remote.sun_path)+sizeof(remote.sun_family)+1;
 
         if (connect(_sock, (struct sockaddr *)&remote, len) == -1) {
-            throw LSST_EXCEPT(RuntimeErrorException, "could not connect to local socket");
+            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "could not connect to local socket");
         }
 
         return;
@@ -142,32 +138,32 @@ void EventTransmitter::init( const std::string& hostName,
         string brokerUri = "tcp://"+hostName+
                       ":61616?wireFormat=openwire&transport.useAsyncSend=true";
 
-        ActiveMQConnectionFactory* connectionFactory =
-            new ActiveMQConnectionFactory( brokerUri );
+        activemq::core::ActiveMQConnectionFactory* connectionFactory =
+            new activemq::core::ActiveMQConnectionFactory( brokerUri );
 
         _connection = connectionFactory->createConnection();
         _connection->start();
 
         delete connectionFactory;
 
-        _session = _connection->createSession( Session::AUTO_ACKNOWLEDGE );
+        _session = _connection->createSession( cms::Session::AUTO_ACKNOWLEDGE );
 
         // Create the destination topic
         _destination = _session->createTopic( topicName );
 
         // Create a MessageProducer from the Session to the Topic or Queue
         _producer = _session->createProducer( _destination );
-        _producer->setDeliveryMode( DeliveryMode::NON_PERSISTENT );
-    } catch ( CMSException& e ) {
-        throw LSST_EXCEPT(RuntimeErrorException, e.getMessage());
+        _producer->setDeliveryMode( cms::DeliveryMode::NON_PERSISTENT );
+    } catch ( cms::CMSException& e ) {
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
     }
 }
 
-void EventTransmitter::publish(const PropertySet::Ptr& psp) {
+void EventTransmitter::publish(const dafBase::PropertySet::Ptr& psp) {
     publish(*psp);
 }
 
-void EventTransmitter::publish(const PropertySet& ps) {
+void EventTransmitter::publish(const dafBase::PropertySet& ps) {
     if (_turnEventsOff == true)
         return;
 
@@ -181,19 +177,19 @@ void EventTransmitter::publish(const PropertySet& ps) {
   *            channels.
   * \throw throws Runtime exception if publish fails
   */
-void EventTransmitter::publish(const LogRecord& rec) {
+void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
 
     if (_turnEventsOff == true)
         return;
 
-    const PropertySet& ps = rec.getProperties();
+    const dafBase::PropertySet& ps = rec.getProperties();
 
     publish("logging", ps);
 }
 
 /** private method used to send event out on the wire.
   */
-void EventTransmitter::publish(const std::string& type, const PropertySet& ps) {
+void EventTransmitter::publish(const std::string& type, const dafBase::PropertySet& ps) {
     // send the marshalled message to the local socket
 
     if (_useLocalSockets == true) {
@@ -202,21 +198,21 @@ void EventTransmitter::publish(const std::string& type, const PropertySet& ps) {
 
         // length of buffer
         if (send(_sock, &str_len, 4, 0) == -1) {
-            throw LSST_EXCEPT(RuntimeErrorException, "couldn't send message on local socket");
+            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "couldn't send message on local socket");
         }
 
         // buffer
         if (send(_sock, str.c_str(), str_len, 0) == -1) {
-            throw LSST_EXCEPT(RuntimeErrorException, "couldn't send message on local socket");
+            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "couldn't send message on local socket");
         }
         return;
     }
 
     if (_session == 0)
-        throw LSST_EXCEPT(RuntimeErrorException, "Not connected to event server");
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Not connected to event server");
 
     // Sending the message to the ActiveMQ server
-    TextMessage* message = _session->createTextMessage();
+    cms::TextMessage* message = _session->createTextMessage();
     message->setCMSType(type);
     std::string payload = marshall(ps);
 
@@ -226,7 +222,7 @@ void EventTransmitter::publish(const std::string& type, const PropertySet& ps) {
     delete message;
 }
 
-std::string EventTransmitter::marshall(const PropertySet& ps) {
+std::string EventTransmitter::marshall(const dafBase::PropertySet& ps) {
     std::vector<std::string> v = ps.paramNames(false);
 
     // TODO: optimize this to get use getArray only when necessary
@@ -288,7 +284,7 @@ EventTransmitter::~EventTransmitter() {
     try {
         if( _destination != NULL )
             delete _destination;
-    } catch ( CMSException& e ) {
+    } catch ( cms::CMSException& e ) {
         e.printStackTrace();
     }
     _destination = NULL;
@@ -296,7 +292,7 @@ EventTransmitter::~EventTransmitter() {
     try {
         if( _producer != NULL )
             delete _producer;
-    } catch ( CMSException& e ) {
+    } catch ( cms::CMSException& e ) {
         e.printStackTrace();
     }
     _producer = NULL;
@@ -307,14 +303,14 @@ EventTransmitter::~EventTransmitter() {
             _session->close();
         if( _connection != NULL )
             _connection->close();
-    } catch ( CMSException& e ) {
+    } catch ( cms::CMSException& e ) {
         e.printStackTrace();
     }
 
     try {
         if( _session != NULL )
             delete _session;
-    } catch ( CMSException& e ) {
+    } catch ( cms::CMSException& e ) {
         e.printStackTrace();
     }
     _session = NULL;
@@ -322,7 +318,7 @@ EventTransmitter::~EventTransmitter() {
     try {
         if( _connection != NULL )
             delete _connection;
-    } catch ( CMSException& e ) {
+    } catch ( cms::CMSException& e ) {
         e.printStackTrace();
     }
     _connection = NULL;

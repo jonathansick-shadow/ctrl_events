@@ -24,11 +24,9 @@
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/ctrl/events/Events.h"
 
-using lsst::daf::base::PropertySet;
-using lsst::pex::logging::LogRecord;
+namespace dafBase = lsst::daf::base;
+namespace pexPolicy = lsst::pex::policy;
 
-using namespace lsst::daf::base;
-using namespace lsst::pex::policy;
 using namespace std;
 
 namespace lsst {
@@ -45,60 +43,60 @@ public:
     void createTransmitter(const std::string& hostName, 
                            const std::string& topicName);
 
-    void createTransmitter(const Policy& policy);
+    void createTransmitter(const pexPolicy::Policy& policy);
 
     void createLocalTransmitter(const std::string& topicName);
 
     void createReceiver(const std::string& hostName, 
                         const std::string& topicName);
 
-    void createReceiver(const Policy& policy);
+    void createReceiver(const pexPolicy::Policy& policy);
 
     void createLocalReceiver(const std::string& topicName);
 
-    void publish(const std::string& topicName, const PropertySet::Ptr psp);
+    void publish(const std::string& topicName, const dafBase::PropertySet::Ptr psp);
 
-    void publish(const std::string& topicName, const LogRecord& rec);
+    void publish(const std::string& topicName, const pexLogging::LogRecord& rec);
 
-    PropertySet::Ptr receive(const std::string& topicName);
+    dafBase::PropertySet::Ptr receive(const std::string& topicName);
 
-    PropertySet::Ptr receive(const std::string& topicName,
+    dafBase::PropertySet::Ptr receive(const std::string& topicName,
                                   const long timeout);
 
 
     // TODO: all these need to be eliminated once the SWIG incantation for templates is figured out
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const int value);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long value);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const float value);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const double value);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long long value);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const std::string& value);
+    dafBase::PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const int value);
+    dafBase::PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long value);
+    dafBase::PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const float value);
+    dafBase::PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const double value);
+    dafBase::PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long long value);
+    dafBase::PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const std::string& value);
 
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const int value, long timeout);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long value, long timeout);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const float value, long timeout);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const double value, long timeout);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long long value, long timeout);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const std::string& value, long timeout);
+    dafBase::PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const int value, long timeout);
+    dafBase::PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long value, long timeout);
+    dafBase::PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const float value, long timeout);
+    dafBase::PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const double value, long timeout);
+    dafBase::PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long long value, long timeout);
+    dafBase::PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const std::string& value, long timeout);
 
 private:
     template <typename T>
-    PropertySet::Ptr _matchingReceive(const std::string& topicName,
+    dafBase::PropertySet::Ptr _matchingReceive(const std::string& topicName,
                                           const std::string& name,
                                           const T& value);
 
     template <typename T>
-    PropertySet::Ptr _matchingReceive(const std::string& topicName,
+    dafBase::PropertySet::Ptr _matchingReceive(const std::string& topicName,
                                           const std::string& name,
                                           const T& value,
                                           long timeout);
-    shared_ptr<EventTransmitter> getTransmitter(const std::string& name);
-    shared_ptr<EventReceiver> getReceiver(const std::string& name);
+    boost::shared_ptr<EventTransmitter> getTransmitter(const std::string& name);
+    boost::shared_ptr<EventReceiver> getReceiver(const std::string& name);
 
 protected:
     static EventSystem *defaultEventSystem;
-    list<shared_ptr<EventTransmitter> >_transmitters;
-    list<shared_ptr<EventReceiver> >_receivers;
+    list<boost::shared_ptr<EventTransmitter> >_transmitters;
+    list<boost::shared_ptr<EventReceiver> >_receivers;
 };
 }
 }

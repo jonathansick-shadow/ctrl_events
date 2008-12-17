@@ -12,7 +12,7 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "lsst/ctrl/events/Events.h"
+#include "lsst/ctrl/events/EventReceiver.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/logging/Component.h"
@@ -21,15 +21,14 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
-using namespace lsst::daf::base;
-using namespace lsst::pex::exceptions;
-using namespace boost;
+//namespace dafBase = lsst::daf::base;
 
-using namespace activemq::core;
-using namespace activemq::util;
-using namespace activemq::concurrent;
-using namespace cms;
-using namespace std;
+// using lsst::daf::base::dafBase::PropertySet;
+
+namespace pexPolicy = lsst::pex::policy;
+namespace pexExceptions = lsst::pex::exceptions;
+
+namespace activemqCore = activemq::core;
 
 namespace lsst {
 namespace ctrl {
@@ -43,12 +42,12 @@ namespace events {
   * \throw throws Runtime exception if connection fails to initialize
   */
 
-EventReceiver::EventReceiver(const Policy& policy) {
+EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
     _turnEventsOff = policy.getBool("turnEventsOff", false);
     if (_turnEventsOff == true)
         return;
     if (!policy.exists("topicName")) {
-        throw LSST_EXCEPT(NotFoundException, "topicName not found in policy");
+        throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName not found in policy");
     }
 
     std::string topicName = policy.getString("topicName");
@@ -56,7 +55,7 @@ EventReceiver::EventReceiver(const Policy& policy) {
     _useLocalSockets = policy.getBool("useLocalSockets", false);
     if (_useLocalSockets == false) {
         if (!policy.exists("hostName")) {
-            throw LSST_EXCEPT(NotFoundException, "hostName was not specified in policy file");
+            throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostName was not specified in policy file");
         }
     }
 
@@ -97,7 +96,7 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
         _useLocalSockets = true;
         _sock = socket(AF_UNIX, SOCK_STREAM, 0);
         if (_sock == -1) {
-            throw LSST_EXCEPT(RuntimeErrorException, "couldn't create local socket");
+            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "couldn't create local socket");
         }
 
         bzero(&local, sizeof(local));
@@ -117,21 +116,21 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
 
         string jmsURL = "tcp://"+hostName+":61616?wireFormat=openwire";
 
-        ActiveMQConnectionFactory* connectionFactory =
-            new ActiveMQConnectionFactory( jmsURL );
+        activemqCore::ActiveMQConnectionFactory* connectionFactory =
+            new activemqCore::ActiveMQConnectionFactory( jmsURL );
 
 
         _connection = connectionFactory->createConnection();
         delete connectionFactory;
         _connection->start();
 
-        _session = _connection->createSession( Session::AUTO_ACKNOWLEDGE );
+        _session = _connection->createSession( cms::Session::AUTO_ACKNOWLEDGE );
 
         _destination = _session->createTopic( topicName );
 
         _consumer = _session->createConsumer( _destination );
 
-    } catch ( CMSException& e ) {
+    } catch ( cms::CMSException& e ) {
         e.printStackTrace();
     }
 }
@@ -141,9 +140,9 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
   * \return a DataProperty::PtrType object
   * \throw throws Runtime exception if receive fails unexpectedly
   */
-PropertySet::Ptr EventReceiver::receive() {
+dafBase::PropertySet::Ptr EventReceiver::receive() {
     if (_messageCache.size() != 0) {
-        PropertySet::Ptr psp = _messageCache.front();
+        dafBase::PropertySet::Ptr psp = _messageCache.front();
         if (psp.get() != 0) {
             _messageCache.remove(psp);
             return psp;
@@ -152,10 +151,10 @@ PropertySet::Ptr EventReceiver::receive() {
     return _receive();
 }
 
-PropertySet::Ptr EventReceiver::_receive() {
+dafBase::PropertySet::Ptr EventReceiver::_receive() {
     if (_useLocalSockets == false) {
-        const TextMessage* textMessage =
-            dynamic_cast<const TextMessage* >(_consumer->receive());
+        const cms::TextMessage* textMessage =
+            dynamic_cast<const cms::TextMessage* >(_consumer->receive());
             return processTextMessage(textMessage);
     } else {
         return _receive(infiniteTimeout);
@@ -169,9 +168,9 @@ PropertySet::Ptr EventReceiver::_receive() {
   *         in receive()
   * \throw throws Runtime exception if receive fails unexpectedly
   */
-PropertySet::Ptr EventReceiver::receive(long timeout) {
+dafBase::PropertySet::Ptr EventReceiver::receive(long timeout) {
     if (_messageCache.size() != 0) {
-        PropertySet::Ptr psp = _messageCache.front();
+        dafBase::PropertySet::Ptr psp = _messageCache.front();
         if (psp.get() != 0) {
             _messageCache.remove(psp);
             return psp;
@@ -180,12 +179,12 @@ PropertySet::Ptr EventReceiver::receive(long timeout) {
     return _receive(timeout);
 }
 
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, int value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, float value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, double value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long long value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, const std::string& value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
+dafBase::PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, int value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
+dafBase::PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
+dafBase::PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, float value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
+dafBase::PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, double value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
+dafBase::PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long long value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
+dafBase::PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, const std::string& value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
 
 /** \brief Receives events matching both the name and string value, with timeout (in milliseconds
   *        Waits until a matching event is received or until the timeout expires.
@@ -196,13 +195,13 @@ PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, const s
   * \throw throws Runtime exception if receive fails unexpectedly
   */
 template <typename T>
-PropertySet::Ptr EventReceiver::_matchingReceiveTimeout(const std::string& name, const T& value, long timeout) {
+dafBase::PropertySet::Ptr EventReceiver::_matchingReceiveTimeout(const std::string& name, const T& value, long timeout) {
     struct timeval tvStart;
     struct timezone tzStart;
     int sec, usec, total_usec, total_msec;
     int ret;
 
-    PropertySet::Ptr psp = checkMessageCache(name, value);
+    dafBase::PropertySet::Ptr psp = checkMessageCache(name, value);
     if (psp.get() != 0) {
         _messageCache.remove(psp);
         return psp;
@@ -220,7 +219,7 @@ PropertySet::Ptr EventReceiver::_matchingReceiveTimeout(const std::string& name,
     while (currentTimeout > 0) {
             psp = _receive(currentTimeout);
             if (psp.get() == 0) {
-                return PropertySet::Ptr();
+                return dafBase::PropertySet::Ptr();
             }
 
             if (matches(psp, name, value) == true) {
@@ -243,22 +242,22 @@ PropertySet::Ptr EventReceiver::_matchingReceiveTimeout(const std::string& name,
             int timeLeft = timeout-total_msec;
             currentTimeout = timeLeft;
             if (currentTimeout <= 0) {
-                return PropertySet::Ptr();
+                return dafBase::PropertySet::Ptr();
             }
     }
-    return PropertySet::Ptr();
+    return dafBase::PropertySet::Ptr();
 }
 
 /** private method that performs a regular (non-matching) receive for all
   * variations of the public receive methods.
   */
-PropertySet::Ptr EventReceiver::_receive(long timeout) {
+dafBase::PropertySet::Ptr EventReceiver::_receive(long timeout) {
     if (_turnEventsOff == true)
-        return PropertySet::Ptr();
+        return dafBase::PropertySet::Ptr();
 
     if (_useLocalSockets == false) {
-        const TextMessage* textMessage =
-            dynamic_cast<const TextMessage* >(_consumer->receive(timeout));
+        const cms::TextMessage* textMessage =
+            dynamic_cast<const cms::TextMessage* >(_consumer->receive(timeout));
             return processTextMessage(textMessage);
     } else {
         struct timeval tv;
@@ -279,9 +278,9 @@ PropertySet::Ptr EventReceiver::_receive(long timeout) {
             select_val = select(_sock+1, &readfds, (fd_set *)0, (fd_set *)0, &tv);
         }
         if (select_val == 0) {
-            return PropertySet::Ptr();
+            return dafBase::PropertySet::Ptr();
         } else if (select_val < 0) {
-            throw LSST_EXCEPT(RuntimeErrorException, "error on local socket select");
+            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "error on local socket select");
             // return DataProperty::PtrType();
         }
 
@@ -290,25 +289,25 @@ PropertySet::Ptr EventReceiver::_receive(long timeout) {
             int len = sizeof(struct sockaddr_un);
             int remote_sock = accept(_sock, (struct sockaddr *)&remote, (socklen_t *)&len);
             if (remote_sock < 0)
-                throw LSST_EXCEPT(RuntimeErrorException, "error on local socket accept");
+                throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "error on local socket accept");
             return processStandaloneMessage(remote_sock);
         }
-       return PropertySet::Ptr();
+       return dafBase::PropertySet::Ptr();
     }
 }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, int value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, float value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, double value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long long value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, const std::string& value) { return _matchingReceive(name, value); }
+dafBase::PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, int value) { return _matchingReceive(name, value); }
+dafBase::PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long value) { return _matchingReceive(name, value); }
+dafBase::PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, float value) { return _matchingReceive(name, value); }
+dafBase::PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, double value) { return _matchingReceive(name, value); }
+dafBase::PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long long value) { return _matchingReceive(name, value); }
+dafBase::PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, const std::string& value) { return _matchingReceive(name, value); }
 
 
 template <typename T>
-PropertySet::Ptr EventReceiver::_matchingReceive(const std::string& name, const T& value) {
+dafBase::PropertySet::Ptr EventReceiver::_matchingReceive(const std::string& name, const T& value) {
 
     // check queue first
-    PropertySet::Ptr psp = checkMessageCache(name, value);
+    dafBase::PropertySet::Ptr psp = checkMessageCache(name, value);
     if (psp.get() != 0) {
         _messageCache.remove(psp);
         return psp;
@@ -320,38 +319,38 @@ PropertySet::Ptr EventReceiver::_matchingReceive(const std::string& name, const 
         }
         _messageCache.push_back(psp);
     }
-    return PropertySet::Ptr();
+    return dafBase::PropertySet::Ptr();
 }
 
-bool EventReceiver::matches(const PropertySet::Ptr& psp, const std::string& name, boost::any value) {
+bool EventReceiver::matches(const dafBase::PropertySet::Ptr& psp, const std::string& name, boost::any value) {
     if (psp->exists(name) == false)
         return false;
     if (psp->typeOf(name) == typeid(int)) {
-        int v1 = any_cast<int>(value);
+        int v1 = boost::any_cast<int>(value);
         int v2 = psp->get<int>(name);
         return (v1 == v2);
     } else if (psp->typeOf(name) == typeid(std::string)) {
-        std::string v1 = any_cast<std::string>(value);
+        std::string v1 = boost::any_cast<std::string>(value);
         std::string v2 = psp->get<std::string>(name);
         return (v1 == v2);
     } else if (psp->typeOf(name) == typeid(double)) {
-        double v1 = any_cast<double>(value);
+        double v1 = boost::any_cast<double>(value);
         double v2 = psp->get<double>(name);
         return (v1 == v2);
     } else if (psp->typeOf(name) == typeid(long)) {
-        long v1 = any_cast<long>(value);
+        long v1 = boost::any_cast<long>(value);
         long v2 = psp->get<long>(name);
         return (v1 == v2);
     } else if (psp->typeOf(name) == typeid(long long)) {
-        long long v1 = any_cast<long long>(value);
+        long long v1 = boost::any_cast<long long>(value);
         long long v2 = psp->get<long long>(name);
         return (v1 == v2);
     } else if (psp->typeOf(name) == typeid(bool)) {
-        bool v1 = any_cast<bool>(value);
+        bool v1 = boost::any_cast<bool>(value);
         bool v2 = psp->get<bool>(name);
         return (v1 == v2);
     } else if (psp->typeOf(name) == typeid(float)) {
-        float v1 = any_cast<float>(value);
+        float v1 = boost::any_cast<float>(value);
         float v2 = psp->get<float>(name);
         return (v1 == v2);
     }
@@ -361,19 +360,19 @@ bool EventReceiver::matches(const PropertySet::Ptr& psp, const std::string& name
 /** private method to check the internal message cache to be sure that the
   * message we're looking for hasn't already been received.
   */
-PropertySet::Ptr EventReceiver::checkMessageCache(const std::string& name, boost::any value) {
-    list<PropertySet::Ptr>::iterator it;
+dafBase::PropertySet::Ptr EventReceiver::checkMessageCache(const std::string& name, boost::any value) {
+    list<dafBase::PropertySet::Ptr>::iterator it;
     for (it = _messageCache.begin(); it != _messageCache.end(); it++) {
         if (matches(*it, name, value)) {
                 return (*it);
         }
     }
-    return PropertySet::Ptr();
+    return dafBase::PropertySet::Ptr();
 }
 
 /** private method to handle reading a local message from a socket
   */
-PropertySet::Ptr EventReceiver::processStandaloneMessage(int remoteSocket) {
+dafBase::PropertySet::Ptr EventReceiver::processStandaloneMessage(int remoteSocket) {
         int messageLength;
 
         int len = read(remoteSocket, &messageLength, 4);
@@ -385,15 +384,15 @@ PropertySet::Ptr EventReceiver::processStandaloneMessage(int remoteSocket) {
         std::string text(buf);
         free(buf);
 
-        PropertySet::Ptr retVal = unmarshall(text);
+        dafBase::PropertySet::Ptr retVal = unmarshall(text);
         return retVal;
 }
 
 /** private method unmarshall the DataProperty from the TextMessage
   */
-PropertySet::Ptr EventReceiver::processTextMessage(const TextMessage* textMessage) {
+dafBase::PropertySet::Ptr EventReceiver::processTextMessage(const cms::TextMessage* textMessage) {
     if (textMessage == NULL)
-        return PropertySet::Ptr();
+        return dafBase::PropertySet::Ptr();
 
     std::string text = textMessage->getText();
     return unmarshall(text);
@@ -401,13 +400,13 @@ PropertySet::Ptr EventReceiver::processTextMessage(const TextMessage* textMessag
 
 /** private method unmarshall the DataProperty from a text string
   */
-PropertySet::Ptr EventReceiver::unmarshall(const std::string& text) {
+dafBase::PropertySet::Ptr EventReceiver::unmarshall(const std::string& text) {
     std::vector<string> tuples;
 
     // split the text into tuples
     splitString(text, "~~", tuples);
 
-    PropertySet::Ptr psp(new PropertySet);
+    dafBase::PropertySet::Ptr psp(new dafBase::PropertySet);
 
     unsigned int i;
     for (i = 0; i < tuples.size(); i++) {
@@ -499,7 +498,7 @@ EventReceiver::~EventReceiver() {
     try {
         if( _destination != NULL )
             delete _destination;
-    } catch ( CMSException& e ) {
+    } catch ( cms::CMSException& e ) {
         e.printStackTrace();
     }
     _destination = NULL;
@@ -507,7 +506,7 @@ EventReceiver::~EventReceiver() {
     try {
         if( _consumer != NULL )
             delete _consumer;
-    } catch ( CMSException& e ) {
+    } catch ( cms::CMSException& e ) {
         e.printStackTrace();
     }
     _consumer = NULL;
@@ -516,20 +515,20 @@ EventReceiver::~EventReceiver() {
     try {
         if( _session != NULL )
             _session->close();
-    } catch ( CMSException& e ) {
+    } catch ( cms::CMSException& e ) {
         e.printStackTrace();
     }
     try {
         if( _connection != NULL )
             _connection->close();
-    } catch ( CMSException& e ) {
+    } catch ( cms::CMSException& e ) {
         e.printStackTrace();
     }
 
     try {
         if( _session != NULL )
             delete _session;
-    } catch ( CMSException& e ) {
+    } catch ( cms::CMSException& e ) {
         e.printStackTrace();
     }
     _session = NULL;
@@ -537,7 +536,7 @@ EventReceiver::~EventReceiver() {
     try {
         if( _connection != NULL )
             delete _connection;
-    } catch ( CMSException& e ) {
+    } catch ( cms::CMSException& e ) {
         e.printStackTrace();
     }
     _connection = NULL;

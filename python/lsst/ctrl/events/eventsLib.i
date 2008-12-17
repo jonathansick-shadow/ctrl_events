@@ -20,12 +20,7 @@ Access to the lsst::ctrl::events classes
 #include "lsst/ctrl/events/EventFormatter.h"
 %}
 
-%inline %{
-namespace activemq { namespace core { } } 
-namespace activemq { namespace util { } } 
-namespace activemq { namespace concurrent { } } 
-namespace cms { } 
-%}
+%rename(dafBase) lsst::daf::base;
 
 %include "lsst/p_lsstSwig.i"
 %lsst_exceptions()

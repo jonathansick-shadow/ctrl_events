@@ -32,17 +32,9 @@
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 
-using lsst::daf::base::PropertySet;
-using lsst::pex::logging::LogRecord;
-
-using namespace lsst::daf::base;
-using namespace lsst::pex::policy;
-using namespace activemq;
-using namespace activemq::core;
-using namespace activemq::util;
-using namespace activemq::concurrent;
-using namespace cms;
-using namespace std;
+namespace dafBase = lsst::daf::base;
+namespace pexPolicy = lsst::pex::policy;
+namespace pexLogging = lsst::pex::logging;
 
 namespace lsst {
 namespace ctrl {
@@ -52,47 +44,35 @@ namespace events {
 class EventTransmitter
 {
 public:
-    EventTransmitter(const Policy& policy);
+    EventTransmitter(const pexPolicy::Policy& policy);
 
     EventTransmitter(const std::string& hostName, const std::string& topicName);
     ~EventTransmitter();
 
-    void publish(const PropertySet::Ptr& psp);
-    void publish(const PropertySet& ps);
+    void publish(const dafBase::PropertySet::Ptr& psp);
+    void publish(const dafBase::PropertySet& ps);
 
-#ifdef REMOVE_THIS
-    void publish(const std::string& type, PropertySet::Ptr psp);
-    void publish(const std::string& type, PropertySet ps);
-    void publish(const std::string& type, PropertySet ps);
-#endif
-    void publish(const LogRecord& rec);
+    void publish(const pexLogging::LogRecord& rec);
 
     std::string getTopicName();
 
 private:
     void init( const std::string& hostName, const std::string& topicName);
-#ifdef REMOVE_THIS
-    std::string marshall(const PropertySet::Ptr dp, int *cTuples);
-    std::string encode(const PropertySet::Ptr dp);
-    void publish(const std::string& type, const std::string& messageText, int tuples);
+    void publish(const std::string& type, const dafBase::PropertySet& ps);
 
-    void setDate(PropertySet::Ptr dpt);
-#endif
-    void publish(const std::string& type, const PropertySet& ps);
-
-    std::string marshall(const PropertySet& ds);
+    std::string marshall(const dafBase::PropertySet& ds);
 
     // Connection to JMS broker
-    Connection* _connection;
+    cms::Connection* _connection;
 
     // JMS session
-    Session* _session;
+    cms::Session* _session;
 
     // Destination to send messages to
-    Destination* _destination;
+    cms::Destination* _destination;
 
     // Creates messages
-    MessageProducer* _producer;
+    cms::MessageProducer* _producer;
 
     // internal info about how to contact JMS
     std::string _brokerUri;

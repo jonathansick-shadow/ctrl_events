@@ -21,8 +21,8 @@
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/logging/Component.h"
 
-using namespace lsst::daf::base;
-using namespace boost;
+namespace dafBase = lsst::daf::base;
+namespace pexLogging = lsst::pex::logging;
 
 using namespace std;
 
@@ -43,9 +43,9 @@ namespace events {
   * \param threshold threshold  of this log. Default is threshold is Log::INFO
   */
 EventLog::EventLog(const std::string runId, int sliceId, const std::string hostId, int threshold) 
-    :  Log(threshold)
+    :  pexLogging::Log(threshold)
 {
-    PropertySet::Ptr psp;
+    dafBase::PropertySet::Ptr psp;
     init(runId, sliceId, psp, hostId, threshold);
 }
 
@@ -56,7 +56,7 @@ EventLog::EventLog(const std::string runId, int sliceId, const std::string hostI
   * \param hostId the name for this host.
   * \param threshold threshold  of this log. Default is threshold is Log::INFO
   */
-EventLog::EventLog(const std::string runId, int sliceId, const PropertySet::Ptr &preamble, const std::string hostId, int threshold) 
+EventLog::EventLog(const std::string runId, int sliceId, const dafBase::PropertySet::Ptr &preamble, const std::string hostId, int threshold) 
     :  Log(threshold)
 {
     init(runId, sliceId, preamble, hostId, threshold);
@@ -64,7 +64,7 @@ EventLog::EventLog(const std::string runId, int sliceId, const PropertySet::Ptr 
 
 /** private method to initialize from each constructor
   */
-void EventLog::init(const std::string runId, int sliceId, const PropertySet::Ptr &preamble, const std::string hostId, int threshold) 
+void EventLog::init(const std::string runId, int sliceId, const dafBase::PropertySet::Ptr &preamble, const std::string hostId, int threshold) 
 {
 
     initThres(threshold);
@@ -93,10 +93,10 @@ void EventLog::init(const std::string runId, int sliceId, const PropertySet::Ptr
 void EventLog::initThres(int threshold)
 {
     _formatter = new EventFormatter();
-    shared_ptr<LogFormatter> fmtr(_formatter);
+    boost::shared_ptr<pexLogging::LogFormatter> fmtr(_formatter);
 
-    _log = new LogDestination(&clog, fmtr, INHERIT_THRESHOLD);
-    shared_ptr<LogDestination> dest(_log);
+    _log = new pexLogging::LogDestination(&clog, fmtr, INHERIT_THRESHOLD);
+    boost::shared_ptr<pexLogging::LogDestination> dest(_log);
     _destinations.push_back(dest);
 }
 
@@ -107,12 +107,12 @@ void EventLog::initThres(int threshold)
   * \param threshold the logging threshold to observe when sending log messages
   */
 void EventLog::createDefaultLog(const std::string runId, int sliceId, const std::string hostId, int threshold)  {
-    PropertySet::Ptr psp;
-    Log::setDefaultLog(new EventLog(runId, sliceId, psp, hostId, threshold));
+    dafBase::PropertySet::Ptr psp;
+    pexLogging::Log::setDefaultLog(new EventLog(runId, sliceId, psp, hostId, threshold));
 }
 
-void EventLog::createDefaultLog(const std::string runId, int sliceId, const PropertySet::Ptr& preamble, const std::string hostId, int threshold)  {
-    Log::setDefaultLog(new EventLog(runId, sliceId, preamble, hostId, threshold));
+void EventLog::createDefaultLog(const std::string runId, int sliceId, const dafBase::PropertySet::Ptr& preamble, const std::string hostId, int threshold)  {
+    pexLogging::Log::setDefaultLog(new EventLog(runId, sliceId, preamble, hostId, threshold));
 }
 
 /** \brief destructor

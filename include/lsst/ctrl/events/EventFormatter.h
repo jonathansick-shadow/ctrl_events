@@ -20,21 +20,21 @@
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 
-using lsst::daf::base::PropertySet;
 
-using namespace lsst::daf::base;
-using namespace lsst::pex::logging;
 using namespace std;
+
+namespace pexLogging = lsst::pex::logging;
 
 namespace lsst {
 namespace ctrl {
 namespace events {
 
-class EventFormatter : public LogFormatter {
+
+class EventFormatter : public pexLogging::LogFormatter {
 public:
-    explicit EventFormatter() : LogFormatter() { }
+    explicit EventFormatter() : pexLogging::LogFormatter() { }
     virtual ~EventFormatter();
-    void write(ostream *os, const LogRecord& rec);
+    void write(ostream *os, const pexLogging::LogRecord& rec);
 
 };
 
