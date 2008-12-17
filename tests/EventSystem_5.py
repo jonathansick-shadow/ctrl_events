@@ -45,29 +45,27 @@ if __name__ == "__main__":
     # shouldn't receive anything
     # 
     val = eventSystem.matchingReceive(topic, "PID", 400, 1000)
-    assert val.get() == None
+    assert val == None
 
     #
     # wait for the 200 event, check that we received
     # the value we wanted
     #
     val = eventSystem.matchingReceive(topic, "PID", 200, 1000)
-    assert val.get() != None
+    assert val != None
 
-    pid = val.findUnique("PID",1)
-    assert pid != None
-    assert pid.getValueInt() == 200
+    pid = val.getInt("PID")
+    assert pid == 200
 
     #
     # wait for the 300 event, check that we received
     # the value we wanted
     #
     val = eventSystem.matchingReceive(topic, "PID", 300, 1000)
-    assert val.get() != None
+    assert val != None
 
-    pid = val.findUnique("PID",1)
-    assert pid != None
-    assert pid.getValueInt() == 300
+    pid = val.getInt("PID")
+    assert pid == 300
 
     # String tests
 
@@ -83,19 +81,17 @@ if __name__ == "__main__":
     # the value we wanted
     #
     val = eventSystem.matchingReceive(topic, "GREET", "HI", 1000)
-    assert val.get() != None
+    assert val != None
 
-    pid = val.get("GREET")
-    assert pid != None
-    assert pid.getValueString() == "HI"
+    pid = val.getString("GREET")
+    assert pid == "HI"
 
     #
     # wait for the "HELLO" event, check that we received
     # the value we wanted
     #
     val = eventSystem.matchingReceive(topic, "GREET", "HELLO", 1000)
-    assert val.get() != None
+    assert val != None
 
-    pid = val.get("GREET")
-    assert pid != None
-    assert pid.getValueString() == "HELLO"
+    pid = val.getString("GREET")
+    assert pid == "HELLO"

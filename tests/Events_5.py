@@ -43,29 +43,29 @@ if __name__ == "__main__":
     # 
     val = recv.matchingReceive("PID", 400, 1000)
     print dir(val)
-    assert val.get() == None
+    assert val == None
 
     #
     # wait for the 200 event, check that we received
     # the value we wanted
     #
     val = recv.matchingReceive("PID", 200, 1000)
-    assert val.get() != None
+    assert val != None
 
-    pid = val.findUnique("PID",1)
+    pid = val.getInt("PID")
     assert pid != None
-    assert pid.getValueInt() == 200
+    assert pid == 200
 
     #
     # wait for the 300 event, check that we received
     # the value we wanted
     #
     val = recv.matchingReceive("PID", 300, 1000)
-    assert val.get() != None
+    assert val != None
 
-    pid = val.findUnique("PID",1)
+    pid = val.getInt("PID")
     assert pid != None
-    assert pid.getValueInt() == 300
+    assert pid == 300
 
     # String tests
 
@@ -73,27 +73,27 @@ if __name__ == "__main__":
     # send two test events, first GREET == "HI", then GREET == "HELLO"
     #
 
-    sendEvent(host, topic, "GREET", "HELLO")
-    sendEvent(host, topic, "GREET", "HI")
+    sendEvent(host, topic, createStringProperty("GREET", "HELLO"))
+    sendEvent(host, topic, createStringProperty("GREET", "HI"))
 
     #
     # wait for the "HI" event, check that we received
     # the value we wanted
     #
     val = recv.matchingReceive("GREET", "HI", 1000)
-    assert val.get() != None
+    assert val != None
 
-    pid = val.findUnique("GREET",1)
+    pid = val.getString("GREET")
     assert pid != None
-    assert pid.getValueString() == "HI"
+    assert pid == "HI"
 
     #
     # wait for the "HELLO" event, check that we received
     # the value we wanted
     #
     val = recv.matchingReceive("GREET", "HELLO", 1000)
-    assert val.get() != None
+    assert val != None
 
-    pid = val.findUnique("GREET",1)
+    pid = val.getString("GREET")
     assert pid != None
-    assert pid.getValueString() == "HELLO"
+    assert pid == "HELLO"

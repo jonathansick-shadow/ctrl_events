@@ -38,7 +38,7 @@ if __name__ == "__main__":
     sendEvent(topic)
 
     val = eventSystem.receive(topic)
-    assert val.get() != None
+    assert val != None
 
 
     #
@@ -46,4 +46,4 @@ if __name__ == "__main__":
     # time out and confirm that we didn't get anything
     #
     val = eventSystem.receive(topic,100)
-    assert val.get() == None
+    assert val == None

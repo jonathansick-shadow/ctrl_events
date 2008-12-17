@@ -205,7 +205,6 @@ PropertySet::Ptr EventReceiver::_matchingReceiveTimeout(const std::string& name,
     PropertySet::Ptr psp = checkMessageCache(name, value);
     if (psp.get() != 0) {
         _messageCache.remove(psp);
-std::cout << "1" << std::endl;
         return psp;
     }
 
@@ -221,12 +220,10 @@ std::cout << "1" << std::endl;
     while (currentTimeout > 0) {
             psp = _receive(currentTimeout);
             if (psp.get() == 0) {
-std::cout << "2" << std::endl;
                 return PropertySet::Ptr();
             }
 
             if (matches(psp, name, value) == true) {
-std::cout << "3" << std::endl;
                 return psp;
             }
 
@@ -246,11 +243,9 @@ std::cout << "3" << std::endl;
             int timeLeft = timeout-total_msec;
             currentTimeout = timeLeft;
             if (currentTimeout <= 0) {
-std::cout << "4" << std::endl;
                 return PropertySet::Ptr();
             }
     }
-std::cout << "5" << std::endl;
     return PropertySet::Ptr();
 }
 
@@ -398,7 +393,7 @@ PropertySet::Ptr EventReceiver::processStandaloneMessage(int remoteSocket) {
   */
 PropertySet::Ptr EventReceiver::processTextMessage(const TextMessage* textMessage) {
     if (textMessage == NULL)
-        return PropertySet::Ptr(new PropertySet);
+        return PropertySet::Ptr();
 
     std::string text = textMessage->getText();
     return unmarshall(text);

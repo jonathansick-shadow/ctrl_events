@@ -38,9 +38,9 @@ if __name__ == "__main__":
     sendEvent(host, topic1+","+topic2)
 
     val = y1.receive()
-    assert val.get() != None
-    print val.toString("-",1)
+    assert val != None
+    print val.toString()
 
     val = y2.receive()
-    assert val.get() != None
-    print val.toString("=",1)
+    assert val != None
+    print val.toString()

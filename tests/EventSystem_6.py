@@ -41,10 +41,10 @@ if __name__ == "__main__":
     sendEvent(combinedTopic)
 
     val = eventSystem.receive(topic1)
-    assert val.get() != None
-    print val.toString("-",1)
+    assert val != None
+    print val.toString()
 
     val = eventSystem.receive(topic2)
-    assert val.get() != None
-    print val.toString("=",1)
+    assert val != None
+    print val.toString()
 
