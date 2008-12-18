@@ -18,21 +18,22 @@
 #include "lsst/pex/logging/Log.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
-#include "lsst/daf/base/DataProperty.h"
+#include "lsst/daf/base/PropertySet.h"
 
-using lsst::daf::base::DataProperty;
 
-using namespace lsst::daf::base;
-using namespace lsst::pex::logging;
+using lsst::daf::base::PropertySet;
+
+namespace pexLogging = lsst::pex::logging;
 using namespace std;
 
 namespace lsst {
 namespace ctrl {
 namespace events {
 
-class EventLog : public Log {
+class EventLog : public pexLogging::Log {
 public:
-    EventLog(const std::string runId, int sliceId, const std::string hostId = "", int threshold=Log::INFO, const list<shared_ptr<DataProperty> > *preamble = 0);
+    EventLog( const std::string runId, int sliceId, const std::string hostId = "", int threshold= pexLogging::Log::INFO);
+    EventLog( const std::string runId, int sliceId, const PropertySet::Ptr& preamble, const std::string hostId = "", int threshold= pexLogging::Log::INFO);
 
     virtual ~EventLog();
 
@@ -47,13 +48,14 @@ public:
         return "LSSTLogging";
     }
 
-    static void createDefaultLog(const std::string runId, int slideId, const std::string hostId = "", int threshold=Log::INFO, 
-             const list<shared_ptr<DataProperty> > *preamble=0);
+    static void createDefaultLog(const std::string runId, int slideId, const std::string hostId = "", int threshold=Log::INFO); 
+    static void createDefaultLog(const std::string runId, int slideId, const PropertySet::Ptr& preamble, const std::string hostId = "", int threshold=Log::INFO); 
 
 private:
-    LogDestination *_log;
+    pexLogging::LogDestination *_log;
     EventFormatter *_formatter;
-    void init(int threshold);
+    void init(const std::string runId, int sliceId, const PropertySet::Ptr& preamble, const std::string hostId, int threshold);
+    void initThres(int threshold);
 };
 
 }

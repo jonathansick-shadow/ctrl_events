@@ -18,14 +18,16 @@
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/logging/Component.h"
 
-//using namespace lsst::daf::base;
-using namespace lsst::pex::logging;
 
 using namespace std;
+namespace pexLogging = lsst::pex::logging;
 
 namespace lsst {
 namespace ctrl {
 namespace events {
+
+EventFormatter::~EventFormatter() {}
+
 
 /** \brief writes a record to the event log stream.   This ignores the
   *        ostream, but this is required because of the signature of this
@@ -35,7 +37,7 @@ namespace events {
   *           signature of this method.
   * \param rec the LogRecord to send to the event topic;
   */
-void EventFormatter::write(ostream *os, const LogRecord& rec) {
+void EventFormatter::write(ostream *os, const pexLogging::LogRecord& rec) {
     EventSystem system = EventSystem::getDefaultEventSystem();
     system.publish(EventLog::getLoggingTopic(), rec);
 }

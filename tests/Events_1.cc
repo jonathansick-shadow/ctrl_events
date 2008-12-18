@@ -9,12 +9,10 @@
 #include "lsst/ctrl/events/Events.h"
 #include "lsst/pex/exceptions.h"
 
-using namespace std;
-using lsst::pex::policy::Policy;
-using lsst::pex::exceptions::NotFound;
-using lsst::pex::exceptions::Runtime;
-
-using lsst::ctrl::events::EventTransmitter;
+namespace pexPolicy = lsst::pex::policy;
+namespace pexExceptions = lsst::pex::exceptions;
+namespace pexLogging = lsst::pex::logging;
+namespace ctrlEvents = lsst::ctrl::events;
 
 #define Assert(b, m) tattle(b, m, __LINE__)
     
@@ -28,45 +26,45 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
     
 int main() {
     
-    Policy p;
+    pexPolicy::Policy p;
 
     //
     // test EventTransmitter(const Policy& policy)
     //
     try {
-        EventTransmitter et1(p);
-    } catch (NotFound&) { 
+        ctrlEvents::EventTransmitter et1(p);
+    } catch (pexExceptions::NotFoundException&) { 
     } 
 
     p.set("topicName", "Events_1_test");
     p.set("useLocalSockets", false);
     try {
-        EventTransmitter et2(p);
-    } catch (NotFound&) { 
+        ctrlEvents::EventTransmitter et2(p);
+    } catch (pexExceptions::NotFoundException&) { 
     } 
 
     p.set("useLocalSockets", true);
     try {
-        EventTransmitter et3(p);
-    } catch (Runtime&) { 
+        ctrlEvents::EventTransmitter et3(p);
+    } catch (pexExceptions::RuntimeErrorException&) { 
     } 
 
-    EventTransmitter et4("lsst8.ncsa.uiuc.edu", "Events_1_test");
+    ctrlEvents::EventTransmitter et4("lsst8.ncsa.uiuc.edu", "Events_1_test");
 
-    // test publish("string", DataProperty)
-    DataProperty dp("test1", 12);
+    // test publish("string", PropertySet)
+    PropertySet::Ptr psp1(new PropertySet);
+    psp1->set("test2",12);
+    et4.publish(psp1);
 
-    DataProperty::PtrType dpt(new DataProperty("test2",12));
-    et4.publish(std::string("test log"), dpt);
-
-    DataProperty::PtrType dpt2(new DataProperty("test3",(long)13));
-    et4.publish(std::string("test log2"), dpt2);
+    PropertySet::Ptr psp2(new PropertySet);
+    psp2->set("test3",(long)13);
+    et4.publish(psp2);
 
     // test publish("string", LogRecord)
-    LogRecord lr(-1, 10);
+    pexLogging::LogRecord lr(-1, 10);
     const char *comment = "a comment";
     lr.addComment(comment);
-    et4.publish("test log", lr);
+    et4.publish(lr);
 
     // test getTopicName();
     std::string topicName = et4.getTopicName();

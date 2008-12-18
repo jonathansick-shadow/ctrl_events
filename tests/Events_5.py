@@ -2,22 +2,27 @@
 
 import threading
 import lsst.ctrl.events as events
-import lsst.daf.base as datap;
-import lsst.pex.policy as policy;
+import lsst.daf.base as base
+import lsst.pex.policy as policy
 import time
 
 
 #
 # sendEvent() - shoot an event to a host on a certain topic
 #
-def sendEvent(hostName, topicName, name, value):
+def sendEvent(hostName, topicName, ps):
     trans = events.EventTransmitter(hostName, topicName)
-    
-    root = datap.DataProperty.createPropertyNode("root");
-    pid = datap.DataProperty(name,value)
-    
-    root.addProperty(pid);
-    trans.publish("log", root)
+    trans.publish(ps)
+
+def createIntProperty(name, value):
+    root = base.PropertySet()
+    root.addInt(name, value)
+    return root
+
+def createStringProperty(name, value):
+    root = base.PropertySet()
+    root.add(name, value)
+    return root
 
 if __name__ == "__main__":
     host = "lsst8.ncsa.uiuc.edu"
@@ -30,36 +35,37 @@ if __name__ == "__main__":
     #
     # send two test events, first PID ==  300, then PID == 200
     #
-    sendEvent(host, topic, "PID", 300)
-    sendEvent(host, topic, "PID", 200)
+    sendEvent(host, topic, createIntProperty("PID", 300))
+    sendEvent(host, topic, createIntProperty("PID", 200))
 
     #
     # shouldn't receive anything
     # 
     val = recv.matchingReceive("PID", 400, 1000)
-    assert val.get() == None
+    print dir(val)
+    assert val == None
 
     #
     # wait for the 200 event, check that we received
     # the value we wanted
     #
     val = recv.matchingReceive("PID", 200, 1000)
-    assert val.get() != None
+    assert val != None
 
-    pid = val.findUnique("PID",1)
+    pid = val.getInt("PID")
     assert pid != None
-    assert pid.getValueInt() == 200
+    assert pid == 200
 
     #
     # wait for the 300 event, check that we received
     # the value we wanted
     #
     val = recv.matchingReceive("PID", 300, 1000)
-    assert val.get() != None
+    assert val != None
 
-    pid = val.findUnique("PID",1)
+    pid = val.getInt("PID")
     assert pid != None
-    assert pid.getValueInt() == 300
+    assert pid == 300
 
     # String tests
 
@@ -67,27 +73,27 @@ if __name__ == "__main__":
     # send two test events, first GREET == "HI", then GREET == "HELLO"
     #
 
-    sendEvent(host, topic, "GREET", "HELLO")
-    sendEvent(host, topic, "GREET", "HI")
+    sendEvent(host, topic, createStringProperty("GREET", "HELLO"))
+    sendEvent(host, topic, createStringProperty("GREET", "HI"))
 
     #
     # wait for the "HI" event, check that we received
     # the value we wanted
     #
     val = recv.matchingReceive("GREET", "HI", 1000)
-    assert val.get() != None
+    assert val != None
 
-    pid = val.findUnique("GREET",1)
+    pid = val.getString("GREET")
     assert pid != None
-    assert pid.getValueString() == "HI"
+    assert pid == "HI"
 
     #
     # wait for the "HELLO" event, check that we received
     # the value we wanted
     #
     val = recv.matchingReceive("GREET", "HELLO", 1000)
-    assert val.get() != None
+    assert val != None
 
-    pid = val.findUnique("GREET",1)
+    pid = val.getString("GREET")
     assert pid != None
-    assert pid.getValueString() == "HELLO"
+    assert pid == "HELLO"

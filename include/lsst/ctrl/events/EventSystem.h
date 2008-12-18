@@ -20,15 +20,13 @@
 #include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
-#include "lsst/daf/base/DataProperty.h"
+#include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/ctrl/events/Events.h"
 
-using lsst::daf::base::DataProperty;
-using lsst::pex::logging::LogRecord;
+using lsst::daf::base::PropertySet;
+namespace pexPolicy = lsst::pex::policy;
 
-using namespace lsst::daf::base;
-using namespace lsst::pex::policy;
 using namespace std;
 
 namespace lsst {
@@ -45,79 +43,60 @@ public:
     void createTransmitter(const std::string& hostName, 
                            const std::string& topicName);
 
-    void createTransmitter(const Policy& policy);
+    void createTransmitter(const pexPolicy::Policy& policy);
 
     void createLocalTransmitter(const std::string& topicName);
 
     void createReceiver(const std::string& hostName, 
                         const std::string& topicName);
 
-    void createReceiver(const Policy& policy);
+    void createReceiver(const pexPolicy::Policy& policy);
 
     void createLocalReceiver(const std::string& topicName);
 
-    void publish(const std::string& topicName, const DataProperty::PtrType dpt);
+    void publish(const std::string& topicName, const PropertySet::Ptr psp);
 
-    void publish(const std::string& topicName, const LogRecord& rec);
+    void publish(const std::string& topicName, const pexLogging::LogRecord& rec);
 
-    DataProperty::PtrType receive(const std::string& topicName);
+    PropertySet::Ptr receive(const std::string& topicName);
 
-    DataProperty::PtrType receive(const std::string& topicName,
+    PropertySet::Ptr receive(const std::string& topicName,
                                   const long timeout);
 
-    DataProperty::PtrType matchingReceive(const std::string& topicName,
-                                          const std::string& name,
-                                          const std::string& value);
 
-    DataProperty::PtrType matchingReceive(const std::string& topicName,
-                                          const std::string& name, 
-                                          int value);
+    // TODO: all these need to be eliminated once the SWIG incantation for templates is figured out
+    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const int value);
+    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long value);
+    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const float value);
+    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const double value);
+    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long long value);
+    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const std::string& value);
 
-    DataProperty::PtrType matchingReceive(const std::string& topicName,
-                                          const std::string& name,
-                                          float value);
-
-    DataProperty::PtrType matchingReceive(const std::string& topicName, 
-                                          const std::string& name,
-                                          double value);
-
-    DataProperty::PtrType matchingReceive(const std::string& topicName, 
-                                          const std::string& name, 
-                                          boost::any value);
-
-    DataProperty::PtrType matchingReceive(const std::string& topicName,
-                                          const std::string& name,
-                                          const std::string& value,
-                                          long timeout);
-
-    DataProperty::PtrType matchingReceive(const std::string& topicName,
-                                          const std::string& name, 
-                                          int value,
-                                          long timeout);
-
-    DataProperty::PtrType matchingReceive(const std::string& topicName,
-                                          const std::string& name,
-                                          float value,
-                                          long timeout);
-
-    DataProperty::PtrType matchingReceive(const std::string& topicName,
-                                          const std::string& name,
-                                          double value,
-                                          long timeout);
-
-    DataProperty::PtrType matchingReceive(const std::string& topicName,
-                                          const std::string& name,
-                                          boost::any value,
-                                          long timeout);
+    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const int value, long timeout);
+    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long value, long timeout);
+    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const float value, long timeout);
+    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const double value, long timeout);
+    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long long value, long timeout);
+    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const std::string& value, long timeout);
 
 private:
-    shared_ptr<EventTransmitter> getTransmitter(const std::string& name);
-    shared_ptr<EventReceiver> getReceiver(const std::string& name);
+    template <typename T>
+    PropertySet::Ptr _matchingReceive(const std::string& topicName,
+                                          const std::string& name,
+                                          const T& value);
+
+    template <typename T>
+    PropertySet::Ptr _matchingReceive(const std::string& topicName,
+                                          const std::string& name,
+                                          const T& value,
+                                          long timeout);
+    boost::shared_ptr<EventTransmitter> getTransmitter(const std::string& name);
+    boost::shared_ptr<EventReceiver> getReceiver(const std::string& name);
 
 protected:
     static EventSystem *defaultEventSystem;
-    list<shared_ptr<EventTransmitter> >_transmitters;
-    list<shared_ptr<EventReceiver> >_receivers;
+    list<boost::shared_ptr<EventTransmitter> >_transmitters;
+    list<boost::shared_ptr<EventReceiver> >_receivers;
 };
 }
 }

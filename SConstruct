@@ -12,9 +12,9 @@ env = scons.makeEnv("ctrl_events",
                      ["boost", "boost/regex.hpp", "boost_regex:C++"],
                      ["activemqcpp", "activemq/util/Number.h", "activemq-cpp:C++"],
                      ["utils", "lsst/utils/Utils.h", "utils:C++"],
-                     ["daf_base", "lsst/daf/base/Citizen.h", "daf_base:C++"],
-                     ["pex_logging", "lsst/pex/logging/Component.h", "pex_logging:C++"],
                      ["pex_exceptions", "lsst/pex/exceptions.h","pex_exceptions:C++"],
+                     ["daf_base", "lsst/daf/base/Citizen.h", "pex_exceptions daf_base:C++"],
+                     ["pex_logging", "lsst/pex/logging/Component.h", "pex_logging:C++"],
                      ["pex_policy", "lsst/pex/policy/Policy.h","pex_policy:C++"],
                      ["python", "Python.h"]
                      ])

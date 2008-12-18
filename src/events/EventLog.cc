@@ -18,11 +18,10 @@
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventFormatter.h"
 #include "lsst/ctrl/events/EventSystem.h"
-#include "lsst/daf/base/DataProperty.h"
+#include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/logging/Component.h"
 
-using namespace lsst::daf::base;
-using namespace boost;
+namespace pexLogging = lsst::pex::logging;
 
 using namespace std;
 
@@ -41,14 +40,33 @@ namespace events {
   * \param sliceId the current slice id
   * \param hostId the name for this host.
   * \param threshold threshold  of this log. Default is threshold is Log::INFO
-  * \param preamble a list of DataProperty to include in each log message.
   */
-EventLog::EventLog(const std::string runId, int sliceId, const std::string hostId, int threshold, const list<shared_ptr<DataProperty> > *preamble) 
+EventLog::EventLog(const std::string runId, int sliceId, const std::string hostId, int threshold) 
+    :  pexLogging::Log(threshold)
+{
+    PropertySet::Ptr psp;
+    init(runId, sliceId, psp, hostId, threshold);
+}
 
+/** \brief constructor for EventLog.   
+  * \param runId name of the run
+  * \param sliceId the current slice id
+  * \param preamble a list of PropertySet to include in each log message.
+  * \param hostId the name for this host.
+  * \param threshold threshold  of this log. Default is threshold is Log::INFO
+  */
+EventLog::EventLog(const std::string runId, int sliceId, const PropertySet::Ptr &preamble, const std::string hostId, int threshold) 
     :  Log(threshold)
 {
+    init(runId, sliceId, preamble, hostId, threshold);
+}
 
-    init(threshold);
+/** private method to initialize from each constructor
+  */
+void EventLog::init(const std::string runId, int sliceId, const PropertySet::Ptr &preamble, const std::string hostId, int threshold) 
+{
+
+    initThres(threshold);
     char host[HOST_NAME_MAX];
 
     // if there is no host name specified, make "unknown host" the name
@@ -60,27 +78,24 @@ EventLog::EventLog(const std::string runId, int sliceId, const std::string hostI
 
     std::string hostName(host);
 
+    // TODO:  add preamble to _preamble
+    if (preamble.get() != 0)
+        _preamble = preamble->deepCopy();
 
-    if (preamble != 0) 
-        _preamble.insert(_preamble.end(), preamble->begin(), preamble->end());
-
-    _preamble.insert(_preamble.end(),            
-                  DataProperty::PtrType(new DataProperty("hostId", hostName)));
-    _preamble.insert(_preamble.end(), 
-                  DataProperty::PtrType(new DataProperty("runId", runId)));
-    _preamble.insert(_preamble.end(),
-                  DataProperty::PtrType(new DataProperty("sliceId", sliceId)));
+    _preamble->add("hostId", hostName);
+    _preamble->add("runId", runId);
+    _preamble->add("sliceId", sliceId);
 }
 
 /** private method to initialize the logging mechanism
   */
-void EventLog::init(int threshold)
+void EventLog::initThres(int threshold)
 {
     _formatter = new EventFormatter();
-    shared_ptr<LogFormatter> fmtr(_formatter);
+    boost::shared_ptr<pexLogging::LogFormatter> fmtr(_formatter);
 
-    _log = new LogDestination(&clog, fmtr, INHERIT_THRESHOLD);
-    shared_ptr<LogDestination> dest(_log);
+    _log = new pexLogging::LogDestination(&clog, fmtr, INHERIT_THRESHOLD);
+    boost::shared_ptr<pexLogging::LogDestination> dest(_log);
     _destinations.push_back(dest);
 }
 
@@ -89,10 +104,14 @@ void EventLog::init(int threshold)
   * \param sliceId the current slice id
   * \param hostId the name of this host
   * \param threshold the logging threshold to observe when sending log messages
-  * \param preamble a list of DataPropertys to include in each log message.
   */
-void EventLog::createDefaultLog(const std::string runId, int sliceId, const std::string hostId, int threshold, const list<shared_ptr<DataProperty> > *preamble)  {
-    Log::setDefaultLog(new EventLog(runId, sliceId, hostId, threshold, preamble));
+void EventLog::createDefaultLog(const std::string runId, int sliceId, const std::string hostId, int threshold)  {
+    PropertySet::Ptr psp;
+    pexLogging::Log::setDefaultLog(new EventLog(runId, sliceId, psp, hostId, threshold));
+}
+
+void EventLog::createDefaultLog(const std::string runId, int sliceId, const PropertySet::Ptr& preamble, const std::string hostId, int threshold)  {
+    pexLogging::Log::setDefaultLog(new EventLog(runId, sliceId, preamble, hostId, threshold));
 }
 
 /** \brief destructor

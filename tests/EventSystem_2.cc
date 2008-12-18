@@ -7,10 +7,11 @@
 #include <stdexcept>
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/pex/exceptions.h"
+
 using namespace std;
 using lsst::pex::policy::Policy;
-using lsst::pex::exceptions::NotFound;
-using lsst::pex::exceptions::Runtime;
+using lsst::pex::exceptions::NotFoundException;
+using lsst::pex::exceptions::RuntimeErrorException;
 
 using lsst::ctrl::events::EventSystem;
 
@@ -34,20 +35,20 @@ int main() {
     //
     try {
         eventSystem.createReceiver(p);
-    } catch (NotFound&) { 
+    } catch (NotFoundException&) { 
     } 
 
     p.set("topicName", "EventSystem_2_test");
     p.set("useLocalSockets", false);
     try {
         eventSystem.createReceiver(p);
-    } catch (NotFound&) { 
+    } catch (NotFoundException&) { 
     } 
 
     p.set("useLocalSockets", true);
     try {
         eventSystem.createTransmitter(p);
-    } catch (Runtime&) { 
+    } catch (RuntimeErrorException&) { 
     } 
 
     eventSystem.createReceiver("lsst8.ncsa.uiuc.edu", "EventSystem_2_test");

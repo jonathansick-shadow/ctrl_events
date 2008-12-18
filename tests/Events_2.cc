@@ -10,8 +10,8 @@
 using namespace std;
 using lsst::pex::policy::Policy;
 
-using lsst::pex::exceptions::NotFound;
-using lsst::pex::exceptions::Runtime;
+using lsst::pex::exceptions::NotFoundException;
+using lsst::pex::exceptions::RuntimeErrorException;
 
 using lsst::ctrl::events::EventReceiver;
 
@@ -21,7 +21,7 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
     if (! mustBeTrue) {
         ostringstream msg;
         msg << __FILE__ << ':' << line << ":\n" << failureMsg << ends;
-        throw runtime_error(msg.str());
+        throw LSST_EXCEPT(RuntimeErrorException, msg.str());
     }
 }   
     
@@ -34,14 +34,14 @@ int main() {
     //
     try {
         EventReceiver er1(p);
-    } catch (NotFound&) { 
+    } catch (NotFoundException&) { 
     } 
 
     p.set("topicName", "Events_1_test");
     p.set("useLocalSockets", false);
     try {
         EventReceiver er2(p);
-    } catch (NotFound&) { 
+    } catch (NotFoundException&) { 
     } 
 
 
