@@ -34,6 +34,7 @@ if __name__ == "__main__":
 
     val = y.receive()
     assert val != None
+    print type(val)
     print dir(val)
     print val.toString()
 

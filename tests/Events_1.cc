@@ -51,12 +51,12 @@ int main() {
 
     ctrlEvents::EventTransmitter et4("lsst8.ncsa.uiuc.edu", "Events_1_test");
 
-    // test publish("string", dafBase::PropertySet)
-    dafBase::PropertySet::Ptr psp1(new dafBase::PropertySet);
+    // test publish("string", PropertySet)
+    PropertySet::Ptr psp1(new PropertySet);
     psp1->set("test2",12);
     et4.publish(psp1);
 
-    dafBase::PropertySet::Ptr psp2(new dafBase::PropertySet);
+    PropertySet::Ptr psp2(new PropertySet);
     psp2->set("test3",(long)13);
     et4.publish(psp2);
 

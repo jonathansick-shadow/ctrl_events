@@ -33,8 +33,7 @@
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 
-
-namespace dafBase = lsst::daf::base;
+using lsst::daf::base::PropertySet;
 
 namespace pexPolicy = lsst::pex::policy;
 
@@ -53,27 +52,27 @@ public:
     // virtual destructor
     virtual ~EventReceiver();
 
-    dafBase::PropertySet::Ptr receive();
+    PropertySet::Ptr receive();
 
-    dafBase::PropertySet::Ptr receive(long timeout);
+    PropertySet::Ptr receive(long timeout);
 
     // TODO: make thesetemplated methods as soon as I figure out how to SWIG them properly...
-    // template <typename T> dafBase::PropertySet::Ptr matchingReceive(const std::string& name, const T& value);
-    // template <typename T> dafBase::PropertySet::Ptr matchingReceive(const std::string& name, const T& value, long timeout);
+    // template <typename T> PropertySet::Ptr matchingReceive(const std::string& name, const T& value);
+    // template <typename T> PropertySet::Ptr matchingReceive(const std::string& name, const T& value, long timeout);
 
-    dafBase::PropertySet::Ptr matchingReceive(const std::string& name, long value);
-    dafBase::PropertySet::Ptr matchingReceive(const std::string& name, int value);
-    dafBase::PropertySet::Ptr matchingReceive(const std::string& name, float value);
-    dafBase::PropertySet::Ptr matchingReceive(const std::string& name, double value);
-    dafBase::PropertySet::Ptr matchingReceive(const std::string& name, long long value);
-    dafBase::PropertySet::Ptr matchingReceive(const std::string& name, const std::string& value);
+    PropertySet::Ptr matchingReceive(const std::string& name, long value);
+    PropertySet::Ptr matchingReceive(const std::string& name, int value);
+    PropertySet::Ptr matchingReceive(const std::string& name, float value);
+    PropertySet::Ptr matchingReceive(const std::string& name, double value);
+    PropertySet::Ptr matchingReceive(const std::string& name, long long value);
+    PropertySet::Ptr matchingReceive(const std::string& name, const std::string& value);
 
-    dafBase::PropertySet::Ptr matchingReceive(const std::string& name, int value, long timeout);
-    dafBase::PropertySet::Ptr matchingReceive(const std::string& name, long value, long timeout);
-    dafBase::PropertySet::Ptr matchingReceive(const std::string& name, float value, long timeout);
-    dafBase::PropertySet::Ptr matchingReceive(const std::string& name, double value, long timeout);
-    dafBase::PropertySet::Ptr matchingReceive(const std::string& name, long long value, long timeout);
-    dafBase::PropertySet::Ptr matchingReceive(const std::string& name, const std::string& value, long timeout);
+    PropertySet::Ptr matchingReceive(const std::string& name, int value, long timeout);
+    PropertySet::Ptr matchingReceive(const std::string& name, long value, long timeout);
+    PropertySet::Ptr matchingReceive(const std::string& name, float value, long timeout);
+    PropertySet::Ptr matchingReceive(const std::string& name, double value, long timeout);
+    PropertySet::Ptr matchingReceive(const std::string& name, long long value, long timeout);
+    PropertySet::Ptr matchingReceive(const std::string& name, const std::string& value, long timeout);
 
     std::string getTopicName();
 
@@ -81,13 +80,13 @@ public:
 
 private:
     void init(const std::string& hostName, const std::string& topicName);
-    dafBase::PropertySet::Ptr _receive();
-    dafBase::PropertySet::Ptr _receive(long timeout);
-    template <typename T> dafBase::PropertySet::Ptr _matchingReceive(const std::string& name, const T& value);
-    template <typename T> dafBase::PropertySet::Ptr _matchingReceiveTimeout(const std::string& name, const T& value, long timeout);
+    PropertySet::Ptr _receive();
+    PropertySet::Ptr _receive(long timeout);
+    template <typename T> PropertySet::Ptr _matchingReceive(const std::string& name, const T& value);
+    template <typename T> PropertySet::Ptr _matchingReceiveTimeout(const std::string& name, const T& value, long timeout);
 
-    dafBase::PropertySet::Ptr processStandaloneMessage(int sock);
-    dafBase::PropertySet::Ptr unmarshall(const std::string& text);
+    PropertySet::Ptr processStandaloneMessage(int sock);
+    PropertySet::Ptr unmarshall(const std::string& text);
 
     // connection to the JMS broker
     cms::Connection* _connection;
@@ -101,7 +100,7 @@ private:
     // Object that receives the messages
     cms::MessageConsumer* _consumer;
 
-    dafBase::PropertySet::Ptr processTextMessage(const cms::TextMessage* textMessage);
+    PropertySet::Ptr processTextMessage(const cms::TextMessage* textMessage);
 
     void splitString(std::string str, std::string delim, std::vector<std::string>&results);
 
@@ -118,14 +117,14 @@ private:
     // the topic for this receiver
     std::string _topic;
 
-    bool matches(const dafBase::PropertySet::Ptr& psp, const std::string& name, boost::any value);
+    bool matches(const PropertySet::Ptr& psp, const std::string& name, boost::any value);
 
-    dafBase::PropertySet::Ptr checkMessageCache(const std::string& name,
+    PropertySet::Ptr checkMessageCache(const std::string& name,
                                             boost::any value);
 
     // this is the simple "cache" used to retain events that weren't matched,
     // but still need to be delivered.
-    list<dafBase::PropertySet::Ptr>_messageCache;
+    list<PropertySet::Ptr>_messageCache;
 
 };
 

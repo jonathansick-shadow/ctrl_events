@@ -21,7 +21,6 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
-namespace dafBase = lsst::daf::base;
 namespace pexExceptions = lsst::pex::exceptions;
 namespace pexLogging = lsst::pex::logging;
 
@@ -159,11 +158,11 @@ void EventTransmitter::init( const std::string& hostName,
     }
 }
 
-void EventTransmitter::publish(const dafBase::PropertySet::Ptr& psp) {
+void EventTransmitter::publish(const PropertySet::Ptr& psp) {
     publish(*psp);
 }
 
-void EventTransmitter::publish(const dafBase::PropertySet& ps) {
+void EventTransmitter::publish(const PropertySet& ps) {
     if (_turnEventsOff == true)
         return;
 
@@ -182,14 +181,14 @@ void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
     if (_turnEventsOff == true)
         return;
 
-    const dafBase::PropertySet& ps = rec.getProperties();
+    const PropertySet& ps = rec.getProperties();
 
     publish("logging", ps);
 }
 
 /** private method used to send event out on the wire.
   */
-void EventTransmitter::publish(const std::string& type, const dafBase::PropertySet& ps) {
+void EventTransmitter::publish(const std::string& type, const PropertySet& ps) {
     // send the marshalled message to the local socket
 
     if (_useLocalSockets == true) {
@@ -222,7 +221,7 @@ void EventTransmitter::publish(const std::string& type, const dafBase::PropertyS
     delete message;
 }
 
-std::string EventTransmitter::marshall(const dafBase::PropertySet& ps) {
+std::string EventTransmitter::marshall(const PropertySet& ps) {
     std::vector<std::string> v = ps.paramNames(false);
 
     // TODO: optimize this to get use getArray only when necessary

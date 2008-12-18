@@ -10,7 +10,10 @@ Access to the lsst::ctrl::events classes
 %feature("autodoc", "1");
 %module(package="lsst.ctrl.events", docstring=eventsLib_DOCSTRING) eventsLib
 
+
+
 %{
+/* swig pulls in references to ScreenLog.h and DualLog.h for some reason, so that's why these are here */
 #include "lsst/pex/logging/ScreenLog.h"
 #include "lsst/pex/logging/DualLog.h"
 #include "lsst/ctrl/events/EventTransmitter.h"
@@ -18,9 +21,8 @@ Access to the lsst::ctrl::events classes
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventFormatter.h"
-%}
 
-%rename(dafBase) lsst::daf::base;
+%}
 
 %include "lsst/p_lsstSwig.i"
 %lsst_exceptions()

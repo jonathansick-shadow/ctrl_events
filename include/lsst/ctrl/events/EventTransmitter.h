@@ -32,7 +32,8 @@
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 
-namespace dafBase = lsst::daf::base;
+using lsst::daf::base::PropertySet;
+
 namespace pexPolicy = lsst::pex::policy;
 namespace pexLogging = lsst::pex::logging;
 
@@ -49,8 +50,8 @@ public:
     EventTransmitter(const std::string& hostName, const std::string& topicName);
     ~EventTransmitter();
 
-    void publish(const dafBase::PropertySet::Ptr& psp);
-    void publish(const dafBase::PropertySet& ps);
+    void publish(const PropertySet::Ptr& psp);
+    void publish(const PropertySet& ps);
 
     void publish(const pexLogging::LogRecord& rec);
 
@@ -58,9 +59,9 @@ public:
 
 private:
     void init( const std::string& hostName, const std::string& topicName);
-    void publish(const std::string& type, const dafBase::PropertySet& ps);
+    void publish(const std::string& type, const PropertySet& ps);
 
-    std::string marshall(const dafBase::PropertySet& ds);
+    std::string marshall(const PropertySet& ds);
 
     // Connection to JMS broker
     cms::Connection* _connection;

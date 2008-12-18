@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/pex/exceptions.h"
+
 using namespace std;
 using lsst::pex::policy::Policy;
 using lsst::pex::exceptions::NotFoundException;

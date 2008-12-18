@@ -19,7 +19,6 @@
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventSystem.h"
 
-namespace dafBase = lsst::daf::base;
 namespace pexLogging =lsst::pex::logging;
 namespace pexExceptions =lsst::pex::exceptions;
 
@@ -110,7 +109,7 @@ void EventSystem::createLocalReceiver(const std::string& topicName) {
   * \throw Runtime exception if the topic wasn't already registered using 
   *        the createTransmitter method
   */
-void EventSystem::publish(const std::string& topicName, const dafBase::PropertySet::Ptr psp) {
+void EventSystem::publish(const std::string& topicName, const PropertySet::Ptr psp) {
     boost::shared_ptr<EventTransmitter> transmitter;
     if ((transmitter = getTransmitter(topicName)) == 0) {
     throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
@@ -150,7 +149,7 @@ boost::shared_ptr<EventTransmitter> EventSystem::getTransmitter(const std::strin
   * \param topicName the topic to listen on
   * \return a PropertySet::Ptr object
   */
-dafBase::PropertySet::Ptr EventSystem::receive(const std::string& topicName) {
+PropertySet::Ptr EventSystem::receive(const std::string& topicName) {
     return receive(topicName, EventReceiver::infiniteTimeout);
 }
 
@@ -162,7 +161,7 @@ dafBase::PropertySet::Ptr EventSystem::receive(const std::string& topicName) {
   * \return a Property::Ptr object on success, 0 on failure  see note
   *         in receive()
   */
-dafBase::PropertySet::Ptr EventSystem::receive(const std::string& topicName, const long timeout) {
+PropertySet::Ptr EventSystem::receive(const std::string& topicName, const long timeout) {
     boost::shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
     throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
@@ -170,26 +169,26 @@ dafBase::PropertySet::Ptr EventSystem::receive(const std::string& topicName, con
     return receiver->receive(timeout);
 }
 // TODO: roll this back into the Template, once the swig stuff is working properly
-dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const int value) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const int value) {
     return _matchingReceive(topicName, name, value);
 }
-dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const long value) {
-    return _matchingReceive(topicName, name, value);
-}
-
-dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const float value) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const long value) {
     return _matchingReceive(topicName, name, value);
 }
 
-dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const double value) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const float value) {
     return _matchingReceive(topicName, name, value);
 }
 
-dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const long long value) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const double value) {
     return _matchingReceive(topicName, name, value);
 }
 
-dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const std::string& value) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const long long value) {
+    return _matchingReceive(topicName, name, value);
+}
+
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const std::string& value) {
     return _matchingReceive(topicName, name, value);
 }
 
@@ -202,7 +201,7 @@ dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicN
   * \return the matching PropertySet::Ptr object
   */
 template <typename T>
-dafBase::PropertySet::Ptr EventSystem::_matchingReceive(const std::string& topicName, const std::string& name, const T& value) {
+PropertySet::Ptr EventSystem::_matchingReceive(const std::string& topicName, const std::string& name, const T& value) {
     boost::shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
     throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
@@ -210,27 +209,27 @@ dafBase::PropertySet::Ptr EventSystem::_matchingReceive(const std::string& topic
     return receiver->matchingReceive(name, value);
 }
 
-dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, int value, const long timeout) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, int value, const long timeout) {
     return _matchingReceive(topicName, name, value, timeout);
 }
 
-dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, long value, const long timeout) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, long value, const long timeout) {
     return _matchingReceive(topicName, name, value, timeout);
 }
 
-dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, double value, const long timeout) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, double value, const long timeout) {
     return _matchingReceive(topicName, name, value, timeout);
 }
 
-dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, float value, const long timeout) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, float value, const long timeout) {
     return _matchingReceive(topicName, name, value, timeout);
 }
 
-dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, long long value, const long timeout) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, long long value, const long timeout) {
     return _matchingReceive(topicName, name, value, timeout);
 }
 
-dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const std::string& value, const long timeout) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const std::string& value, const long timeout) {
     return _matchingReceive(topicName, name, value, timeout);
 }
 
@@ -246,7 +245,7 @@ dafBase::PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicN
   *         or a null PropertySet::Ptr object on timeout expiration
   */
 template <typename T>
-dafBase::PropertySet::Ptr EventSystem::_matchingReceive(const std::string& topicName, const std::string& name, const T& value, long timeout) {
+PropertySet::Ptr EventSystem::_matchingReceive(const std::string& topicName, const std::string& name, const T& value, long timeout) {
     boost::shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
     throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");

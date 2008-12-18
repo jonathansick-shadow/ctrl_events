@@ -10,7 +10,6 @@
 
 using namespace std;
 
-namespace dafBase = lsst::daf::base;
 namespace pexExceptions = lsst::pex::exceptions;
 namespace pexLogging = lsst::pex::logging;
 namespace pexPolicy = lsst::pex::policy;
@@ -55,7 +54,7 @@ int main() {
     eventSystem.createTransmitter("lsst8.ncsa.uiuc.edu", "EventSystem_1_test");
 
     // test publish("string", DataProperty)
-    dafBase::PropertySet::Ptr psp(new dafBase::PropertySet);
+    PropertySet::Ptr psp(new PropertySet);
     psp->add("test", 12);
 
     eventSystem.publish("EventSystem_1_test", psp);
