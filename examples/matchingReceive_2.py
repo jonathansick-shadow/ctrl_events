@@ -1,5 +1,3 @@
-
-import lsst.daf.base as datap
 import lsst.ctrl.events as events
 import time
 
@@ -11,35 +9,30 @@ if __name__ == "__main__":
 
     val = x.matchingReceive("PID", 200, 10000)
     print "finished!\n"
-    print val.get()
-    if val.get() != None:
-        print val.toString("=", 1)
+    if val != None:
+        print val.toString()
 
     print "waiting on matchingReceive... for PID == 300\n"
     val = x.matchingReceive("PID", 300, 10000)
     print "finished!\n"
-    print val.get()
-    if val.get() != None:
-        print val.toString("=", 1)
+    if val != None:
+        print val.toString()
    
 
     print "waiting on receive...\n"
     val = x.receive(10000)
     print "finished!\n"
-    print val.get()
-    if val.get() != None:
-        print val.toString("=", 1)
+    if val != None:
+        print val.toString()
 
     print "waiting on receive...\n"
     val = x.receive(10000)
     print "finished!\n"
-    print val.get()
-    if val.get() != None:
-        print val.toString("=", 1)
+    if val != None:
+        print val.toString()
 
     print "waiting on receive...\n"
     val = x.receive(10000)
     print "finished!\n"
-    print val.get()
-    if val.get() != None:
-        print val.toString("=", 1)
+    if val != None:
+        print val.toString()

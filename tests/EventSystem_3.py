@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import lsst.ctrl.events as events
-import lsst.daf.base as datap;
-import lsst.pex.exceptions as ex
+import lsst.daf.base as base
+import lsst.pex.exceptions
 import lsst.pex.logging as logging
 import lsst.pex.policy as policy
 
@@ -16,14 +16,14 @@ if __name__ == "__main__":
     p = policy.Policy()
     try:
         eventSystem.createTransmitter(p)
-    except ex.LsstCppException, e:
+    except lsst.pex.exceptions.LsstCppException, e:
         pass
 
     # host wasn't specified...that's a no-no, since useLocalSockets is false
     p.set("topicName", "EventSystem_test")
     try:
         eventSystem.createTransmitter(p)
-    except ex.LsstCppException, e:
+    except lsst.pex.exceptions.LsstCppException, e:
         pass
 
     # TODO:
@@ -36,9 +36,8 @@ if __name__ == "__main__":
 
     eventSystem.createTransmitter(host, topic)
 
-    root = datap.DataProperty.createPropertyNode("root")
-    test = datap.DataProperty("test", 12)
-    root.addProperty(test)
+    root = base.PropertySet()
+    root.addInt("test", 12)
 
     eventSystem.publish(topic, root)
 

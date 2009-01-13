@@ -1,4 +1,4 @@
-import lsst.daf.base as datap
+import lsst.daf.base as base
 import lsst.ctrl.events as events
 
 if __name__ == "__main__":
@@ -10,25 +10,16 @@ if __name__ == "__main__":
 
     newSystem = events.EventSystem().getDefaultEventSystem()
 
-    root = datap.DataProperty.createPropertyNode("root");
-    date = datap.DataProperty("DATE","2007-07-01T14:28:32.546012")
-    pid = datap.DataProperty("PID",200)
-    host = datap.DataProperty("HOST","fester.ncsa.uiuc.edu")
-    ip = datap.DataProperty("IP","141.142.220.44")
-    event = datap.DataProperty("EVNT","test")
-    misc1 = datap.DataProperty("misc1","data 1")
-    misc2 = datap.DataProperty("misc2","data 2")
-    flo = datap.DataProperty("float_value", 3.14)
+    root = base.PropertySet()
+    root.add("DATE","2007-07-01T14:28:32.546012")
+    root.addInt("PID",200)
+    root.add("HOST","lsst8.ncsa.uiuc.edu")
+    root.add("IP","141.142.220.44")
+    root.add("EVNT","test")
+    root.add("misc1","data 1")
+    root.add("misc2","data 2")
+    root.addDouble("float_value", 3.14)
 
-    root.addProperty(date)
-    root.addProperty(pid)
-    root.addProperty(host)
-    root.addProperty(ip)
-    root.addProperty(event)
-    root.addProperty(misc1)
-    root.addProperty(misc2)
-    root.addProperty(flo)
-
-    newSystem.publish("test1", root, "type1")
-    newSystem.publish("test2", root, "type2")
-    newSystem.publish("test3", root, "type3")
+    newSystem.publish("test1", root)
+    newSystem.publish("test2", root)
+    newSystem.publish("test3", root)

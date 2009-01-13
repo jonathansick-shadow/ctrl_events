@@ -9,7 +9,6 @@ Run with:
 #   import lsst.tests as tests
 import lsst.pex.logging as log
 import lsst.ctrl.events as events
-from lsst.daf.base import DataProperty
 
 if __name__ == "__main__":
 
@@ -47,9 +46,9 @@ if __name__ == "__main__":
     print "message sent"
 
 #    // test streaming
-    log.LogRec(tgclog, log.Log.FATAL) << "help: I've fallen" << DataProperty("NODE", 5) << "& I can't get up" << log.endr;
+    log.LogRec(tgclog, log.Log.FATAL) << "help: I've fallen" << log.Prop("NODE", 5) << "& I can't get up" << log.endr;
     print "message sent"
-    tmp = DataProperty("NODE",5)
+    tmp = log.Prop("NODE",5)
     log.LogRec(tgclog, log.Log.FATAL) << "help: I've fallen" << tmp << "& I can't get up" << log.endr;
     print "message sent"
 

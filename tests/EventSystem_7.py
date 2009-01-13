@@ -16,7 +16,7 @@ def sendEvent(topicName):
     root = base.PropertySet()
     root.add("DATE","2007-07-01T14:28:32.546012")
     root.addInt("PID",200)
-    root.add("HOST","fester.ncsa.uiuc.edu")
+    root.add("HOST","lsst8.ncsa.uiuc.edu")
     root.add("IP","141.142.220.44")
     root.add("EVNT","test")
     root.add("misc1","data 1")

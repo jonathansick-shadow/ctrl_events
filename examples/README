@@ -2,10 +2,10 @@ These simple examples show how to use the event system in Python:
 
 doit - shell script to run transmit.py after a 10 second delay
 transmit_1.py - transmits an event to receive_1
-receive_1.py - blocking receive 
+receive_1.py - blocking receive with timeout
 
 transmit_2.py - transmits an event to receive_2
-receive_2.py - blocking receive with timeout
+receive_2.py - blocking receive
 
 transmit_3.py - transmits an event to receive_3
 receive_3.py - blocking receive
@@ -34,7 +34,7 @@ $ python receive_2.py
 will produce similar results as the first example.  You can also run it
 like:
 
-$ python receive_2.py
+$ python receive_1.py
 
 without the transmit.  The receive will timeout.
 

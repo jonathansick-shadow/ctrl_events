@@ -1,4 +1,3 @@
-import lsst.daf.base as datap
 import lsst.ctrl.events as events
 import time
 
@@ -10,4 +9,4 @@ if __name__ == "__main__":
         val = x.receive(8000)
         print "finished!\n"
         if val.get() != None:
-            print val.toString("=", 1)
+            print val.toString()

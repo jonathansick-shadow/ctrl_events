@@ -1,17 +1,14 @@
 import lsst.ctrl.events as events
-import lsst.daf.base as datap
+import lsst.daf.base as base
 import lsst.pex.policy as policy
 
 if __name__ == "__main__":
-    p = policy.Policy.createPolicy("examples/policies/localsockets_policy.paf", 1)
+    p = policy.Policy.createPolicy("policies/localsockets_policy.paf", 1)
     x = events.EventTransmitter(p)
 
-    root = datap.DataProperty.createPropertyNode("root")
-    pid = datap.DataProperty("PID",200)
-    text = datap.DataProperty("text", "hello, world")
-    flo = datap.DataProperty("flo", 3.14)
+    root = base.PropertySet()
+    root.addInt("PID",200)
+    root.add("text", "hello, world")
+    root.addFloat("flo", 3.14)
 
-    root.addProperty(pid)
-    root.addProperty(text)
-    root.addProperty(flo)
-    x.publish("log", root)
+    x.publish(root)

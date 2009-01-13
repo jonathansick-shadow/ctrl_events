@@ -1,5 +1,4 @@
 import lsst.ctrl.events as events
-import lsst.daf.base as datap
 
 if __name__ == "__main__":
 
@@ -9,21 +8,21 @@ if __name__ == "__main__":
     system.createReceiver("lsst8.ncsa.uiuc.edu", "test3")
 
     dp1 = system.receive("test1", 5000)
-    if dp1.get() == None:
+    if dp1 == None:
         print "Nothing received from test1"
     else:
-        print dp1.toString(" ",1)
+        print dp1.toString()
 
 
     dp2 = system.receive("test2", 5000)
-    if dp2.get() == None:
+    if dp2 == None:
         print "Nothing received from test2"
     else:
-        print dp2.toString(" ",1)
+        print dp2.toString()
 
     dp3 = system.receive("test3", 5000)
-    if dp3.get() == None:
+    if dp3 == None:
         print "Nothing received from test3"
     else:
-        print dp3.toString(" ",1)
+        print dp3.toString()
 
