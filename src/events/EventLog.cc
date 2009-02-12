@@ -10,6 +10,7 @@
   * \author Stephen R. Pietrowicz, NCSA
   *
   */
+#include <cstring>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -72,9 +73,9 @@ void EventLog::init(const std::string runId, int sliceId, const PropertySet::Ptr
     // if there is no host name specified, make "unknown host" the name
     if (hostId.size() == 0) {
         if (gethostname(host, HOST_NAME_MAX) < 0)
-            strcpy(host, "unknown host");
+            std::strcpy(host, "unknown host");
     } else
-        strcpy(host, hostId.c_str());
+        std::strcpy(host, hostId.c_str());
 
     std::string hostName(host);
 
