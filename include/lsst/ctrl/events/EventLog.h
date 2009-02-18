@@ -1,15 +1,15 @@
 // -*- lsst-c++ -*-
-/** \class EventLog
+/** \file EventLog.h
   *
   * \ingroup events
   *
-  * \brief EventLog object used by the LSST logging system
+  * \brief defines the EventLog class
   *
   * \author Stephen Pietrowicz, NCSA
   */
 
-#ifndef EVENTLOG_H_
-#define EVENTLOG_H_
+#ifndef LSST_CTRL_EVENTLOG_H_
+#define LSST_CTRL_EVENTLOG_H_
 
 #include <stdlib.h>
 #include <iostream>
@@ -30,6 +30,9 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
+/**
+ * @brief a Log for transmitting log messages as events.
+ */
 class EventLog : public pexLogging::Log {
 public:
     EventLog( const std::string runId, int sliceId, const std::string hostId = "", int threshold= pexLogging::Log::INFO);
@@ -61,4 +64,4 @@ private:
 }
 }
 }
-#endif
+#endif /* end LSST_CTRL_EVENTS_EVENTLOG_H */

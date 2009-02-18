@@ -1,16 +1,16 @@
 // -*- lsst-c++ -*-
-/** \class EventReceiver
+/** \file EventReceiver.h
   *
   * \ingroup events
   *
-  * \brief Receive events from the event bus
+  * \brief defines the EventReceiver class
   *
   * \author Stephen Pietrowicz, NCSA
   *
   */
 
-#ifndef EVENTRECEIVER_H_
-#define EVENTRECEIVER_H_
+#ifndef LSST_CTRL_EVENTRECEIVER_H_
+#define LSST_CTRL_EVENTRECEIVER_H_
 
 #include <activemq/concurrent/Thread.h>
 #include <activemq/concurrent/Runnable.h>
@@ -43,6 +43,9 @@ namespace lsst {
 namespace ctrl {
 namespace events { 
 
+/**
+ * @brief Receive events from the event bus
+ */
 class EventReceiver {
 public:
     EventReceiver(const pexPolicy::Policy& policy);
@@ -134,4 +137,4 @@ private:
 }
 
 
-#endif /*EVENTRECEIVER_H_*/
+#endif /*LSST_CTRL_EVENTRECEIVER_H_*/

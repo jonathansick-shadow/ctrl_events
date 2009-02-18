@@ -1,16 +1,16 @@
 // -*- lsst-c++ -*-
-/** \class EventTransmitter
+/** \file EventTransmitter.h
   *
   * \ingroup events
   *
-  * \brief Transmit events to the event bus
+  * \brief defines the EventTransmitter class
   *
   * \author Stephen Pietrowicz, NCSA
   *
   */
 
-#ifndef EVENTTRANSMITTER_H_
-#define EVENTTRANSMITTER_H_
+#ifndef LSST_CTRL_EVENTTRANSMITTER_H_
+#define LSST_CTRL_EVENTTRANSMITTER_H_
 
 #include <activemq/concurrent/Thread.h>
 #include <activemq/concurrent/Runnable.h>
@@ -41,7 +41,9 @@ namespace lsst {
 namespace ctrl {
 namespace events { 
 
-
+/**
+ * @brief Transmit events to the event bus
+ */
 class EventTransmitter
 {
 public:
@@ -95,4 +97,4 @@ private:
 }
 
 
-#endif /*EVENTTRANSMITTER_H_*/
+#endif /*LSST_CTRL_EVENTTRANSMITTER_H_*/

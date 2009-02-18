@@ -1,15 +1,15 @@
 // -*- lsst-c++ -*-
-/** \class EventFormatter
+/** \file EventFormatter.h
   *
   * \ingroup events
   *
-  * \brief EventFormatter object to support the LSST logging mechanism
+  * \brief defines the EventFormatter class
   *
   * \author Stephen Pietrowicz, NCSA
   */
 
-#ifndef EVENTFORMATTER_H_
-#define EVENTFORMATTER_H_
+#ifndef LSST_CTRL_EVENTFORMATTER_H_
+#define LSST_CTRL_EVENTFORMATTER_H_
 
 #include <stdlib.h>
 #include <iostream>
@@ -29,7 +29,9 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-
+/**
+ * @brief class that send a LogRecord into an event stream
+ */
 class EventFormatter : public pexLogging::LogFormatter {
 public:
     explicit EventFormatter() : pexLogging::LogFormatter() { }
@@ -41,4 +43,4 @@ public:
 }
 }
 }
-#endif
+#endif   /* end LSST_CTRL_EVENTFORMATTER_H  */
