@@ -1,7 +1,7 @@
 # -*- python -*-
 Import('env')
 
-env.SharedLibrary('ctrl_events', map(lambda str: "../src/events/" + str,
+env.SharedLibrary('ctrl_events', map(lambda str: "../src/" + str,
                             ["EventTransmitter.cc",
                              "EventReceiver.cc",
                              "EventFormatter.cc",

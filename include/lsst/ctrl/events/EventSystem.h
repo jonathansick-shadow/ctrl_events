@@ -1,15 +1,15 @@
 // -*- lsst-c++ -*-
-/** \class EventSystem
+/** \file EventSystem.h
   *
   * \ingroup events
   *
-  * \brief Coordinate publishing and receiving events
+  * \brief defines the EventSystem class
   *
   * \author Stephen Pietrowicz, NCSA
   */
 
-#ifndef LSST_EVENTS_EVENTSYSTEM_H_
-#define LSST_EVENTS_EVENTSYSTEM_H_
+#ifndef LSST_CTRL_EVENTS_EVENTSYSTEM_H
+#define LSST_CTRL_EVENTS_EVENTSYSTEM_H
 
 #include <stdlib.h>
 #include <iostream>
@@ -22,7 +22,7 @@
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/logging/LogRecord.h"
-#include "lsst/ctrl/events/Events.h"
+#include "lsst/ctrl/events.h"
 
 using lsst::daf::base::PropertySet;
 namespace pexPolicy = lsst::pex::policy;
@@ -32,6 +32,9 @@ using namespace std;
 namespace lsst {
 namespace ctrl {
 namespace events {
+/**
+ * @brief Coordinate publishing and receiving events
+ */
 class EventSystem {
 public:
     EventSystem();
@@ -102,5 +105,5 @@ protected:
 }
 }
 
-#endif /*LSST_EVENTS_EVENTSYSTEM_H_*/
+#endif /*end LSST_CTRL_EVENTS_EVENTSYSTEM_H*/
 

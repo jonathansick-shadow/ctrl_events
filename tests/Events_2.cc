@@ -5,7 +5,7 @@
  */
 #include <iostream>
 #include <stdexcept>
-#include "lsst/ctrl/events/Events.h"
+#include "lsst/ctrl/events.h"
 #include "lsst/pex/exceptions.h"
 using namespace std;
 using lsst::pex::policy::Policy;
