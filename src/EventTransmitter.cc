@@ -227,7 +227,7 @@ std::string EventTransmitter::marshall(const PropertySet& ps) {
     // TODO: optimize this to get use getArray only when necessary
     std::ostringstream payload;
     unsigned int i;
-    payload << "nodelist||nodelist||" << v.size() << "~~";
+    payload << "nodelist||nodelist||" << (v.size()-1) << "~~";
     for (i = 0; i < v.size(); i++) {
         std::string name = v[i];
         if (ps.typeOf(name) == typeid(bool)) {
