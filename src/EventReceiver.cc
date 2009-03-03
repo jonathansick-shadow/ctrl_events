@@ -401,6 +401,7 @@ PropertySet::Ptr EventReceiver::unmarshall(const std::string& text) {
 
     // split the text into tuples
     splitString(text, "~~", tuples);
+std::cout << text << std::endl;
 
     PropertySet::Ptr psp(new PropertySet);
 
@@ -452,6 +453,7 @@ PropertySet::Ptr EventReceiver::unmarshall(const std::string& text) {
             iss >> string_value;
             psp->add(key, string_value);
         }
+        // type == nodelist can be ignored
     }
         
     return psp;
