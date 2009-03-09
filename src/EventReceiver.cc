@@ -401,7 +401,6 @@ PropertySet::Ptr EventReceiver::unmarshall(const std::string& text) {
 
     // split the text into tuples
     splitString(text, "~~", tuples);
-std::cout << text << std::endl;
 
     PropertySet::Ptr psp(new PropertySet);
 
