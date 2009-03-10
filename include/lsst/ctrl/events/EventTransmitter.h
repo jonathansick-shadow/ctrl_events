@@ -27,7 +27,7 @@
 #include <iostream>
 
 #include "lsst/pex/logging/LogRecord.h"
-#include "lsst/pex/policy/Policy.h"
+#include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"

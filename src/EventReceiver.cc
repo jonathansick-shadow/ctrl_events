@@ -39,7 +39,11 @@ namespace events {
   */
 
 EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
-    _turnEventsOff = policy.getBool("turnEventsOff", false);
+    try {
+        _turnEventsOff = policy.getBool("turnEventsOff");
+    } catch (pexPolicy::NameNotFound& e) {
+        _turnEventsOff = false;
+    }
     if (_turnEventsOff == true)
         return;
     if (!policy.exists("topicName")) {
@@ -47,8 +51,18 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
     }
 
     std::string topicName = policy.getString("topicName");
-    _turnEventsOff = policy.getBool("turnEventsOff", false);
-    _useLocalSockets = policy.getBool("useLocalSockets", false);
+    try {
+        _turnEventsOff = policy.getBool("turnEventsOff");
+    } catch (pexPolicy::NameNotFound& e) {
+        _turnEventsOff = false;
+    }
+
+    try {
+        _useLocalSockets = policy.getBool("useLocalSockets");
+    } catch (pexPolicy::NameNotFound& e) {
+        _useLocalSockets = false;
+    }
+
     if (_useLocalSockets == false) {
         if (!policy.exists("hostName")) {
             throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostName was not specified in policy file");
@@ -56,7 +70,13 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
     }
 
 
-    init(policy.getString("hostName", "non"), topicName);
+    std::string hostName;
+    try {
+        hostName = policy.getString("hostName");
+    } catch (pexPolicy::NameNotFound& e) {
+        hostName = "non";
+    }
+    init(hostName, topicName);
 }
 
 /** \brief Receives events from the specified host and topic

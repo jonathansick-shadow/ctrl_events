@@ -24,6 +24,7 @@
 namespace pexExceptions = lsst::pex::exceptions;
 namespace pexLogging = lsst::pex::logging;
 
+
 using namespace std;
 
 namespace lsst {
@@ -59,7 +60,11 @@ namespace events {
   * \throw throws RuntimeErrorException if connection to transport mechanism fails
   */
 EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
-    _turnEventsOff = policy.getBool("turnEventsoff", false);
+    try {
+        _turnEventsOff = policy.getBool("turnEventsoff");
+    } catch (pexPolicy::NameNotFound& e) {
+        _turnEventsOff = false;
+    }
     if (_turnEventsOff == true)
         return;
 
@@ -67,13 +72,23 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
         throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName not found in policy");
     }
 
-    _useLocalSockets = policy.getBool("useLocalSockets", false);
+    try {
+        _useLocalSockets = policy.getBool("useLocalSockets");
+    } catch (pexPolicy::NameNotFound& e) {
+        _useLocalSockets = false;
+    }
     if (_useLocalSockets == false) {
         if (!policy.exists("hostName")) {
             throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostname must be specified with 'useLocalSockets' is false");
         }
     }
-    init(policy.getString("hostName", ""), policy.getString("topicName"));
+    std::string hostName;
+    try {
+        hostName = policy.getString("hostName");
+    } catch (pexPolicy::NameNotFound& e) {
+        hostName = ""; 
+    }
+    init(hostName, policy.getString("topicName"));
 }
 
 /** \brief Transmits events to the specified host and topic
