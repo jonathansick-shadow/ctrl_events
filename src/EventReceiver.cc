@@ -70,7 +70,7 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
     }
 
 
-    std::string hostName = 0;
+    std::string hostName;
     try {
         hostName = policy.getString("hostName");
     } catch (pexPolicy::NameNotFound& e) {

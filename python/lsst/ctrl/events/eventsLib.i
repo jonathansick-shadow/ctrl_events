@@ -15,6 +15,7 @@ Access to the lsst::ctrl::events classes
 %{
 /* swig pulls in references to ScreenLog.h and DualLog.h for some reason, so that's why these are here */
 #include "lsst/pex/logging/ScreenLog.h"
+#include "lsst/pex/logging/Debug.h"
 #include "lsst/pex/logging/DualLog.h"
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/ctrl/events/EventReceiver.h"
@@ -32,6 +33,21 @@ SWIG_SHARED_PTR_DERIVED(EventFormatter, lsst::pex::logging::LogFormatter, lsst::
 %import "lsst/daf/base/baseLib.i"
 %import "lsst/pex/logging/loggingLib.i"
 %import "lsst/pex/policy/policyLib.i"
+/*
+*/
+
+%inline %{
+namespace lsst {
+    namespace pex {
+        namespace logging {}
+    }
+}
+namespace lsst {
+    namespace pex {
+        namespace policy {}
+    }
+}
+%}
 
 %include "lsst/ctrl/events/EventTransmitter.h"
 %include "lsst/ctrl/events/EventReceiver.h"
