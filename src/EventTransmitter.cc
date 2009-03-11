@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
+#include <limits>
 
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/daf/base/PropertySet.h"
@@ -26,6 +27,7 @@ namespace pexLogging = lsst::pex::logging;
 
 
 using namespace std;
+using std::numeric_limits;
 
 namespace lsst {
 namespace ctrl {
@@ -260,12 +262,14 @@ std::string EventTransmitter::marshall(const PropertySet& ps) {
         } else if (ps.typeOf(name) == typeid(float)) {
             std::vector<float> vec  = ps.getArray<float>(name);
             std::vector<float>::iterator iter;
+            payload.precision(numeric_limits<float>::digits10+1);
             for (iter = vec.begin(); iter != vec.end(); iter++) {
                 payload << "float||"<< name << "||"<< *iter << "~~";
             }
         } else if (ps.typeOf(name) == typeid(double)) {
             std::vector<double> vec  = ps.getArray<double>(name);
             std::vector<double>::iterator iter;
+            payload.precision(numeric_limits<double>::digits10+1);
             for (iter = vec.begin(); iter != vec.end(); iter++) {
                 payload << "double||"<< name << "||"<< *iter << "~~";
             }
