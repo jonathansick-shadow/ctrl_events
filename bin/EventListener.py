@@ -5,7 +5,6 @@
 #                 they are happening for debugging.
 #
 #
-import lsst.daf.base as datap
 import lsst.ctrl.events as events
 import lsst.pex.logging as logging
 import time
@@ -17,12 +16,7 @@ def printValue(log, info, dp):
     logRec << logging.endr;
 
 def pValue(logRec, dp):
-    if (dp.isNode() == True):
-            kids = dp.getChildren()
-            for i in kids:
-                pValue(logRec, i)
-    else:
-        logRec << dp.get()
+        logRec << dp
 
 if __name__ == "__main__":
     print "starting...\n"
@@ -37,6 +31,6 @@ if __name__ == "__main__":
     print "waiting on receive...\n"
     while (True):
         val = x.receive()
-        if val.get() != None:
+        if val != None:
             printValue(tlog, logging.Log.INFO, val)
 
