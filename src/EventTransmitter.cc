@@ -12,6 +12,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <limits>
+#include <cstring>
 
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/daf/base/PropertySet.h"
