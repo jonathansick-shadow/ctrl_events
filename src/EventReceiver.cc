@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
+#include <cstring>
 
 #include "lsst/ctrl/events/EventReceiver.h"
 #include "lsst/daf/base/PropertySet.h"
@@ -115,7 +116,8 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
             throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "couldn't create local socket");
         }
 
-        bzero(&local, sizeof(local));
+        // bzero(&local, sizeof(local));
+        memset(&local, 0, sizeof(local));
         local.sun_family = AF_UNIX;
 
         std::string unix_socket = "/tmp/"+topicName;
