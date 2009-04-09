@@ -41,7 +41,7 @@ public:
 
     ~EventSystem();
 
-    static const EventSystem& getDefaultEventSystem();
+    static EventSystem& getDefaultEventSystem();
 
     void createTransmitter(const std::string& hostName, 
                            const std::string& topicName);
