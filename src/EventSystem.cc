@@ -44,7 +44,7 @@ EventSystem::~EventSystem() {
   *               previously created Transmitters and receivers
   * \return The EventSystem object
   */
-const EventSystem& EventSystem::getDefaultEventSystem() {
+EventSystem& EventSystem::getDefaultEventSystem() {
     if (defaultEventSystem == 0) defaultEventSystem = new EventSystem();
     return *defaultEventSystem;
 }
