@@ -14,7 +14,6 @@
 #include <cstring>
 
 #include "lsst/ctrl/events/EventReceiver.h"
-#include "lsst/daf/base/DateTime.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/logging/Component.h"
@@ -22,6 +21,8 @@
 #include "lsst/pex/logging/LogRecord.h"
 #include <sys/socket.h>
 #include <sys/un.h>
+
+#include <activemq/core/ActiveMQConnectionFactory.h>
 
 namespace pexPolicy = lsst::pex::policy;
 namespace pexExceptions = lsst::pex::exceptions;
@@ -471,13 +472,10 @@ PropertySet::Ptr EventReceiver::unmarshall(const std::string& text) {
             value = boost::any(double_value);
             psp->add(key, double_value);
         } else if (type == "string") {
-            psp->add(key, val);
-        } else if (type == "datetime") {
-            long long longlong_value;
-            iss >> longlong_value;
-            psp->add(key, lsst::daf::base::DateTime(longlong_value, lsst::daf::base::DateTime::UTC));
+            std::string string_value;
+            iss >> string_value;
+            psp->add(key, string_value);
         }
-
         // type == nodelist can be ignored
     }
         

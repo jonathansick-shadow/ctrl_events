@@ -15,7 +15,6 @@
 #include <cstring>
 
 #include "lsst/ctrl/events/EventTransmitter.h"
-#include "lsst/daf/base/DateTime.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/logging/Component.h"
@@ -23,6 +22,8 @@
 #include "lsst/pex/logging/LogRecord.h"
 #include <sys/socket.h>
 #include <sys/un.h>
+
+#include <activemq/core/ActiveMQConnectionFactory.h>
 
 namespace pexExceptions = lsst::pex::exceptions;
 namespace pexLogging = lsst::pex::logging;
@@ -281,14 +282,7 @@ std::string EventTransmitter::marshall(const PropertySet& ps) {
             for (iter = vec.begin(); iter != vec.end(); iter++) {
                 payload << "string||" << name << "||"<< *iter << "~~";
             }
-        } else if (ps.typeOf(name) == typeid(lsst::daf::base::DateTime)) {
-            std::vector<lsst::daf::base::DateTime> vec  = ps.getArray<lsst::daf::base::DateTime>(name);
-            std::vector<lsst::daf::base::DateTime>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "datetime||" << name << "||"<< (*iter).nsecs() << "~~";
-            }
         }
-        
     }
     return payload.str();
 }
