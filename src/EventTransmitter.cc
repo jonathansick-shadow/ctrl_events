@@ -15,6 +15,7 @@
 #include <cstring>
 
 #include "lsst/ctrl/events/EventTransmitter.h"
+#include "lsst/daf/base/DateTime.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/logging/Component.h"
@@ -281,6 +282,12 @@ std::string EventTransmitter::marshall(const PropertySet& ps) {
             std::vector<std::string>::iterator iter;
             for (iter = vec.begin(); iter != vec.end(); iter++) {
                 payload << "string||" << name << "||"<< *iter << "~~";
+            }
+        } else if (ps.typeOf(name) == typeid(lsst::daf::base::DateTime)) {
+            std::vector<lsst::daf::base::DateTime> vec  = ps.getArray<lsst::daf::base::DateTime>(name);
+            std::vector<lsst::daf::base::DateTime>::iterator iter;
+            for (iter = vec.begin(); iter != vec.end(); iter++) {
+                payload << "datetime||" << name << "||"<< (*iter).nsecs() << "~~";
             }
         }
     }
