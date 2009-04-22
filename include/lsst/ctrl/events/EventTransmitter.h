@@ -12,11 +12,6 @@
 #ifndef LSST_CTRL_EVENTS_EVENTTRANSMITTER_H
 #define LSST_CTRL_EVENTS_EVENTTRANSMITTER_H
 
-#include <activemq/concurrent/Thread.h>
-#include <activemq/concurrent/Runnable.h>
-#include <activemq/core/ActiveMQConnectionFactory.h>
-#include <activemq/util/Integer.h>
-#include <activemq/util/Config.h>
 #include <cms/Connection.h>
 #include <cms/Session.h>
 #include <cms/TextMessage.h>

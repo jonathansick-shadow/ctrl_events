@@ -23,6 +23,8 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
+#include <activemq/core/ActiveMQConnectionFactory.h>
+
 namespace pexPolicy = lsst::pex::policy;
 namespace pexExceptions = lsst::pex::exceptions;
 
@@ -477,7 +479,6 @@ PropertySet::Ptr EventReceiver::unmarshall(const std::string& text) {
             iss >> longlong_value;
             psp->add(key, lsst::daf::base::DateTime(longlong_value, lsst::daf::base::DateTime::UTC));
         }
-
         // type == nodelist can be ignored
     }
         

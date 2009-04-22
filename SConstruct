@@ -10,7 +10,8 @@ env = scons.makeEnv("ctrl_events",
                     [["boost", "boost/version.hpp", "boost_system:C++"],
                      ["boost", "boost/version.hpp", "boost_filesystem:C++"],
                      ["boost", "boost/regex.hpp", "boost_regex:C++"],
-                     ["activemqcpp", "activemq/util/Number.h", "activemq-cpp:C++"],
+                     ["apr", "apr-1/apr.h", "apr-1"],
+                     ["activemqcpp", "activemq/core/ActiveMQConnectionFactory.h"],
                      ["utils", "lsst/utils/Utils.h", "utils:C++"],
                      ["pex_exceptions", "lsst/pex/exceptions.h","pex_exceptions:C++"],
                      ["daf_base", "lsst/daf/base/Citizen.h", "pex_exceptions daf_base:C++"],
@@ -18,6 +19,11 @@ env = scons.makeEnv("ctrl_events",
                      ["pex_policy", "lsst/pex/policy/Policy.h","pex_policy:C++"],
                      ["python", "Python.h"]
                      ])
+
+env.Append(LIBPATH = os.path.join(os.environ["ACTIVEMQCPP_DIR"],"lib"))
+env.libs["activemqcpp"] += "activemq-cpp".split()
+env.libs["activemqcpp"] += env.getlibs("apr")
+env.libs["ctrl_events"] += env.getlibs("activemqcpp")
 
 #
 # Libraries that I need to link things.  This should be handled better

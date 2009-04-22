@@ -24,6 +24,8 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
+#include <activemq/core/ActiveMQConnectionFactory.h>
+
 namespace pexExceptions = lsst::pex::exceptions;
 namespace pexLogging = lsst::pex::logging;
 
@@ -288,7 +290,6 @@ std::string EventTransmitter::marshall(const PropertySet& ps) {
                 payload << "datetime||" << name << "||"<< (*iter).nsecs() << "~~";
             }
         }
-        
     }
     return payload.str();
 }
