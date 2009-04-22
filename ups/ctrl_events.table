@@ -1,5 +1,5 @@
 setupRequired(boost >= 1.37.0)   
-setupRequired(activemqcpp >= 2.1-RC1)
+setupRequired(activemqcpp >= 2.2.6)
 setupRequired(utils >= 3.4.2)
 setupRequired(daf_base >= 3.2.3)   
 setupRequired(pex_logging >= 3.3.2)
