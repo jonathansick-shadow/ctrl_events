@@ -24,6 +24,7 @@
 #include <sys/un.h>
 
 #include <activemq/core/ActiveMQConnectionFactory.h>
+#include <activemq/exceptions/ActiveMQException.h>
 
 namespace pexPolicy = lsst::pex::policy;
 namespace pexExceptions = lsst::pex::exceptions;
@@ -277,9 +278,13 @@ PropertySet::Ptr EventReceiver::_receive(long timeout) {
         return PropertySet::Ptr();
 
     if (_useLocalSockets == false) {
-        const cms::TextMessage* textMessage =
-            dynamic_cast<const cms::TextMessage* >(_consumer->receive(timeout));
-            return processTextMessage(textMessage);
+        try {
+                const cms::TextMessage* textMessage =
+                    dynamic_cast<const cms::TextMessage* >(_consumer->receive(timeout));
+                    return processTextMessage(textMessage);
+        } catch (activemq::exceptions::ActiveMQException& e) {
+                throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
+        }
     } else {
         struct timeval tv;
         fd_set readfds;
