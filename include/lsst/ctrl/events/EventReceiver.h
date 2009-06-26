@@ -45,6 +45,7 @@ public:
     EventReceiver(const pexPolicy::Policy& policy);
 
     EventReceiver(const std::string& hostName, const std::string& topicName);
+    EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector);
 
     // virtual destructor
     virtual ~EventReceiver();
@@ -76,7 +77,7 @@ public:
     static const long infiniteTimeout = -1;
 
 private:
-    void init(const std::string& hostName, const std::string& topicName);
+    void init(const std::string& hostName, const std::string& topicName, const std::string& selector);
     PropertySet::Ptr _receive();
     PropertySet::Ptr _receive(long timeout);
     template <typename T> PropertySet::Ptr _matchingReceive(const std::string& name, const T& value);
@@ -113,6 +114,9 @@ private:
 
     // the topic for this receiver
     std::string _topic;
+
+    // the selector for this receiver
+    std::string _selector;;
 
     bool matches(const PropertySet::Ptr& psp, const std::string& name, boost::any value);
 

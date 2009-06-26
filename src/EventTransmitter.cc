@@ -24,6 +24,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
+#include <activemq/exceptions/ActiveMQException.h>
 #include <activemq/core/ActiveMQConnectionFactory.h>
 
 namespace pexExceptions = lsst::pex::exceptions;
@@ -66,6 +67,8 @@ namespace events {
   * \throw throws RuntimeErrorException if connection to transport mechanism fails
   */
 EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
+    PropertySet::Ptr psp(new PropertySet);
+
     try {
         _turnEventsOff = policy.getBool("turnEventsoff");
     } catch (pexPolicy::NameNotFound& e) {
@@ -94,7 +97,7 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
     } catch (pexPolicy::NameNotFound& e) {
         hostName = ""; 
     }
-    init(hostName, policy.getString("topicName"));
+    init(hostName, policy.getString("topicName"), psp);
 }
 
 /** \brief Transmits events to the specified host and topic
@@ -107,20 +110,32 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
   */
 EventTransmitter::EventTransmitter( const std::string& hostName,
                                     const std::string& topicName) {
+    PropertySet::Ptr psp(new PropertySet);
     _turnEventsOff = false;
     _useLocalSockets = false;
-    init(hostName, topicName);
+    init(hostName, topicName, psp);
 }
+
+EventTransmitter::EventTransmitter( const std::string& hostName,
+                                    const std::string& topicName,
+                                    const PropertySet::Ptr&  header) {
+    _turnEventsOff = false;
+    _useLocalSockets = false;
+    init(hostName, topicName, header);
+}
+
 
 /** private initialization method for configuring EventTransmitter
   */
 void EventTransmitter::init( const std::string& hostName,
-                                    const std::string& topicName) {
+                                    const std::string& topicName,
+                            const PropertySet::Ptr& header) {
     _connection = NULL;
     _session = NULL;
     _destination = NULL;
     _producer = NULL;
     _topic = topicName;
+    _header = header;
 
     if (_turnEventsOff == true)
         return;
@@ -235,6 +250,43 @@ void EventTransmitter::publish(const std::string& type, const PropertySet& ps) {
     cms::TextMessage* message = _session->createTextMessage();
     message->setCMSType(type);
     std::string payload = marshall(ps);
+
+    // add the message header, if there is one.
+    if (_header != 0) {
+        std::vector<std::string> v = _header->paramNames(false);
+        unsigned int i;
+        // XXX - there's probably a way to get the first element, not the array.  fix this.
+        for (i = 0; i < v.size(); i++) {
+            std::string name = v[i];
+            if (_header->typeOf(name) == typeid(std::string)) {
+                std::vector<std::string> vec  = _header->getArray<std::string>(name);
+                std::vector<std::string>::iterator iter;
+                iter = vec.begin();
+                message->setStringProperty(name, *iter);
+            } else if (_header->typeOf(name) == typeid(bool)) {
+                std::vector<bool> vec  = _header->getArray<bool>(name);
+                std::vector<bool>::iterator iter;
+                iter = vec.begin();
+                // msg->setBooleanProperty(name, *iter);
+            } else if (_header->typeOf(name) == typeid(int)) {
+                std::vector<int> vec  = _header->getArray<int>(name);
+                std::vector<int>::iterator iter;
+                iter = vec.begin();
+                // msg->setIntProperty(name, *iter);
+            } else if (_header->typeOf(name) == typeid(float)) {
+                std::vector<float> vec  = _header->getArray<float>(name);
+                std::vector<float>::iterator iter;
+                iter = vec.begin();
+                // msg->setFloatProperty(name, *iter);
+            } else if (_header->typeOf(name) == typeid(double)) {
+                std::vector<double> vec  = _header->getArray<double>(name);
+                std::vector<double>::iterator iter;
+                iter = vec.begin();
+                // msg->setDoubleProperty(name, *iter);
+            }
+        }
+
+    }
 
     message->setText(payload);
     _producer->send( message );

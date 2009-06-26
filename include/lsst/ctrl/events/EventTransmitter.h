@@ -14,8 +14,10 @@
 
 #include <cms/Connection.h>
 #include <cms/Session.h>
+/*
 #include <cms/TextMessage.h>
 #include <cms/MapMessage.h>
+*/
 #include <cms/BytesMessage.h>
 
 #include <stdlib.h>
@@ -46,6 +48,7 @@ public:
     EventTransmitter(const pexPolicy::Policy& policy);
 
     EventTransmitter(const std::string& hostName, const std::string& topicName);
+    EventTransmitter(const std::string& hostName, const std::string& topicName, const PropertySet::Ptr& header);
     ~EventTransmitter();
 
     void publish(const PropertySet::Ptr& psp);
@@ -58,7 +61,8 @@ public:
     void publish(const std::string& type, const PropertySet& ps);
 
 private:
-    void init( const std::string& hostName, const std::string& topicName);
+    // void init( const std::string& hostName, const std::string& topicName);
+    void init( const std::string& hostName, const std::string& topicName, const PropertySet::Ptr& header);
 
     std::string marshall(const PropertySet& ds);
 
@@ -79,6 +83,8 @@ private:
 
     std::string _topic;
 
+    
+
     // used to indicate "standalone mode", running without using the 
     // ActiveMQ server
     bool _useLocalSockets;
@@ -88,6 +94,9 @@ private:
 
     // socket for "standalone mode"
     int _sock;
+
+protected:
+    PropertySet::Ptr _header;
 };
 }
 }

@@ -24,6 +24,7 @@
 #include <sys/un.h>
 
 #include <activemq/core/ActiveMQConnectionFactory.h>
+#include <activemq/exceptions/ActiveMQException.h>
 
 namespace pexPolicy = lsst::pex::policy;
 namespace pexExceptions = lsst::pex::exceptions;
@@ -41,7 +42,7 @@ namespace events {
   * \throw throws NotFound exception if hostName isn't specified
   * \throw throws Runtime exception if connection fails to initialize
   */
-
+// TODO: add selector
 EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
     try {
         _turnEventsOff = policy.getBool("turnEventsOff");
@@ -80,7 +81,7 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
     } catch (pexPolicy::NameNotFound& e) {
         hostName = "non";
     }
-    init(hostName, topicName);
+    init(hostName, topicName, "");
 }
 
 /** \brief Receives events from the specified host and topic
@@ -92,14 +93,27 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName) {
     _turnEventsOff = false;
     _useLocalSockets = false;
-    init(hostName, topicName);
+    init(hostName, topicName, "");
+}
+
+/** \brief Receives events from the specified host and topic
+  *
+  * \param hostName the machine hosting the message broker
+  * \param topicName the topic to receive events from
+  * \param selector the message selector expression to use
+  * \throw throws Runtime exception if connection fails to initialize
+  */
+EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector) {
+    _turnEventsOff = false;
+    _useLocalSockets = false;
+    init(hostName, topicName, selector);
 }
 
 
 /** private method for initialization of EventReceiver.  Sets up use of local
   * sockets or activemq, depending on how the policy file was configured.  
   */
-void EventReceiver::init(const std::string& hostName, const std::string& topicName) {
+void EventReceiver::init(const std::string& hostName, const std::string& topicName, const std::string& selector) {
 
     _connection = NULL;
     _session = NULL;
@@ -107,6 +121,7 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
     _consumer = NULL;
     _sock = 0;
     _topic = topicName;
+    _selector = selector;
 
     if (_turnEventsOff == true)
         return;
@@ -147,12 +162,15 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
 
         _session = _connection->createSession( cms::Session::AUTO_ACKNOWLEDGE );
 
-        _destination = _session->createTopic( topicName );
+        _destination = _session->createTopic( topicName);
 
-        _consumer = _session->createConsumer( _destination );
+        if (_selector == "")
+            _consumer = _session->createConsumer( _destination);
+        else
+            _consumer = _session->createConsumer( _destination, selector);
 
     } catch ( cms::CMSException& e ) {
-        e.printStackTrace();
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
     }
 }
 
@@ -277,9 +295,13 @@ PropertySet::Ptr EventReceiver::_receive(long timeout) {
         return PropertySet::Ptr();
 
     if (_useLocalSockets == false) {
-        const cms::TextMessage* textMessage =
-            dynamic_cast<const cms::TextMessage* >(_consumer->receive(timeout));
-            return processTextMessage(textMessage);
+        try {
+                const cms::TextMessage* textMessage =
+                    dynamic_cast<const cms::TextMessage* >(_consumer->receive(timeout));
+                    return processTextMessage(textMessage);
+        } catch (activemq::exceptions::ActiveMQException& e) {
+                throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
+        }
     } else {
         struct timeval tv;
         fd_set readfds;
