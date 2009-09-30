@@ -41,19 +41,25 @@ public:
 
     ~EventSystem();
 
-    static const EventSystem& getDefaultEventSystem();
+    static EventSystem& getDefaultEventSystem();
 
     void createTransmitter(const std::string& hostName, 
                            const std::string& topicName);
 
+    void destroyTransmitter(const std::string& topicName);
+
     void createTransmitter(const pexPolicy::Policy& policy);
+    void destroyTransmitter(const pexPolicy::Policy& policy);
 
     void createLocalTransmitter(const std::string& topicName);
 
     void createReceiver(const std::string& hostName, 
                         const std::string& topicName);
 
+    void destroyReceiver(const std::string& topicName);
+
     void createReceiver(const pexPolicy::Policy& policy);
+    void destroyReceiver(const pexPolicy::Policy& policy);
 
     void createLocalReceiver(const std::string& topicName);
 

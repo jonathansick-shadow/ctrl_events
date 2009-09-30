@@ -40,11 +40,59 @@ EventSystem::EventSystem() {
 EventSystem::~EventSystem() {
 }
 
+void EventSystem::destroyTransmitter(const std::string& topicName) {
+    list<boost::shared_ptr<EventTransmitter> >::iterator i;
+    list<boost::shared_ptr<EventTransmitter> >::iterator i2;
+    for (i = _transmitters.begin(); i != _transmitters.end(); i++) {
+        if ((*i)->getTopicName() == topicName) {
+            i2 = _transmitters.erase(i);
+            return;
+        } 
+    }
+    throw LSST_EXCEPT(pexExceptions::NotFoundException, "could not find transmitter with specified topicName");
+}
+
+void EventSystem::destroyReceiver(const std::string& topicName) {
+    list<boost::shared_ptr<EventReceiver> >::iterator i;
+    list<boost::shared_ptr<EventReceiver> >::iterator i2;
+    for (i = _receivers.begin(); i != _receivers.end(); i++) {
+        if ((*i)->getTopicName() == topicName) {
+            i2 = _receivers.erase(i);
+            return;
+        } 
+    }
+    throw LSST_EXCEPT(pexExceptions::NotFoundException, "could not find receiver with specified topicName");
+}
+
+void EventSystem::destroyTransmitter(const pexPolicy::Policy& policy) {
+    std::string topicName;
+
+    try {
+        topicName = policy.getString("topicName");
+    } catch (pexPolicy::NameNotFound& e) {
+        throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName was not specified in policy");
+    }
+
+    destroyTransmitter(topicName);
+}
+    
+void EventSystem::destroyReceiver(const pexPolicy::Policy& policy) {
+    std::string topicName;
+
+    try {
+        topicName = policy.getString("topicName");
+    } catch (pexPolicy::NameNotFound& e) {
+        throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName was not specified in policy");
+    }
+
+    destroyReceiver(topicName);
+}
+
 /** \brief return the default EventSystem object, which can access all 
   *               previously created Transmitters and receivers
   * \return The EventSystem object
   */
-const EventSystem& EventSystem::getDefaultEventSystem() {
+EventSystem& EventSystem::getDefaultEventSystem() {
     if (defaultEventSystem == 0) defaultEventSystem = new EventSystem();
     return *defaultEventSystem;
 }
@@ -112,7 +160,7 @@ void EventSystem::createLocalReceiver(const std::string& topicName) {
 void EventSystem::publish(const std::string& topicName, const PropertySet::Ptr psp) {
     boost::shared_ptr<EventTransmitter> transmitter;
     if ((transmitter = getTransmitter(topicName)) == 0) {
-    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
     }
     transmitter->publish( psp);
 }
