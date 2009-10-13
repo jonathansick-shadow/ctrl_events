@@ -201,12 +201,31 @@ PropertySet::Ptr EventReceiver::receive(long timeout) {
     return _receive(timeout);
 }
 
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, int value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, float value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, double value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long long value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, const std::string& value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
+PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, int value, long timeout) 
+{ 
+    return _matchingReceiveTimeout(name, value, timeout); 
+}
+PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long value, long timeout)
+{
+     return _matchingReceiveTimeout(name, value, timeout); 
+}
+PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, float value, long timeout)
+{ 
+    return _matchingReceiveTimeout(name, value, timeout);
+}
+PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, double value, long timeout)
+{
+    return _matchingReceiveTimeout(name, value, timeout);
+}
+PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long long value, long timeout)
+{
+     return _matchingReceiveTimeout(name, value, timeout);
+}
+PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, const std::string& value, 
+                                                long timeout) 
+{
+    return _matchingReceiveTimeout(name, value, timeout);
+}
 
 /** \brief Receives events matching both the name and string value, with timeout (in milliseconds
   *        Waits until a matching event is received or until the timeout expires.
@@ -217,7 +236,9 @@ PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, const s
   * \throw throws Runtime exception if receive fails unexpectedly
   */
 template <typename T>
-PropertySet::Ptr EventReceiver::_matchingReceiveTimeout(const std::string& name, const T& value, long timeout) {
+PropertySet::Ptr EventReceiver::_matchingReceiveTimeout(const std::string& name, const T& value, 
+                                                        long timeout)
+{
     struct timeval tvStart;
     struct timezone tzStart;
     int sec, usec, total_usec, total_msec;
@@ -321,12 +342,31 @@ PropertySet::Ptr EventReceiver::_receive(long timeout) {
        return PropertySet::Ptr();
     }
 }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, int value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, float value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, double value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long long value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, const std::string& value) { return _matchingReceive(name, value); }
+
+PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, int value)
+{
+    return _matchingReceive(name, value);
+}
+
+PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long value) {
+    return _matchingReceive(name, value);
+}
+
+PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, float value) {
+    return _matchingReceive(name, value);
+}
+
+PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, double value) {
+    return _matchingReceive(name, value);
+}
+
+PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long long value) {
+    return _matchingReceive(name, value);
+}
+
+PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, const std::string& value) {
+    return _matchingReceive(name, value);
+}
 
 
 template <typename T>

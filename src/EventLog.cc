@@ -56,15 +56,16 @@ EventLog::EventLog(const std::string runId, int sliceId, const std::string hostI
   * \param hostId the name for this host.
   * \param threshold threshold  of this log. Default is threshold is Log::INFO
   */
-EventLog::EventLog(const std::string runId, int sliceId, const PropertySet::Ptr &preamble, const std::string hostId, int threshold) 
-    :  Log(threshold)
+EventLog::EventLog(const std::string runId, int sliceId, const PropertySet::Ptr &preamble, 
+                    const std::string hostId, int threshold) :  Log(threshold)
 {
     init(runId, sliceId, preamble, hostId, threshold);
 }
 
 /** private method to initialize from each constructor
   */
-void EventLog::init(const std::string runId, int sliceId, const PropertySet::Ptr &preamble, const std::string hostId, int threshold) 
+void EventLog::init(const std::string runId, int sliceId, const PropertySet::Ptr &preamble,
+                     const std::string hostId, int threshold) 
 {
 
     initThres(threshold);
@@ -106,12 +107,16 @@ void EventLog::initThres(int threshold)
   * \param hostId the name of this host
   * \param threshold the logging threshold to observe when sending log messages
   */
-void EventLog::createDefaultLog(const std::string runId, int sliceId, const std::string hostId, int threshold)  {
+void EventLog::createDefaultLog(const std::string runId, int sliceId, const std::string hostId, 
+                                int threshold)
+{
     PropertySet::Ptr psp;
     pexLogging::Log::setDefaultLog(new EventLog(runId, sliceId, psp, hostId, threshold));
 }
 
-void EventLog::createDefaultLog(const std::string runId, int sliceId, const PropertySet::Ptr& preamble, const std::string hostId, int threshold)  {
+void EventLog::createDefaultLog(const std::string runId, int sliceId, const PropertySet::Ptr& preamble,
+                                    const std::string hostId, int threshold)
+{
     pexLogging::Log::setDefaultLog(new EventLog(runId, sliceId, preamble, hostId, threshold));
 }
 

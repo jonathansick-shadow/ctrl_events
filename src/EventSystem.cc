@@ -49,7 +49,8 @@ void EventSystem::destroyTransmitter(const std::string& topicName) {
             return;
         } 
     }
-    throw LSST_EXCEPT(pexExceptions::NotFoundException, "could not find transmitter with specified topicName");
+    throw LSST_EXCEPT(pexExceptions::NotFoundException,
+                        "could not find transmitter with specified topicName");
 }
 
 void EventSystem::destroyReceiver(const std::string& topicName) {
@@ -103,16 +104,38 @@ EventSystem *EventSystem::defaultEventSystem = 0;
   * \param topicName the topic to transmit events to
   */ 
 void EventSystem::createTransmitter(const std::string& hostName, const std::string& topicName) {
-    boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(hostName, topicName));
-    _transmitters.push_back(transmitter);
+
+    boost::shared_ptr<EventTransmitter> transm;
+
+    if ((transm = getTransmitter(topicName)) == 0) {
+        boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(hostName, topicName));
+        _transmitters.push_back(transmitter);
+        return;
+    }
+    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException,
+                        "topic "+ topicName + " is already registered with EventSystem");
 }
 
 /** \brief create an EventTransmitter to send messages to the message broker
   * \param policy the Policy object to use to configure the EventTransmitter
   */
 void EventSystem::createTransmitter(const pexPolicy::Policy& policy) {
-    boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(policy));
-    _transmitters.push_back(transmitter);
+    std::string hostName;
+    std::string topicName;
+
+    try {
+        hostName = policy.getString("hostName");
+    } catch (pexPolicy::NameNotFound& e) {
+        throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostName was not specified in policy");
+    }
+
+    try {
+        topicName = policy.getString("topicName");
+    } catch (pexPolicy::NameNotFound& e) {
+        throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName was not specified in policy");
+    }
+
+    createTransmitter(hostName, topicName);
 }
 
 void EventSystem::createLocalTransmitter(const std::string& topicName) {
@@ -128,16 +151,37 @@ void EventSystem::createLocalTransmitter(const std::string& topicName) {
   * \param topicName the topic to receive messages from
   */
 void EventSystem::createReceiver(const std::string& hostName, const std::string& topicName) {
-    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, topicName));
-    _receivers.push_back(receiver);
+    boost::shared_ptr<EventReceiver> eventrecv;
+
+    if ((eventrecv = getReceiver(topicName)) == 0) {
+        boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, topicName));
+        _receivers.push_back(receiver);
+        return;
+    }
+    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException,
+                        "topic "+ topicName + " is already registered with EventSystem");
 }
 
 /** \brief create an EventReceiver to receive messages from the message broker
   * \param policy the Policy object to use to configure the EventReceiver
   */
 void EventSystem::createReceiver(const pexPolicy::Policy& policy) {
-    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(policy));
-    _receivers.push_back(receiver);
+    std::string hostName;
+    std::string topicName;
+
+    try {
+        hostName = policy.getString("hostName");
+    } catch (pexPolicy::NameNotFound& e) {
+        throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostName was not specified in policy");
+    }
+
+    try {
+        topicName = policy.getString("topicName");
+    } catch (pexPolicy::NameNotFound& e) {
+        throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName was not specified in policy");
+    }
+
+    createReceiver(hostName, topicName);
 }
 
 /** \brief create an EventReceiver that uses local sockets to communicate
@@ -160,7 +204,8 @@ void EventSystem::createLocalReceiver(const std::string& topicName) {
 void EventSystem::publish(const std::string& topicName, const PropertySet::Ptr psp) {
     boost::shared_ptr<EventTransmitter> transmitter;
     if ((transmitter = getTransmitter(topicName)) == 0) {
-        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException,
+                            "topic "+ topicName + " is not registered with EventSystem");
     }
     transmitter->publish( psp);
 }
@@ -174,7 +219,8 @@ void EventSystem::publish(const std::string& topicName, const PropertySet::Ptr p
 void EventSystem::publish(const std::string& topicName, const pexLogging::LogRecord& rec) {
     boost::shared_ptr<EventTransmitter> transmitter;
     if ((transmitter = getTransmitter(topicName)) == 0) {
-    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
+    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException,
+                        "topic "+ topicName + " is not registered with EventSystem");
     }
     transmitter->publish(rec);
 }
@@ -182,15 +228,14 @@ void EventSystem::publish(const std::string& topicName, const pexLogging::LogRec
 
 /** private method to retrieve a transmitter from the internal list
   */
-boost::shared_ptr<EventTransmitter> EventSystem::getTransmitter(const std::string& name) {
+boost::shared_ptr<EventTransmitter> EventSystem::getTransmitter(const std::string& topicName) {
     list<boost::shared_ptr<EventTransmitter> >::iterator i;
     for (i = _transmitters.begin(); i != _transmitters.end(); i++) {
-        if ((*i)->getTopicName() == name)
+        if ((*i)->getTopicName() == topicName)
             return *i;
     }
     return boost::shared_ptr<EventTransmitter>();
 }
-
 
 /** \brief blocking receive for events.  Waits until an event
   *        is received for the topic specified in the constructor
@@ -212,31 +257,44 @@ PropertySet::Ptr EventSystem::receive(const std::string& topicName) {
 PropertySet::Ptr EventSystem::receive(const std::string& topicName, const long timeout) {
     boost::shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
-    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
+    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, 
+                        "Topic "+ topicName +" is not registered with EventSystem");
     }
     return receiver->receive(timeout);
 }
 // TODO: roll this back into the Template, once the swig stuff is working properly
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const int value) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name,
+                                                const int value)
+{
     return _matchingReceive(topicName, name, value);
 }
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const long value) {
-    return _matchingReceive(topicName, name, value);
-}
-
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const float value) {
-    return _matchingReceive(topicName, name, value);
-}
-
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const double value) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name,
+                                                const long value)
+{
     return _matchingReceive(topicName, name, value);
 }
 
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const long long value) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, 
+                                                const float value)
+{
     return _matchingReceive(topicName, name, value);
 }
 
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const std::string& value) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name,
+                                                const double value)
+{
+    return _matchingReceive(topicName, name, value);
+}
+
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name,
+                                                const long long value)
+{
+    return _matchingReceive(topicName, name, value);
+}
+
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name,
+                                                const std::string& value)
+{
     return _matchingReceive(topicName, name, value);
 }
 
@@ -249,35 +307,50 @@ PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, cons
   * \return the matching PropertySet::Ptr object
   */
 template <typename T>
-PropertySet::Ptr EventSystem::_matchingReceive(const std::string& topicName, const std::string& name, const T& value) {
+PropertySet::Ptr EventSystem::_matchingReceive(const std::string& topicName, const std::string& name,
+                                                const T& value)
+{
     boost::shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
-    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
+    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException,
+                        "Topic "+ topicName +" is not registered with EventSystem");
     }
     return receiver->matchingReceive(name, value);
 }
 
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, int value, const long timeout) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name,
+                                                int value, const long timeout)
+{
     return _matchingReceive(topicName, name, value, timeout);
 }
 
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, long value, const long timeout) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name,
+                                                long value, const long timeout)
+{
     return _matchingReceive(topicName, name, value, timeout);
 }
 
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, double value, const long timeout) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name,
+                                                double value, const long timeout)
+{
     return _matchingReceive(topicName, name, value, timeout);
 }
 
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, float value, const long timeout) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name,
+                                                float value, const long timeout)
+{
     return _matchingReceive(topicName, name, value, timeout);
 }
 
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, long long value, const long timeout) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name,
+                                                long long value, const long timeout)
+{
     return _matchingReceive(topicName, name, value, timeout);
 }
 
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const std::string& value, const long timeout) {
+PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name,
+                                                const std::string& value, const long timeout)
+{
     return _matchingReceive(topicName, name, value, timeout);
 }
 
@@ -293,10 +366,13 @@ PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, cons
   *         or a null PropertySet::Ptr object on timeout expiration
   */
 template <typename T>
-PropertySet::Ptr EventSystem::_matchingReceive(const std::string& topicName, const std::string& name, const T& value, long timeout) {
+PropertySet::Ptr EventSystem::_matchingReceive(const std::string& topicName, const std::string& name,
+                                                const T& value, long timeout)
+{
     boost::shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
-    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
+    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException,
+                "Topic "+ topicName +" is not registered with EventSystem");
     }
     return receiver->matchingReceive(name, value, timeout);
 }

@@ -85,7 +85,8 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
     }
     if (_useLocalSockets == false) {
         if (!policy.exists("hostName")) {
-            throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostname must be specified with 'useLocalSockets' is false");
+            throw LSST_EXCEPT(pexExceptions::NotFoundException,
+                                "hostname must be specified with 'useLocalSockets' is false");
         }
     }
     std::string hostName;
