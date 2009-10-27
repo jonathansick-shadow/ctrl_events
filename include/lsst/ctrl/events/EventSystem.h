@@ -46,12 +46,20 @@ public:
     void createTransmitter(const std::string& hostName, 
                            const std::string& topicName);
 
+    void createTransmitter(const std::string& hostName, 
+                           const std::string& topicName,
+                           const PropertySet::Ptr& header);
+
     void createTransmitter(const pexPolicy::Policy& policy);
 
     void createLocalTransmitter(const std::string& topicName);
 
     void createReceiver(const std::string& hostName, 
                         const std::string& topicName);
+
+    void createReceiver(const std::string& hostName, 
+                        const std::string& topicName,
+                        const std::string& selector);
 
     void createReceiver(const pexPolicy::Policy& policy);
 
