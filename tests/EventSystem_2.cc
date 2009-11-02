@@ -39,16 +39,9 @@ int main() {
     } 
 
     p.set("topicName", "EventSystem_2_test");
-    p.set("useLocalSockets", false);
     try {
         eventSystem.createReceiver(p);
     } catch (NotFoundException&) { 
-    } 
-
-    p.set("useLocalSockets", true);
-    try {
-        eventSystem.createTransmitter(p);
-    } catch (RuntimeErrorException&) { 
     } 
 
     eventSystem.createReceiver("lsst8.ncsa.uiuc.edu", "EventSystem_2_test");

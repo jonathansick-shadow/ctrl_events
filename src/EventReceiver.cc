@@ -62,17 +62,9 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
         _turnEventsOff = false;
     }
 
-    try {
-        _useLocalSockets = policy.getBool("useLocalSockets");
-    } catch (pexPolicy::NameNotFound& e) {
-        _useLocalSockets = false;
-    }
-
-    if (_useLocalSockets == false) {
-        if (!policy.exists("hostName")) {
+   if (!policy.exists("hostName")) {
             throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostName was not specified in policy file");
-        }
-    }
+   }
 
 
     std::string hostName;
@@ -92,7 +84,6 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
   */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName) {
     _turnEventsOff = false;
-    _useLocalSockets = false;
     init(hostName, topicName, "");
 }
 
@@ -105,7 +96,6 @@ EventReceiver::EventReceiver(const std::string& hostName, const std::string& top
   */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector) {
     _turnEventsOff = false;
-    _useLocalSockets = false;
     init(hostName, topicName, selector);
 }
 
@@ -126,28 +116,6 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
     if (_turnEventsOff == true)
         return;
 
-    if (_useLocalSockets == true) {
-        struct sockaddr_un local;
-        _useLocalSockets = true;
-        _sock = socket(AF_UNIX, SOCK_STREAM, 0);
-        if (_sock == -1) {
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "couldn't create local socket");
-        }
-
-        // bzero(&local, sizeof(local));
-        memset(&local, 0, sizeof(local));
-        local.sun_family = AF_UNIX;
-
-        std::string unix_socket = "/tmp/"+topicName;
-
-        strcpy(local.sun_path,unix_socket.c_str());
-        unlink(local.sun_path);
-
-        int len = strlen(local.sun_path)+sizeof(local.sun_family)+1;
-        bind(_sock, (struct sockaddr *)&local, len);
-        listen(_sock, 5);
-        return;
-    }
     try {
 
         string jmsURL = "tcp://"+hostName+":61616?wireFormat=openwire";
@@ -191,13 +159,8 @@ PropertySet::Ptr EventReceiver::receive() {
 }
 
 PropertySet::Ptr EventReceiver::_receive() {
-    if (_useLocalSockets == false) {
-        const cms::TextMessage* textMessage =
-            dynamic_cast<const cms::TextMessage* >(_consumer->receive());
-            return processTextMessage(textMessage);
-    } else {
-        return _receive(infiniteTimeout);
-    }
+    const cms::TextMessage* textMessage = dynamic_cast<const cms::TextMessage* >(_consumer->receive());
+    return processTextMessage(textMessage);
 }
 
 
@@ -294,50 +257,14 @@ PropertySet::Ptr EventReceiver::_receive(long timeout) {
     if (_turnEventsOff == true)
         return PropertySet::Ptr();
 
-    if (_useLocalSockets == false) {
-        try {
-                const cms::TextMessage* textMessage =
-                    dynamic_cast<const cms::TextMessage* >(_consumer->receive(timeout));
-                    return processTextMessage(textMessage);
-        } catch (activemq::exceptions::ActiveMQException& e) {
-                throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
-        }
-    } else {
-        struct timeval tv;
-        fd_set readfds;
-
-        if (timeout >= 0) {
-                tv.tv_sec = (int)(timeout/1000);
-                tv.tv_usec = (int)((timeout-(tv.tv_sec*1000))*1000);
-        }
-
-        FD_ZERO(&readfds);
-        FD_SET(_sock, &readfds);
-
-        int select_val;
-        if (timeout == infiniteTimeout) {
-            select_val = select(_sock+1, &readfds, (fd_set *)0, (fd_set *)0, NULL);
-        } else {
-            select_val = select(_sock+1, &readfds, (fd_set *)0, (fd_set *)0, &tv);
-        }
-        if (select_val == 0) {
-            return PropertySet::Ptr();
-        } else if (select_val < 0) {
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "error on local socket select");
-            // return DataProperty::PtrType();
-        }
-
-        if (FD_ISSET(_sock, &readfds)) {
-            struct sockaddr_un remote;
-            int len = sizeof(struct sockaddr_un);
-            int remote_sock = accept(_sock, (struct sockaddr *)&remote, (socklen_t *)&len);
-            if (remote_sock < 0)
-                throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "error on local socket accept");
-            return processStandaloneMessage(remote_sock);
-        }
-       return PropertySet::Ptr();
+    try {
+        const cms::TextMessage* textMessage = dynamic_cast<const cms::TextMessage* >(_consumer->receive(timeout));
+        return processTextMessage(textMessage);
+    } catch (activemq::exceptions::ActiveMQException& e) {
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
     }
 }
+
 PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, int value) { return _matchingReceive(name, value); }
 PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long value) { return _matchingReceive(name, value); }
 PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, float value) { return _matchingReceive(name, value); }
@@ -534,11 +461,6 @@ std::string EventReceiver::getTopicName() {
 /** \brief destructor method
   */
 EventReceiver::~EventReceiver() {
-
-    if (_useLocalSockets == true) {
-        close(_sock);
-        return;
-    }
 
     // Destroy resources.
     try {

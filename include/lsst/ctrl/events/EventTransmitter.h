@@ -83,12 +83,6 @@ private:
 
     std::string _topic;
 
-    
-
-    // used to indicate "standalone mode", running without using the 
-    // ActiveMQ server
-    bool _useLocalSockets;
-
     // used to completely turn off event  transmission
     bool _turnEventsOff;
 

@@ -13,6 +13,7 @@
 #ifndef LSST_CTRL_EVENTS_H_
 #define LSST_CTRL_EVENTS_H_
 
+#include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/ctrl/events/EventReceiver.h"
 
