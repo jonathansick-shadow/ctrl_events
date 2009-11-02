@@ -17,6 +17,7 @@ Access to the lsst::ctrl::events classes
 #include "lsst/pex/logging/ScreenLog.h"
 #include "lsst/pex/logging/Debug.h"
 #include "lsst/pex/logging/DualLog.h"
+#include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/ctrl/events/EventReceiver.h"
 #include "lsst/ctrl/events/EventSystem.h"
@@ -49,6 +50,7 @@ namespace lsst {
 }
 %}
 
+%include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/EventTransmitter.h"
 %include "lsst/ctrl/events/EventReceiver.h"
 %include "lsst/ctrl/events/EventLog.h"

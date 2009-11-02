@@ -3,6 +3,7 @@ Import('env')
 
 env.SharedLibrary('ctrl_events', map(lambda str: "../src/" + str,
                             ["EventTransmitter.cc",
+                             "Event.cc",
                              "EventReceiver.cc",
                              "EventFormatter.cc",
                              "EventLog.cc",

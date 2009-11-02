@@ -37,16 +37,9 @@ int main() {
     } 
 
     p.set("topicName", "Events_1_test");
-    p.set("useLocalSockets", false);
     try {
         ctrlEvents::EventTransmitter et2(p);
     } catch (pexExceptions::NotFoundException&) { 
-    } 
-
-    p.set("useLocalSockets", true);
-    try {
-        ctrlEvents::EventTransmitter et3(p);
-    } catch (pexExceptions::RuntimeErrorException&) { 
     } 
 
     ctrlEvents::EventTransmitter et4("lsst8.ncsa.uiuc.edu", "Events_1_test");

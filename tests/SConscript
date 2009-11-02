@@ -15,6 +15,7 @@ import os
 
 tests = lsst.tests.Control(env, verbose=True)
 
+tests.run("Event.py")
 tests.run("Events_1.cc")
 tests.run("Events_2.cc")
 tests.run("Events_3.py")
