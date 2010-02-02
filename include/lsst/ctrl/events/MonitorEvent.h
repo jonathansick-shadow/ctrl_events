@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "lsst/ctrl/event/Event.h"
+#include "lsst/ctrl/events/Event.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
@@ -41,12 +41,12 @@ namespace events {
  * @brief Representation of an LSST Event
  */
 
-class LogEvent : public Event
+class MonitorEvent : public Event
 {
 public:
-    LogEvent(const std::string& runid, const pexLogging::LogRecord& rec);
+    MonitorEvent(const std::string& runid, const pexLogging::LogRecord& rec);
 
-    ~LogEvent();
+    ~MonitorEvent();
 
     int getLevel();
     std::string getLog();

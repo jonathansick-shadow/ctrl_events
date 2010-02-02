@@ -21,7 +21,7 @@
 #include <netdb.h>
 #include <string.h>
 
-#include "lsst/ctrl/events/LogEvent.h"
+#include "lsst/ctrl/events/MonitorEvent.h"
 #include "lsst/daf/base/DateTime.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
@@ -42,7 +42,7 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-MonitorEvent::MonitorEvent(const std::string& runId, const pexLogging::LogRecord& rec) {
+MonitorEvent::MonitorEvent(const std::string& runId, const pexLogging::LogRecord& rec) : Event(runId, rec.getProperties()) {
     Event::init(runId);
 }
 
