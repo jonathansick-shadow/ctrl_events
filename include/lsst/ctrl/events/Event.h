@@ -47,6 +47,7 @@ namespace events {
 class Event
 {
 public:
+    Event(const std::string& runid, const PropertySet& ps);
     Event(const std::string& runid, const PropertySet::Ptr& ps);
 
     ~Event();
@@ -63,8 +64,7 @@ public:
 
     std::string getTopic();
 
-    /* XXX ? */
-    void getCustomPropertyNames();
+    vector<std::string> getCustomPropertyNames();
     void setEventTime(long t);
 
 private:
@@ -78,13 +78,15 @@ private:
 
     long _eventTime;
     std::string _hostId;
-    long _pubTime;
     std::string _runId;
     std::string _status;
     std::string _topic;
+    long _pubTime;
 
     PropertySet::Ptr _psp;
 
+protected:
+    void init(const std::string& runId);
 };
 }
 }

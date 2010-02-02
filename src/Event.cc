@@ -42,15 +42,18 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-Event::Event( const std::string& runId, const PropertySet::Ptr& psp) {
+Event::Event( const std::string& runId, const PropertySet& ps) {
+    init(runId);
+    _psp = ps.deepCopy();
+}
+
+void Event::init(const std::string& runId) {
     _runId = runId;
     _hostId = getIPAddr();
     _status = std::string("undefined");
     _topic = std::string("unpublished");
     _type = std::string("unknown");
     _pubTime = 0L;
-
-    _psp = psp;
 
     _eventTime = currentTime();
 }
@@ -74,8 +77,9 @@ std::string Event::getType() {
     return std::string("unknown");
 }
 
-void Event::getCustomPropertyNames() {
-    return;
+vector<std::string> Event::getCustomPropertyNames() {
+    vector <std::string> strings(2);
+    return strings;
 }
 
 std::string Event::getDate() {

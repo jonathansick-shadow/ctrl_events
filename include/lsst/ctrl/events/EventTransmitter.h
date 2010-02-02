@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include "lsst/ctrl/events/Event.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
@@ -48,9 +49,10 @@ public:
     EventTransmitter(const pexPolicy::Policy& policy);
 
     EventTransmitter(const std::string& hostName, const std::string& topicName);
-    EventTransmitter(const std::string& hostName, const std::string& topicName, const PropertySet::Ptr& header);
+
     ~EventTransmitter();
 
+    void publish(Event& event);
     void publish(const PropertySet::Ptr& psp);
     void publish(const PropertySet& ps);
 
@@ -61,10 +63,11 @@ public:
     void publish(const std::string& type, const PropertySet& ps);
 
 private:
-    // void init( const std::string& hostName, const std::string& topicName);
-    void init( const std::string& hostName, const std::string& topicName, const PropertySet::Ptr& header);
+    void init( const std::string& hostName, const std::string& topicName);
 
     std::string marshall(const PropertySet& ds);
+
+    long getCurrentTime();
 
     // Connection to JMS broker
     cms::Connection* _connection;
@@ -89,8 +92,6 @@ private:
     // socket for "standalone mode"
     int _sock;
 
-protected:
-    PropertySet::Ptr _header;
 };
 }
 }

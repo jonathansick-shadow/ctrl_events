@@ -14,6 +14,7 @@
 #include <limits>
 #include <cstring>
 
+#include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/daf/base/DateTime.h"
 #include "lsst/daf/base/PropertySet.h"
@@ -62,7 +63,6 @@ namespace events {
   * \throw throws RuntimeErrorException if connection to transport mechanism fails
   */
 EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
-    PropertySet::Ptr psp(new PropertySet);
 
     try {
         _turnEventsOff = policy.getBool("turnEventsoff");
@@ -82,7 +82,7 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
     } catch (pexPolicy::NameNotFound& e) {
         throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostName not found in policy");
     }
-    init(hostName, policy.getString("topicName"), psp);
+    init(hostName, policy.getString("topicName"));
 }
 
 /** \brief Transmits events to the specified host and topic
@@ -95,30 +95,21 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
   */
 EventTransmitter::EventTransmitter( const std::string& hostName,
                                     const std::string& topicName) {
-    PropertySet::Ptr psp(new PropertySet);
     _turnEventsOff = false;
-    init(hostName, topicName, psp);
-}
-
-EventTransmitter::EventTransmitter( const std::string& hostName,
-                                    const std::string& topicName,
-                                    const PropertySet::Ptr&  header) {
-    _turnEventsOff = false;
-    init(hostName, topicName, header);
+    init(hostName, topicName);
 }
 
 
 /** private initialization method for configuring EventTransmitter
   */
 void EventTransmitter::init( const std::string& hostName,
-                                    const std::string& topicName,
-                            const PropertySet::Ptr& header) {
+                                    const std::string& topicName) {
+
     _connection = NULL;
     _session = NULL;
     _destination = NULL;
     _producer = NULL;
     _topic = topicName;
-    _header = header;
 
     if (_turnEventsOff == true)
         return;
@@ -182,10 +173,92 @@ void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
     publish("logging", ps);
 }
 
+void EventTransmitter::publish(Event& event) {
+    if (_session == 0)
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Not connected to event server");
+
+    std::ostringstream payload;
+
+    // Sending the message to the ActiveMQ server
+    cms::TextMessage* message = _session->createTextMessage();
+
+    message->setCMSType(event.getType());
+
+    message->setStringProperty("hostId",event.getHostId());
+    message->setStringProperty("runId",event.getRunId());
+    message->setStringProperty("status",event.getStatus());
+    message->setStringProperty("topic",_topic);
+    message->setLongProperty("eventTime",getCurrentTime());
+
+    // delete marshall line below
+    // std::string payload = marshall(ps);
+
+    PropertySet::Ptr psp = event.getPropertySet();
+
+    if (psp != 0) {
+        std::vector<std::string> v = psp->paramNames(false);
+        unsigned int i;
+        // XXX - there's probably a way to get the first element, not the array.  fix this.
+        for (i = 0; i < v.size(); i++) {
+            std::string name = v[i];
+            if (psp->typeOf(name) == typeid(std::string)) {
+                /*
+                std::vector<std::string> vec  = psp->getArray<std::string>(name);
+                std::vector<std::string>::iterator iter;
+                iter = vec.begin();
+                message->setStringProperty(name, *iter);
+                */
+                std::string data = psp->get<std::string>(name);
+                message->setStringProperty(name, data);
+                payload << "string|"<< name << ";";
+            } else if (psp->typeOf(name) == typeid(bool)) {
+                bool data = psp->get<bool>(name);
+                message->setBooleanProperty(name, data);
+                payload << "bool|"<< name << ";";
+            } else if (psp->typeOf(name) == typeid(unsigned char)) {
+                unsigned char data = psp->get<unsigned char>(name);
+                message->setByteProperty(name, data);
+                payload << "unsigned char|"<< name << ";";
+            } else if (psp->typeOf(name) == typeid(int)) {
+                int data = psp->get<int>(name);
+                message->setIntProperty(name, data);
+                payload << "int|"<< name << ";";
+            } else if (psp->typeOf(name) == typeid(float)) {
+                float data = psp->get<float>(name);
+                message->setFloatProperty(name, data);
+                payload << "float|"<< name << ";";
+            } else if (psp->typeOf(name) == typeid(long long)) {
+                long long data = psp->get<long long>(name);
+                message->setLongProperty(name, data);
+                payload << "long long|"<< name << ";";
+            } else if (psp->typeOf(name) == typeid(short)) {
+                short data = psp->get<short>(name);
+                message->setShortProperty(name, data);
+                payload << "short|"<< name << ";";
+            } else if (psp->typeOf(name) == typeid(double)) {
+                double data = psp->get<double>(name);
+                message->setDoubleProperty(name, data);
+                payload << "double|"<< name << ";";
+            }
+        }
+
+    }
+}
+
+long EventTransmitter::getCurrentTime() {
+    struct timeval tv;
+    long currentTime;
+
+    gettimeofday(&tv,0);
+    currentTime = (tv.tv_sec *1000000 + tv.tv_usec)*1000;
+    return currentTime;
+}
+
+
+
 /** private method used to send event out on the wire.
   */
 void EventTransmitter::publish(const std::string& type, const PropertySet& ps) {
-    // send the marshalled message to the local socket
 
     if (_session == 0)
         throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Not connected to event server");
@@ -195,6 +268,7 @@ void EventTransmitter::publish(const std::string& type, const PropertySet& ps) {
     message->setCMSType(type);
     std::string payload = marshall(ps);
 
+#ifdef NOTDEF
     // add the message header, if there is one.
     if (_header != 0) {
         std::vector<std::string> v = _header->paramNames(false);
@@ -231,6 +305,7 @@ void EventTransmitter::publish(const std::string& type, const PropertySet& ps) {
         }
 
     }
+#endif
 
     message->setText(payload);
     _producer->send( message );

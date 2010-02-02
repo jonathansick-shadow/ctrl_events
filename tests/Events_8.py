@@ -10,10 +10,8 @@ import time
 #
 # sendEvent() - shoot an event to a host on a certain topic
 #
-def sendEvent(hostName, topicName, ps, id):
-    header = base.PropertySet()
-    header.addString("runid",id);
-    trans = events.EventTransmitter(hostName, topicName, header)
+def sendEvent(hostName, topicName, ps):
+    trans = events.EventTransmitter(hostName, topicName)
     
     trans.publish(ps)
 
@@ -31,38 +29,37 @@ if __name__ == "__main__":
     p = policy.Policy()
     host = "lsst8.ncsa.uiuc.edu"
     topic = "test_events_5"
-    recv = events.EventReceiver(host, topic, "runid = 'srp200'")
-    recv2 = events.EventReceiver(host, topic)
-
-
-    # Integer tests
-
-    #
-    # send two test events, first PID ==  400, then PID == 300, then PID == 200
-    #
-    sendEvent(host, topic, createIntProperty("PID", 400), "srp199")
-    sendEvent(host, topic, createIntProperty("PID", 300), "srp200")
-    sendEvent(host, topic, createIntProperty("PID", 200), "srp201")
-
-    #
-    # wait for the srp201 event
-    #
-    val = recv.receive()
-
-    assert val != None
-
-    #
-    # shouldn't receive any others on this topic for this receiver
-    #
-    val = recv.receive(1000)
-    assert val == None
-
-    # recv2 should receive all three messages
-    val = recv2.receive()
-    assert val != None
-
-    val = recv2.receive()
-    assert val != None
-
-    val = recv2.receive()
-    assert val != None
+#    recv = events.EventReceiver(host, topic, "runId = 'srp201'")
+#    recv2 = events.EventReceiver(host, topic)
+#
+#
+#    # Integer tests
+#
+#    #
+#    # send two test events, first PID ==  400, then PID == 300, then PID == 200
+#    #
+#    sendEvent(host, topic, createStringProperty("runId", "srp199"))
+#    sendEvent(host, topic, createStringProperty("runId", "srp200"))
+#    sendEvent(host, topic, createStringProperty("runId", "srp201"))
+#
+#    #
+#    # wait for the srp201 event
+#    #
+#    val = recv.receive()
+#    assert val != None
+#
+#    #
+#    # shouldn't receive any others on this topic for this receiver
+#    #
+#    val = recv.receive(1000)
+#    assert val == None
+#
+#    # recv2 should receive all three messages
+#    val = recv2.receive(1000)
+#    assert val != None
+#
+#    val = recv2.receive(1000)
+#    assert val != None
+#
+#    val = recv2.receive(1000)
+#    assert val != None

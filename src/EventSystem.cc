@@ -60,16 +60,6 @@ void EventSystem::createTransmitter(const std::string& hostName, const std::stri
 }
 
 /** \brief create an EventTransmitter to send messages to the message broker
-  * \param hostName the location of the message broker to use
-  * \param topicName the topic to transmit events to
-  * \param header a propertySet of header information to filter on.
-  */ 
-void EventSystem::createTransmitter(const std::string& hostName, const std::string& topicName, const PropertySet::Ptr& header) {
-    boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(hostName, topicName, header));
-    _transmitters.push_back(transmitter);
-}
-
-/** \brief create an EventTransmitter to send messages to the message broker
   * \param policy the Policy object to use to configure the EventTransmitter
   */
 void EventSystem::createTransmitter(const pexPolicy::Policy& policy) {
@@ -97,6 +87,7 @@ void EventSystem::createReceiver(const std::string& hostName, const std::string&
 /** \brief create an EventReceiver which will receive message
   * \param hostName the location of the message broker to use
   * \param topicName the topic to receive messages from
+  * \param selector the message selector to specify which messages to receive
   */
 void EventSystem::createReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector) {
     boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, topicName, selector));
