@@ -48,7 +48,7 @@ class Event
 {
 public:
     Event(const std::string& runid, const PropertySet& ps);
-    Event(const std::string& runid, const PropertySet::Ptr& ps);
+    // Event(const std::string& runid, const PropertySet::Ptr& ps);
 
     ~Event();
 
