@@ -22,6 +22,7 @@
 #include "lsst/pex/logging/LogRecord.h"
 #include <sys/socket.h>
 #include <sys/un.h>
+#include "lsst/ctrl/events/EventLibrary.h"
 
 #include <activemq/core/ActiveMQConnectionFactory.h>
 #include <activemq/exceptions/ActiveMQException.h>
@@ -44,6 +45,8 @@ namespace events {
   */
 
 EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
+    EventLibrary().initializeLibrary();
+
     try {
         _turnEventsOff = policy.getBool("turnEventsOff");
     } catch (pexPolicy::NameNotFound& e) {
@@ -91,6 +94,8 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
   * \throw throws Runtime exception if connection fails to initialize
   */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName) {
+    EventLibrary().initializeLibrary();
+
     _turnEventsOff = false;
     _useLocalSockets = false;
     init(hostName, topicName);
@@ -174,10 +179,10 @@ PropertySet::Ptr EventReceiver::receive() {
 }
 
 PropertySet::Ptr EventReceiver::_receive() {
+    std::cout << "_receive() called" << std::endl;
     if (_useLocalSockets == false) {
-        const cms::TextMessage* textMessage =
-            dynamic_cast<const cms::TextMessage* >(_consumer->receive());
-            return processTextMessage(textMessage);
+        const cms::TextMessage* textMessage = dynamic_cast<const cms::TextMessage* >(_consumer->receive());
+        return processTextMessage(textMessage);
     } else {
         return _receive(infiniteTimeout);
     }

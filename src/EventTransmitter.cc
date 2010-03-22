@@ -23,6 +23,7 @@
 #include "lsst/pex/logging/LogRecord.h"
 #include <sys/socket.h>
 #include <sys/un.h>
+#include "lsst/ctrl/events/EventLibrary.h"
 
 #include <activemq/core/ActiveMQConnectionFactory.h>
 
@@ -66,6 +67,8 @@ namespace events {
   * \throw throws RuntimeErrorException if connection to transport mechanism fails
   */
 EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
+    EventLibrary().initializeLibrary();
+
     try {
         _turnEventsOff = policy.getBool("turnEventsoff");
     } catch (pexPolicy::NameNotFound& e) {
@@ -107,6 +110,8 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
   */
 EventTransmitter::EventTransmitter( const std::string& hostName,
                                     const std::string& topicName) {
+    EventLibrary().initializeLibrary();
+
     _turnEventsOff = false;
     _useLocalSockets = false;
     init(hostName, topicName);
@@ -118,9 +123,10 @@ void EventTransmitter::init( const std::string& hostName,
                                     const std::string& topicName) {
     _connection = NULL;
     _session = NULL;
-    _destination = NULL;
+    // _destination = NULL;
     _producer = NULL;
-    _topic = topicName;
+    _topicName = topicName;
+    _topic = NULL;
 
     if (_turnEventsOff == true)
         return;
@@ -137,7 +143,7 @@ void EventTransmitter::init( const std::string& hostName,
             throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "failed to open local socket");
         }
         remote.sun_family = AF_UNIX;
-        std::string unix_socket = "/tmp/"+_topic;
+        std::string unix_socket = "/tmp/"+_topicName;
         strcpy(remote.sun_path, unix_socket.c_str());
         len = strlen(remote.sun_path)+sizeof(remote.sun_family)+1;
 
@@ -169,10 +175,13 @@ void EventTransmitter::init( const std::string& hostName,
         _session = _connection->createSession( cms::Session::AUTO_ACKNOWLEDGE );
 
         // Create the destination topic
-        _destination = _session->createTopic( topicName );
+        //_destination = _session->createTopic( topicName );
+
+        // Create Topic
+        _topic = new activemq::commands::ActiveMQTopic(_topicName);
 
         // Create a MessageProducer from the Session to the Topic or Queue
-        _producer = _session->createProducer( _destination );
+        _producer = _session->createProducer(NULL);
         _producer->setDeliveryMode( cms::DeliveryMode::NON_PERSISTENT );
     } catch ( cms::CMSException& e ) {
         throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
@@ -237,7 +246,7 @@ void EventTransmitter::publish(const std::string& type, const PropertySet& ps) {
     std::string payload = marshall(ps);
 
     message->setText(payload);
-    _producer->send( message );
+    _producer->send(_topic, message );
 
     delete message;
 }
@@ -297,7 +306,7 @@ std::string EventTransmitter::marshall(const PropertySet& ps) {
 /** \brief get the topic name of this EventTransmitter
   */
 std::string EventTransmitter::getTopicName() {
-    return _topic;
+    return _topicName;
 }
 
 /** \brief Destructor for EventTransmitter
@@ -309,6 +318,7 @@ EventTransmitter::~EventTransmitter() {
         return;
     }
 
+/*
     // Destroy resources.
     try {
         if( _destination != NULL )
@@ -317,6 +327,7 @@ EventTransmitter::~EventTransmitter() {
         e.printStackTrace();
     }
     _destination = NULL;
+*/
 
     try {
         if( _producer != NULL )

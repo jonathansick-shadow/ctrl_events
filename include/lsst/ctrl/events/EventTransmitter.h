@@ -12,6 +12,7 @@
 #ifndef LSST_CTRL_EVENTS_EVENTTRANSMITTER_H
 #define LSST_CTRL_EVENTS_EVENTTRANSMITTER_H
 
+#include <activemq/commands/ActiveMQTopic.h>
 #include <cms/Connection.h>
 #include <cms/Session.h>
 #include <cms/TextMessage.h>
@@ -77,7 +78,8 @@ private:
     // internal info about how to contact JMS
     std::string _brokerUri;
 
-    std::string _topic;
+    activemq::commands::ActiveMQTopic* _topic;
+    std::string _topicName;
 
     // used to indicate "standalone mode", running without using the 
     // ActiveMQ server

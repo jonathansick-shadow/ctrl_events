@@ -18,6 +18,7 @@
 #include "lsst/pex/exceptions.h"
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventSystem.h"
+#include "lsst/ctrl/events/EventLibrary.h"
 
 namespace pexLogging =lsst::pex::logging;
 namespace pexExceptions =lsst::pex::exceptions;
@@ -33,6 +34,7 @@ namespace events {
   *        the topic to receive from or send on.
   */
 EventSystem::EventSystem() {
+    EventLibrary().initializeLibrary();
 }
 
 /** \brief destructor
