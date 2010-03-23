@@ -15,6 +15,7 @@
 #include <cstring>
 
 #include "lsst/ctrl/events/EventTransmitter.h"
+#include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/daf/base/DateTime.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
@@ -43,14 +44,14 @@ namespace events {
   * The Policy object is checked for four keywords:
   *
   * topicName - the name of the topic to send to       
-  * useLocalSockets - use UNIX domain sockets, instead of the JMS daemon
-  * hostname - the name of the host hosting the JMS daemon
+  * hostName - the name of the host hosting the event broker
+  * hostPort - the port the event broker is listening on 
   * turnEventsOff - turn off event transmission
   *
   * Defaults are:
   *
-  * useLocalSockets = false
   * turnEventsOff = false
+  * hostPort = EventSystem::DEFAULTHOSTPORT
   * 
   * The dependencies for these keywords are as follows:
   *
@@ -59,14 +60,13 @@ namespace events {
   *
   * 2) If no topicName is specified, a NotFound exception is thrown
   *
-  * 3) If useLocalSockets is false, and no hostName is specified, a
-  * NotFound exception is thrown
-  *
   * \param policy the policy object to use when building the receiver
   * \throw throws NotFoundException if expected keywords are missing in Policy object
   * \throw throws RuntimeErrorException if connection to transport mechanism fails
   */
 EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
+    int hostPort;
+
     EventLibrary().initializeLibrary();
 
     try {
@@ -81,23 +81,19 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
         throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName not found in policy");
     }
 
-    try {
-        _useLocalSockets = policy.getBool("useLocalSockets");
-    } catch (pexPolicy::NameNotFound& e) {
-        _useLocalSockets = false;
-    }
-    if (_useLocalSockets == false) {
-        if (!policy.exists("hostName")) {
-            throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostname must be specified with 'useLocalSockets' is false");
-        }
-    }
     std::string hostName;
     try {
         hostName = policy.getString("hostName");
     } catch (pexPolicy::NameNotFound& e) {
-        hostName = ""; 
+        throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostName not found in policy");
     }
-    init(hostName, policy.getString("topicName"));
+
+    try {
+        hostPort = policy.getInt("hostPort");
+    } catch (pexPolicy::NameNotFound& e) {
+        hostPort = EventSystem::DEFAULTHOSTPORT;
+    }
+    init(hostName, hostPort, policy.getString("topicName"));
 }
 
 /** \brief Transmits events to the specified host and topic
@@ -108,19 +104,32 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
   * \throw throws RuntimeErrorException if connect to local socket fails
   * \throw throws RuntimeErrorException if connect to remote ActiveMQ host fails
   */
-EventTransmitter::EventTransmitter( const std::string& hostName,
-                                    const std::string& topicName) {
+EventTransmitter::EventTransmitter( const std::string& hostName, const std::string& topicName) {
     EventLibrary().initializeLibrary();
 
     _turnEventsOff = false;
-    _useLocalSockets = false;
-    init(hostName, topicName);
+    init(hostName, EventSystem::DEFAULTHOSTPORT, topicName);
+}
+
+/** \brief Transmits events to the specified host and topic
+  *
+  * \param hostName the machine hosting the message broker
+  * \param hostPort the port number which the message broker is listening to
+  * \param topicName the topic to transmit events to
+  * \throw throws RuntimeErrorException if local socket can't be created
+  * \throw throws RuntimeErrorException if connect to local socket fails
+  * \throw throws RuntimeErrorException if connect to remote ActiveMQ host fails
+  */
+EventTransmitter::EventTransmitter( const std::string& hostName, const int hostPort, const std::string& topicName) {
+    EventLibrary().initializeLibrary();
+
+    _turnEventsOff = false;
+    init(hostName, hostPort, topicName);
 }
 
 /** private initialization method for configuring EventTransmitter
   */
-void EventTransmitter::init( const std::string& hostName,
-                                    const std::string& topicName) {
+void EventTransmitter::init( const std::string& hostName, const int hostPort, const std::string& topicName) {
     _connection = NULL;
     _session = NULL;
     // _destination = NULL;
@@ -131,38 +140,17 @@ void EventTransmitter::init( const std::string& hostName,
     if (_turnEventsOff == true)
         return;
 
-    // If the _useLocalSockets flag is set, create a Unix domain
-    // socket using the topic name to transmit events
-
-    if (_useLocalSockets == true) {
-        int len;
-        struct sockaddr_un remote;
-
-        _sock = socket(AF_UNIX, SOCK_STREAM, 0);
-        if (_sock == -1) {
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "failed to open local socket");
-        }
-        remote.sun_family = AF_UNIX;
-        std::string unix_socket = "/tmp/"+_topicName;
-        strcpy(remote.sun_path, unix_socket.c_str());
-        len = strlen(remote.sun_path)+sizeof(remote.sun_family)+1;
-
-        if (connect(_sock, (struct sockaddr *)&remote, len) == -1) {
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "could not connect to local socket");
-        }
-
-        return;
-    }
-
     // set up a connection to the ActiveMQ server for message transmission
     try {
+        std::stringstream ss;
+
+        ss << hostPort;
 
         /*
          * Create a ConnectionFactory to connect to hostName, and
          * create a topic for this.
          */
-        string brokerUri = "tcp://"+hostName+
-                      ":61616?wireFormat=openwire&transport.useAsyncSend=true";
+        string brokerUri = "tcp://"+hostName+":"+ss.str()+"?wireFormat=openwire&transport.useAsyncSend=true";
 
         activemq::core::ActiveMQConnectionFactory* connectionFactory =
             new activemq::core::ActiveMQConnectionFactory( brokerUri );
@@ -173,12 +161,13 @@ void EventTransmitter::init( const std::string& hostName,
         delete connectionFactory;
 
         _session = _connection->createSession( cms::Session::AUTO_ACKNOWLEDGE );
-
+       
         // Create the destination topic
         //_destination = _session->createTopic( topicName );
 
         // Create Topic
         _topic = new activemq::commands::ActiveMQTopic(_topicName);
+        
 
         // Create a MessageProducer from the Session to the Topic or Queue
         _producer = _session->createProducer(NULL);
@@ -219,23 +208,6 @@ void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
 /** private method used to send event out on the wire.
   */
 void EventTransmitter::publish(const std::string& type, const PropertySet& ps) {
-    // send the marshalled message to the local socket
-
-    if (_useLocalSockets == true) {
-        std::string str = marshall(ps);
-        int str_len = strlen(str.c_str());
-
-        // length of buffer
-        if (send(_sock, &str_len, 4, 0) == -1) {
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "couldn't send message on local socket");
-        }
-
-        // buffer
-        if (send(_sock, str.c_str(), str_len, 0) == -1) {
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "couldn't send message on local socket");
-        }
-        return;
-    }
 
     if (_session == 0)
         throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Not connected to event server");
@@ -312,11 +284,6 @@ std::string EventTransmitter::getTopicName() {
 /** \brief Destructor for EventTransmitter
   */
 EventTransmitter::~EventTransmitter() {
-
-    if (_useLocalSockets == true) {
-        close(_sock);
-        return;
-    }
 
 /*
     // Destroy resources.

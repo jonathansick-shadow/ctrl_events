@@ -8,4 +8,5 @@ env.SharedLibrary('ctrl_events', map(lambda str: "../src/" + str,
                              "EventLog.cc",
                              "EventSystem.cc",
                              "EventLibrary.cc",
+                             "Event.cc",
                              ]), LIBS=env.getlibs("boost pex_policy pex_exceptions pex_logging daf_base utils activemqcpp") )

@@ -45,12 +45,6 @@ int main() {
     } catch (NotFoundException&) { 
     } 
 
-    p.set("useLocalSockets", true);
-    try {
-        eventSystem.createTransmitter(p);
-    } catch (RuntimeErrorException&) { 
-    } 
-
     eventSystem.createReceiver("lsst8.ncsa.uiuc.edu", "EventSystem_2_test");
 
 }

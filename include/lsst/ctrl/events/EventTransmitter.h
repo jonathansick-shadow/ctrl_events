@@ -16,12 +16,11 @@
 #include <cms/Connection.h>
 #include <cms/Session.h>
 #include <cms/TextMessage.h>
-#include <cms/MapMessage.h>
-#include <cms/BytesMessage.h>
 
 #include <stdlib.h>
 #include <iostream>
 
+#include "lsst/ctrl/events/Event.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
@@ -47,19 +46,20 @@ public:
     EventTransmitter(const pexPolicy::Policy& policy);
 
     EventTransmitter(const std::string& hostName, const std::string& topicName);
+    EventTransmitter(const std::string& hostName, int hostPort, const std::string& topicName);
     ~EventTransmitter();
 
     void publish(const PropertySet::Ptr& psp);
     void publish(const PropertySet& ps);
-
     void publish(const pexLogging::LogRecord& rec);
+    void publish(const std::string& type, const PropertySet& ps);
 
     std::string getTopicName();
 
-    void publish(const std::string& type, const PropertySet& ps);
+    // void publishEvent(const Event& event);
 
 private:
-    void init( const std::string& hostName, const std::string& topicName);
+    void init( const std::string& hostName, const int port, const std::string& topicName);
 
     std::string marshall(const PropertySet& ds);
 
@@ -81,15 +81,9 @@ private:
     activemq::commands::ActiveMQTopic* _topic;
     std::string _topicName;
 
-    // used to indicate "standalone mode", running without using the 
-    // ActiveMQ server
-    bool _useLocalSockets;
-
     // used to completely turn off event  transmission
     bool _turnEventsOff;
 
-    // socket for "standalone mode"
-    int _sock;
 };
 }
 }
