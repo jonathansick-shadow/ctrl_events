@@ -14,6 +14,7 @@
 #include <limits>
 #include <cstring>
 
+#include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/daf/base/DateTime.h"
@@ -203,6 +204,26 @@ void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
     const PropertySet& ps = rec.getProperties();
 
     publish("logging", ps);
+}
+
+void EventTransmitter::publishEvent(Event* event) {
+    PropertySet::Ptr psp;
+    cms::TextMessage* message = _session->createTextMessage();
+
+    // since we can only create TextMessage objects via a Session,
+    // create the object, and pass it to the Event to be populated.
+    // The event, knowing the type that it is, can populate the
+    // message properly itself.
+    event->populateHeader(message);
+    message->setStringProperty("TOPIC", _topicName);
+    message->setLongProperty("PUBTIME", time(0));
+
+    psp = event->getPropertySet();
+    std::string payload = marshall(*psp);
+    message->setText(payload);
+
+    _producer->send(_topic, message);
+    delete message;
 }
 
 /** private method used to send event out on the wire.

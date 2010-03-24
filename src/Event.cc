@@ -42,12 +42,16 @@ namespace events {
   * \throw throws NotFoundException if expected keywords are missing a property set
   */
 Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
+    // PropertySet::Ptr internalPsp(new PropertySet);
+
     char hostname[HOST_NAME_MAX];
     struct hostent *hostEntry;
     if (!psp->exists("status"))
         throw LSST_EXCEPT(pexExceptions::NotFoundException, "'status' not found in PropertySet");
-    else
+    else {
         _status = psp->get<std::string>("status");
+        psp->add("status", _status);
+        }
 
     _eventTime = time(0); // current time in ns
     gethostname(hostname, HOST_NAME_MAX);
@@ -61,6 +65,65 @@ Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
     // _pubTime is filled in on publish
     _psp = psp;
     
+    _pubTime = 0L;
+}
+
+void Event::populateHeader(cms::Message* msg) {
+    msg->setStringProperty("TYPE", _type);
+    msg->setLongProperty("EVENTTIME", _eventTime);
+    msg->setStringProperty("HOSTID", _hostId);
+    msg->setStringProperty("RUNID", _runId);
+    msg->setStringProperty("STATUS", _status);
+}
+
+std::string Event::getDate() {
+    return "time";
+}
+
+PropertySet::Ptr Event::getPropertySet() {
+    return _psp;
+}
+
+long Event::getPubTime() {
+    return _pubTime;
+}
+
+std::string Event::getPubDate() {
+    std::string pubDate;
+    return pubDate;
+}
+
+
+std::string Event::getHostId() {
+    return _hostId;
+}
+
+std::string Event::getRunId() {
+    return _runId;
+}
+
+std::string Event::getType() {
+    return _type;
+}
+
+std::string Event::getStatus() {
+    return _status;
+}
+
+void Event::setTopic(std::string topic) {
+    _topic = topic;
+}
+
+std::string Event::getTopic() {
+    return _topic;
+}
+void Event::setEventTime(long t) {
+    _pubTime = t;
+}
+
+vector<std::string> Event::getCustomPropertyNames() {
+    vector<std::string> names;
+    return names;
 }
 
 /** \brief destructor

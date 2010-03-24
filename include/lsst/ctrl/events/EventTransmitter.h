@@ -56,7 +56,7 @@ public:
 
     std::string getTopicName();
 
-    // void publishEvent(const Event& event);
+    void publishEvent(Event* event);
 
 private:
     void init( const std::string& hostName, const int port, const std::string& topicName);

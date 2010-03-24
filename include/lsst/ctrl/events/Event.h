@@ -14,6 +14,7 @@
 
 #include <cms/Connection.h>
 #include <cms/Session.h>
+#include <cms/Message.h>
 
 #include <stdlib.h>
 #include <iostream>
@@ -48,7 +49,6 @@ public:
     ~Event();
 
     // StringArray getCustomPropertyNames()
-/*
     std::string getDate();
     PropertySet::Ptr getPropertySet();
     std::string getPubDate();
@@ -58,20 +58,17 @@ public:
     std::string getType();
     std::string getStatus();
 
+    void setTopic(std::string topic);
     std::string getTopic();
 
     vector<std::string> getCustomPropertyNames();
     void setEventTime(long t);
-*/
+
+    void populateHeader(cms::Message* msg);
 
 private:
 
-    // private methods
-/*
-    void setMessageType(const std::string& msgType);
-    long currentTime();
-    std::string getIPAddr();
-*/
+    vector<std::string> privateKeywords;
 
     std::string _type;
 
@@ -89,6 +86,7 @@ protected:
     void init(const std::string& runId);
 */
 };
+
 }
 }
 }

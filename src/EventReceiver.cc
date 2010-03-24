@@ -186,6 +186,23 @@ PropertySet::Ptr EventReceiver::_receive(long timeout) {
     }
 }
 
+Event *_receiveEvent(long timeout) {
+    PropertySet::Ptr psp;
+    Event event;
+    if (_turnEventsOff == true)
+        return PropertySet::Ptr();
+
+    try {
+            const cms::TextMessage* textMessage =
+                dynamic_cast<const cms::TextMessage* >(_consumer->receive(timeout));
+            psp =  processTextMessage(textMessage);
+    } catch (activemq::exceptions::ActiveMQException& e) {
+            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
+    }
+    event = EventFactory().createEvent(textMessage)
+    return event;
+}
+
 /** private method unmarshall the DataProperty from the TextMessage
   */
 PropertySet::Ptr EventReceiver::processTextMessage(const cms::TextMessage* textMessage) {
