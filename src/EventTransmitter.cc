@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <limits>
 #include <cstring>
+#include <time.h>
 
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/EventTransmitter.h"
@@ -208,17 +209,22 @@ void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
 
 void EventTransmitter::publishEvent(const Event& event) {
     PropertySet::Ptr psp;
+    time_t _pubtime;
+    long pubtime;
     cms::TextMessage* message = _session->createTextMessage();
 
     // since we can only create TextMessage objects via a Session,
     // create the object, and pass it to the Event to be populated.
     // The event, knowing the type that it is, can populate the
     // message properly itself.
-    std::cout << "publishEvent: 1" << std::endl;
+
     event.populateHeader(message);
-    std::cout << "publishEvent: 2" << std::endl;
+
     message->setStringProperty("TOPIC", _topicName);
-    message->setLongProperty("PUBTIME", time(0));
+    
+    pubtime = time(&_pubtime);
+    std::cout << "pubtime in C++ is " << pubtime << std::endl;
+    message->setLongProperty("PUBTIME", pubtime);
 
     psp = event.getPropertySet();
     std::string payload = marshall(*psp);
