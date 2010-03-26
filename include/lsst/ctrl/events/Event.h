@@ -51,10 +51,15 @@ public:
     ~Event();
 
     // StringArray getCustomPropertyNames()
-    std::string getDate();
     PropertySet::Ptr getPropertySet() const;
+
     std::string getPubDate();
     long getPubTime();
+    void setPubTime(long t);
+
+    long getEventTime();
+    std::string getEventDate();
+
     std::string getHostId();
     std::string getRunId();
     std::string getType();
@@ -63,14 +68,15 @@ public:
     void setTopic(std::string topic);
     std::string getTopic();
 
+    vector<std::string> getFilterablePropertyNames();
     vector<std::string> getCustomPropertyNames();
-    void setEventTime(long t);
 
     void populateHeader(cms::TextMessage* msg) const;
 
 private:
 
-    vector<std::string> privateKeywords;
+    void _init();
+    vector<std::string> _keywords;
 
     std::string _type;
 

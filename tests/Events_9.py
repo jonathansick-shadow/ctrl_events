@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import time
 import threading
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
@@ -17,6 +18,12 @@ def sendEvent(hostName, topic):
     root.set("RUNID","srptestrun")
     
     event = events.Event("srptestrun", root)
+
+    # wait a short time so we can see the difference between the time 
+    # the event is created and the time it is published
+    time.sleep(2)
+
+    # ok...now publish it
     trans.publishEvent(event)
 
 if __name__ == "__main__":
@@ -33,11 +40,13 @@ if __name__ == "__main__":
     sendEvent(host, topicA)
     sendEvent(host, topicB)
 
-    val = yC.receive()
+    val = yC.receiveEvent()
     assert val != None
-    print val.toString()
+    print "eventTime = ",val.getEventTime()
+    print "eventDate = ",val.getEventDate()
+    print "pubTime = ",val.getPubTime()
+    print "pubDate = ",val.getPubDate()
 
-    val = yC.receive()
+    val = yC.receiveEvent()
     assert val != None
-    print val.toString()
 
