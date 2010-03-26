@@ -76,6 +76,8 @@ public:
 private:
 
     void _init();
+    void setKeywords();
+
     vector<std::string> _keywords;
 
     std::string _type;
