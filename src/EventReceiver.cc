@@ -194,11 +194,9 @@ Event EventReceiver::receiveEvent() {
 Event EventReceiver::receiveEvent(long timeout) {
     PropertySet::Ptr psp;
 
-    std::cout << "receiveEvent 1" << std::endl;
     if (_turnEventsOff == true)
         return Event();
 
-    std::cout << "receiveEvent 2" << std::endl;
     cms::TextMessage* textMessage;
     try {
             textMessage = dynamic_cast<cms::TextMessage* >(_consumer->receive(timeout));
@@ -206,9 +204,9 @@ Event EventReceiver::receiveEvent(long timeout) {
     } catch (activemq::exceptions::ActiveMQException& e) {
             throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
     }
-    std::cout << "receiveEvent 3" << std::endl;
+
     Event event = EventFactory().createEvent(textMessage, psp);
-    std::cout << "receiveEvent 4" << std::endl;
+
     return event;
 }
 
