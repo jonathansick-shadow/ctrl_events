@@ -49,8 +49,8 @@ public:
     PropertySet::Ptr receive();
     PropertySet::Ptr receive(long timeout);
 
-    // Event* receiveEvent();
-    // Event* receiveEvent(long timeout);
+    Event receiveEvent();
+    Event receiveEvent(long timeout);
 
     std::string getTopicName();
 
@@ -74,7 +74,7 @@ private:
     // Object that receives the messages
     cms::MessageConsumer* _consumer;
 
-    PropertySet::Ptr processTextMessage(const cms::TextMessage* textMessage);
+    PropertySet::Ptr processTextMessage(cms::TextMessage* textMessage);
 
     void splitString(std::string str, std::string delim, std::vector<std::string>&results);
 

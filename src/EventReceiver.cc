@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <cstring>
 
+#include "lsst/ctrl/events/EventFactory.h"
 #include "lsst/ctrl/events/EventReceiver.h"
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/daf/base/DateTime.h"
@@ -178,34 +179,42 @@ PropertySet::Ptr EventReceiver::_receive(long timeout) {
         return PropertySet::Ptr();
 
     try {
-            const cms::TextMessage* textMessage =
-                dynamic_cast<const cms::TextMessage* >(_consumer->receive(timeout));
+            cms::TextMessage* textMessage =
+                dynamic_cast<cms::TextMessage* >(_consumer->receive(timeout));
             return processTextMessage(textMessage);
     } catch (activemq::exceptions::ActiveMQException& e) {
             throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
     }
 }
 
-Event *_receiveEvent(long timeout) {
-    PropertySet::Ptr psp;
-    Event event;
-    if (_turnEventsOff == true)
-        return PropertySet::Ptr();
+Event EventReceiver::receiveEvent() {
+    return receiveEvent(infiniteTimeout);
+}
 
+Event EventReceiver::receiveEvent(long timeout) {
+    PropertySet::Ptr psp;
+
+    std::cout << "receiveEvent 1" << std::endl;
+    if (_turnEventsOff == true)
+        return Event();
+
+    std::cout << "receiveEvent 2" << std::endl;
+    cms::TextMessage* textMessage;
     try {
-            const cms::TextMessage* textMessage =
-                dynamic_cast<const cms::TextMessage* >(_consumer->receive(timeout));
+            textMessage = dynamic_cast<cms::TextMessage* >(_consumer->receive(timeout));
             psp =  processTextMessage(textMessage);
     } catch (activemq::exceptions::ActiveMQException& e) {
             throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
     }
-    event = EventFactory().createEvent(textMessage)
+    std::cout << "receiveEvent 3" << std::endl;
+    Event event = EventFactory().createEvent(textMessage, psp);
+    std::cout << "receiveEvent 4" << std::endl;
     return event;
 }
 
 /** private method unmarshall the DataProperty from the TextMessage
   */
-PropertySet::Ptr EventReceiver::processTextMessage(const cms::TextMessage* textMessage) {
+PropertySet::Ptr EventReceiver::processTextMessage(cms::TextMessage* textMessage) {
     if (textMessage == NULL)
         return PropertySet::Ptr();
 

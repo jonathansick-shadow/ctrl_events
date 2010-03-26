@@ -12,6 +12,13 @@
 #include <sstream>
 #include <stdexcept>
 
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy/Policy.h"
@@ -47,10 +54,36 @@ EventSystem::~EventSystem() {
   * \return The EventSystem object
   */
 EventSystem& EventSystem::getDefaultEventSystem() {
-    if (defaultEventSystem == 0) defaultEventSystem = new EventSystem();
+    if (defaultEventSystem == 0) {
+
+        // create the _hostId here, rather than
+        // reconstructing it every time we create an
+        // identificationId
+
+        char buf [255];
+        struct hostent *ent;
+        unsigned char a,b,c,d;
+
+        gethostname(buf, 255) ;
+        ent = (struct hostent *)gethostbyname(buf) ;
+
+        a = ent->h_addr_list[0][0] & 0xFF;
+        b = ent->h_addr_list[0][1] & 0xFF;
+        c = ent->h_addr_list[0][2] & 0xFF;
+        d = ent->h_addr_list[0][3] & 0xFF;
+
+        _hostId = (a << 24) | (b << 16) | (c << 8) | d;
+  
+        // create the default EventSystem object
+        defaultEventSystem = new EventSystem();
+    }
     return *defaultEventSystem;
+
 }
+
 EventSystem *EventSystem::defaultEventSystem = 0;
+unsigned int EventSystem::_hostId = 0;
+unsigned int EventSystem::_localId = 0;
 
 /** \brief create an EventTransmitter to send messages to the message broker
   * \param hostName the location of the message broker to use
@@ -181,6 +214,38 @@ boost::shared_ptr<EventReceiver> EventSystem::getReceiver(const std::string& nam
             return *i;
     }
     return boost::shared_ptr<EventReceiver>();
+}
+
+unsigned long EventSystem::createOriginatorId() {
+    int pid = getpid();
+    
+    unsigned long originatorId = _hostId & 0x00000000FFFFFFFF;
+    originatorId = (originatorId << 32) | (pid << 16) | _localId;
+    _localId++;
+    return originatorId;
+}
+
+/** \brief extract the 32-bit hostId embedded in this identificationId.
+  *        This is the integer representation of the IPV4 network address
+  *        of the host associated with this identificationId
+  * \return the 16-bit hostId
+  */
+unsigned int EventSystem::extractHostId(unsigned long identificationId) {
+    return (identificationId & 0xFFFFFFFF00000000) >> 32;
+}
+
+/** \brief extract the 16-bit processId embedded in this identificationId
+  * \return the 16-bit processId
+  */
+unsigned short EventSystem::extractProcessId(unsigned long identificationId) {
+    return (identificationId & 0xFFFF0000) >> 16;
+}
+
+/** \brief extract the 16-bit localId embedded in this identificationId
+  * \return the 16-bit localId
+  */
+unsigned short EventSystem::extractLocalId(unsigned long identificationId) {
+    return identificationId & 0xFFFF;
 }
 
 }

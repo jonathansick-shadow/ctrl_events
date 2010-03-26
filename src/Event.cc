@@ -41,16 +41,35 @@ namespace events {
   *
   * \throw throws NotFoundException if expected keywords are missing a property set
   */
+Event::Event() {
+}
+
+Event::Event(cms::TextMessage *msg, const PropertySet::Ptr psp) {
+    std::cout << "1" << std::endl;
+    _type = msg->getStringProperty("TYPE");
+    std::cout << "2" << std::endl;
+    _eventTime = msg->getLongProperty("EVENTTIME") ;
+    std::cout << "3" << std::endl;
+    _hostId = msg->getStringProperty("HOSTID") ;
+    std::cout << "4" << std::endl;
+    _runId = msg->getStringProperty("RUNID") ;
+    std::cout << "5" << std::endl;
+    _status = msg->getStringProperty("STATUS") ;
+    std::cout << "6" << std::endl;
+    _topic = msg->getStringProperty("TOPIC") ;
+    std::cout << "7" << std::endl;
+    _psp = psp;
+}
+
 Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
     // PropertySet::Ptr internalPsp(new PropertySet);
 
     char hostname[HOST_NAME_MAX];
     struct hostent *hostEntry;
-    if (!psp->exists("status"))
-        throw LSST_EXCEPT(pexExceptions::NotFoundException, "'status' not found in PropertySet");
+    if (!psp->exists("STATUS"))
+        throw LSST_EXCEPT(pexExceptions::NotFoundException, "'STATUS' not found in PropertySet");
     else {
-        _status = psp->get<std::string>("status");
-        psp->add("status", _status);
+        _status = psp->get<std::string>("STATUS");
         }
 
     _eventTime = time(0); // current time in ns
@@ -68,19 +87,22 @@ Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
     _pubTime = 0L;
 }
 
-void Event::populateHeader(cms::Message* msg) {
+void Event::populateHeader(cms::TextMessage* msg) const {
+    std::cout << "populateHeader 1" << std::endl;
     msg->setStringProperty("TYPE", _type);
+    msg->setStringProperty("TOPIC", _topic);
     msg->setLongProperty("EVENTTIME", _eventTime);
     msg->setStringProperty("HOSTID", _hostId);
     msg->setStringProperty("RUNID", _runId);
     msg->setStringProperty("STATUS", _status);
+    std::cout << "populateHeader 2" << std::endl;
 }
 
 std::string Event::getDate() {
     return "time";
 }
 
-PropertySet::Ptr Event::getPropertySet() {
+PropertySet::Ptr Event::getPropertySet() const {
     return _psp;
 }
 

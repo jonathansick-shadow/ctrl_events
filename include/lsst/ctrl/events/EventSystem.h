@@ -65,6 +65,11 @@ public:
     // Event* receiveEvent(const std::string& topicName);
     // Event* receiveEvent(const std::string& topicName, const long timeout);
 
+    unsigned long createOriginatorId();
+    unsigned int extractHostId(unsigned long identificationId);
+    unsigned short extractProcessId(unsigned long identificationId);
+    unsigned short extractLocalId(unsigned long identificationId);
+
     static const int DEFAULTHOSTPORT = 61616;
 private:
     boost::shared_ptr<EventTransmitter> getTransmitter(const std::string& name);
@@ -72,6 +77,10 @@ private:
 
 protected:
     static EventSystem *defaultEventSystem;
+
+    static unsigned int _localId;
+    static unsigned int _hostId;
+
     list<boost::shared_ptr<EventTransmitter> >_transmitters;
     list<boost::shared_ptr<EventReceiver> >_receivers;
 };

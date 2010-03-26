@@ -43,14 +43,16 @@ namespace events {
 class Event
 {
 public:
+    Event();
     Event(const std::string& runid, const PropertySet::Ptr ps);
+    Event(cms::TextMessage *msg, const PropertySet::Ptr ps);
     // Event(const std::string& runid, const PropertySet::Ptr& ps);
 
     ~Event();
 
     // StringArray getCustomPropertyNames()
     std::string getDate();
-    PropertySet::Ptr getPropertySet();
+    PropertySet::Ptr getPropertySet() const;
     std::string getPubDate();
     long getPubTime();
     std::string getHostId();
@@ -64,7 +66,7 @@ public:
     vector<std::string> getCustomPropertyNames();
     void setEventTime(long t);
 
-    void populateHeader(cms::Message* msg);
+    void populateHeader(cms::TextMessage* msg) const;
 
 private:
 

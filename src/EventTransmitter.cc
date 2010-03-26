@@ -206,7 +206,7 @@ void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
     publish("logging", ps);
 }
 
-void EventTransmitter::publishEvent(Event* event) {
+void EventTransmitter::publishEvent(const Event& event) {
     PropertySet::Ptr psp;
     cms::TextMessage* message = _session->createTextMessage();
 
@@ -214,11 +214,13 @@ void EventTransmitter::publishEvent(Event* event) {
     // create the object, and pass it to the Event to be populated.
     // The event, knowing the type that it is, can populate the
     // message properly itself.
-    event->populateHeader(message);
+    std::cout << "publishEvent: 1" << std::endl;
+    event.populateHeader(message);
+    std::cout << "publishEvent: 2" << std::endl;
     message->setStringProperty("TOPIC", _topicName);
     message->setLongProperty("PUBTIME", time(0));
 
-    psp = event->getPropertySet();
+    psp = event.getPropertySet();
     std::string payload = marshall(*psp);
     message->setText(payload);
 

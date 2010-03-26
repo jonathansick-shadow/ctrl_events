@@ -22,24 +22,22 @@ def sendEvent(hostName, topic):
 if __name__ == "__main__":
     host = "fester.ncsa.uiuc.edu"
     topicA = "PIPELINE.A"
-    topicB = "PIPELINE.*"
+    topicB = "PIPELINE.B"
+    topicC = "PIPELINE.*"
 
-    yC = events.EventReceiver(host, topicB)
+    yC = events.EventReceiver(host, topicC)
 
     #
     # send a test event, and wait to receive it
     #
     sendEvent(host, topicA)
+    sendEvent(host, topicB)
 
-    val = yC.receiveEvent()
+    val = yC.receive()
     assert val != None
-    ps = val.getPropertySet()
-    print ps.toString()
+    print val.toString()
 
-    print "+++++"
-    retTopic = val.getTopic()
-    print "topic = ",retTopic
-    retStatus = val.getStatus()
-    print "status = ",retStatus
-    retRunId = val.getRunId()
-    print "runId = ", retRunId
+    val = yC.receive()
+    assert val != None
+    print val.toString()
+

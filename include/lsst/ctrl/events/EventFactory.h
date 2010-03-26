@@ -42,12 +42,12 @@ public:
 
     ~EventFactory();
 
-    static Event* createEvent(cms::Message* msg);
+    static Event createEvent(cms::TextMessage* msg, const PropertySet::Ptr psp);
 
 };
 }
 }
 }
 
-#endif /*end LSST_CTRL_EVENTS_EVENTSYSTEM_H*/
+#endif /*end LSST_CTRL_EVENTS_EVENTFACTORY_H*/
 
