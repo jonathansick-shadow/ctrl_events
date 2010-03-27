@@ -78,19 +78,21 @@ private:
     void _init();
     void setKeywords();
 
-    vector<std::string> _keywords;
+    //vector<std::string> _keywords;
 
-    std::string _type;
 
+
+
+protected:
+    PropertySet::Ptr _psp;
     long _eventTime;
+    vector<std::string> _keywords;
+    std::string _type;
+    std::string _topic;
     std::string _hostId;
     std::string _runId;
     std::string _status;
-    std::string _topic;
     long _pubTime;
-
-    PropertySet::Ptr _psp;
-
 /*
 protected:
     void init(const std::string& runId);

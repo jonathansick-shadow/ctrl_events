@@ -41,23 +41,31 @@ namespace events {
 class CommandEvent : public Event
 {
 public:
-    CommandEvent(const std::string& runid, const PropertySet::Ptr psp);
+    CommandEvent(const std::string& runid, unsigned long destination, const PropertySet::Ptr psp);
 
     ~CommandEvent();
 
+    unsigned long getOriginator();
+    unsigned short getOriginatorLocalId();
+    unsigned short getOriginatorProcessId();
+    unsigned int getOriginatorHostId();
+
+    unsigned long getDestination();
+    unsigned short getDestinationLocalId();
+    unsigned short getDestinationProcessId();
+    unsigned int getDestinationHostId();
+
 private:
 
-    long originator;      // long value of pid localid and hostid combined.
-    int _orig_pid;        // process id 
-    int _orig_localid;    // created by EventSystem
-    int _orig_hostid;     // hex value of ip addr
+    unsigned long _originator;      // long value of pid localid and hostid combined.
+    unsigned short _orig_localid;    // created by EventSystem
+    unsigned short _orig_pid;        // process id 
+    unsigned int _orig_hostid;     // hex value of ip addr
 
-    long destination;     // long value of pid localid and hostid combined.
-    int _dest_pid;        // process id 
-    int _dest_localid;    // created by EventSystem
-    int _dest_hostid;     // hex value of ip addr
-
-    std::string _log;
+    unsigned long _destination;     // long value of pid localid and hostid combined.
+    unsigned short _dest_localid;    // created by EventSystem
+    unsigned short _dest_pid;        // process id 
+    unsigned int _dest_hostid;     // hex value of ip addr
 
 };
 }

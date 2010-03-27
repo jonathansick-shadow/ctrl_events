@@ -11,8 +11,16 @@ if __name__ == "__main__":
     
     event = events.Event("srptestrun", root)
 
-    print "Filterable names = ",event.getFilterablePropertyNames()
-    print "Custom names = ",event.getCustomPropertyNames()
     props = event.getPropertySet()
     print "PropertySet: "
     print props.toString()
+    print
+
+    print "Filterable names = ",event.getFilterablePropertyNames()
+
+    print "Custom names = ",event.getCustomPropertyNames()
+
+    print "getEventTime() = ",event.getEventTime()
+    print "getEventDate() = ",event.getEventDate()
+    print "getPubTime() = ",event.getPubTime()
+    print "getPubTime() = ",event.getPubDate()

@@ -267,6 +267,12 @@ std::string EventTransmitter::marshall(const PropertySet& ps) {
             for (iter = vec.begin(); iter != vec.end(); iter++) {
                 payload << "bool||"<< name << "||" << *iter << "~~";
             }
+        } else if (ps.typeOf(name) == typeid(long)) {
+            std::vector<long> vec  = ps.getArray<long>(name);
+            std::vector<long>::iterator iter;
+            for (iter = vec.begin(); iter != vec.end(); iter++) {
+                payload << "long||" << name << "||"<< *iter << "~~";
+            }
         } else if (ps.typeOf(name) == typeid(int)) {
             std::vector<int> vec  = ps.getArray<int>(name);
             std::vector<int>::iterator iter;
@@ -299,6 +305,8 @@ std::string EventTransmitter::marshall(const PropertySet& ps) {
             for (iter = vec.begin(); iter != vec.end(); iter++) {
                 payload << "datetime||" << name << "||"<< (*iter).nsecs() << "~~";
             }
+        } else {
+            std::cout << "Couldn't marshall "<< name << std::endl;
         }
     }
     return payload.str();

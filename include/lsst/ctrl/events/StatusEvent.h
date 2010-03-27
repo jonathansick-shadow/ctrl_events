@@ -14,7 +14,7 @@
 
 #include <cms/Connection.h>
 #include <cms/Session.h>
-#include <cms/BytesMessage.h>
+#include <cms/Message.h>
 
 #include <stdlib.h>
 #include <iostream>
@@ -44,7 +44,10 @@ namespace events {
 class StatusEvent : public Event
 {
 public:
+    StatusEvent();
+    StatusEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
     StatusEvent(const std::string& runid, const PropertySet::Ptr psp);
+    void populateHeader(cms::TextMessage* msg) const;
 
     ~StatusEvent();
 
@@ -54,11 +57,12 @@ public:
     unsigned long getOriginator();
 
 private:
+    void _init();
 
-    unsigned short pid;        // process id 
-    unsigned short localid;    // created by EventSystem
-    unsigned int hostid;     // hex value of ip addr
-    unsigned long originator; // long value of pid localid and hostid combined.
+    unsigned short _processId;        // process id 
+    unsigned short _localId;    // created by EventSystem
+    unsigned int _hostId;     // hex value of ip addr
+    unsigned long _originator; // long value of pid localid and hostid combined.
 
 };
 }
