@@ -52,6 +52,8 @@ public:
     void createReceiver(const pexPolicy::Policy& policy);
     void createReceiver(const std::string& hostName, const std::string& topicName);
     void createReceiver(const std::string& hostName, const int hostPort, const std::string& topicName);
+    void createReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector);
+    void createReceiver(const std::string& hostName, const int hostPort, const std::string& topicName, const std::string& selector);
 
 
     void publish(const std::string& topicName, const PropertySet::Ptr psp);

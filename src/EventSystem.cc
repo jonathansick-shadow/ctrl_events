@@ -139,6 +139,28 @@ void EventSystem::createReceiver(const pexPolicy::Policy& policy) {
     _receivers.push_back(receiver);
 }
 
+/** \brief create an EventReceiver which will receive message
+  * \param hostName the location of the message broker to use
+  * \param topicName the topic to receive messages from
+  * \param selector the message selector to specify which messages to receive
+  */
+void EventSystem::createReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector) {
+    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, topicName, selector));
+    _receivers.push_back(receiver);
+}
+
+/** \brief create an EventReceiver which will receive message
+  * \param hostName the location of the message broker to use
+  * \param hostPort the port where the broker can be reached
+  * \param topicName the topic to receive messages from
+  * \param selector the message selector to specify which messages to receive
+  */
+void EventSystem::createReceiver(const std::string& hostName, const int hostPort, const std::string& topicName, const std::string& selector) {
+    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, hostPort, topicName, selector));
+    _receivers.push_back(receiver);
+}
+
+
 /** \brief send an event on a topic
   * \param topicName the topic to send messages to
   * \param psp the PropertySet to send

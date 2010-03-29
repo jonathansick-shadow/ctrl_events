@@ -47,7 +47,7 @@ namespace events {
   */
 
 EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
-    EventLibrary().initializeLibrary();
+    //EventLibrary().initializeLibrary();
     int hostPort;
 
     try {
@@ -57,6 +57,7 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
     }
     if (_turnEventsOff == true)
         return;
+
     if (!policy.exists("topicName")) {
         throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName not found in policy");
     }
@@ -80,7 +81,13 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
     } catch (pexPolicy::NameNotFound& e) {
         hostPort = EventSystem::DEFAULTHOSTPORT;
     }
-    init(hostName, hostPort, topicName);
+
+    try {
+        _selector = policy.getString("selector");
+    } catch (pexPolicy::NameNotFound& e) {
+        _selector = "";
+    }
+    init(hostName, hostPort, topicName, _selector);
 }
 
 /** \brief Receives events from the specified host and topic
@@ -90,11 +97,11 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
   * \throw throws Runtime exception if connection fails to initialize
   */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName) {
-    EventLibrary().initializeLibrary();
+    //EventLibrary().initializeLibrary();
 
     _turnEventsOff = false;
 
-    init(hostName, EventSystem::DEFAULTHOSTPORT, topicName);
+    init(hostName, EventSystem::DEFAULTHOSTPORT, topicName, "");
 }
 
 /** \brief Receives events from the specified host and topic
@@ -105,23 +112,52 @@ EventReceiver::EventReceiver(const std::string& hostName, const std::string& top
   * \throw throws Runtime exception if connection fails to initialize
   */
 EventReceiver::EventReceiver(const std::string& hostName, const int hostPort, const std::string& topicName) {
-    EventLibrary().initializeLibrary();
+    //EventLibrary().initializeLibrary();
 
     _turnEventsOff = false;
 
-    init(hostName, hostPort, topicName);
+    init(hostName, hostPort, topicName, "");
 }
+
+/** \brief Receives events from the specified host and topic
+  *
+  * \param hostName the machine hosting the message broker
+  * \param topicName the topic to receive events from
+  * \param selector the message selector expression to use
+  * \throw throws Runtime exception if connection fails to initialize
+  */
+EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector) {
+    _turnEventsOff = false;
+    init(hostName, EventSystem::DEFAULTHOSTPORT, topicName, selector);
+}
+
+/** \brief Receives events from the specified host and topic
+  *
+  * \param hostName the machine hosting the message broker
+  * \param hostPort the port which the message broker is listening on
+  * \param topicName the topic to receive events from
+  * \param selector the message selector expression to use
+  * \throw throws Runtime exception if connection fails to initialize
+  */
+EventReceiver::EventReceiver(const std::string& hostName, const int hostPort, const std::string& topicName, const std::string& selector) {
+    _turnEventsOff = false;
+    init(hostName, hostPort, topicName, selector);
+}
+
+
 
 /** private method for initialization of EventReceiver.  Sets up use of local
   * sockets or activemq, depending on how the policy file was configured.  
   */
-void EventReceiver::init(const std::string& hostName, const int hostPort, const std::string& topicName) {
+void EventReceiver::init(const std::string& hostName, const int hostPort, const std::string& topicName, const std::string& selector) {
 
+    EventLibrary().initializeLibrary();
     _connection = NULL;
     _session = NULL;
     _destination = NULL;
     _consumer = NULL;
     _topic = topicName;
+    _selector = selector;
 
     if (_turnEventsOff == true)
         return;
@@ -145,7 +181,10 @@ void EventReceiver::init(const std::string& hostName, const int hostPort, const 
 
         _destination = _session->createTopic( topicName );
 
-        _consumer = _session->createConsumer( _destination );
+        if (_selector == "")
+            _consumer = _session->createConsumer( _destination );
+        else
+            _consumer = _session->createConsumer( _destination, selector );
 
     } catch ( cms::CMSException& e ) {
         e.printStackTrace();
