@@ -223,10 +223,9 @@ void EventTransmitter::publishEvent(const Event& event) {
     message->setStringProperty("TOPIC", _topicName);
     
     pubtime = time(&_pubtime);
-    std::cout << "pubtime in C++ is " << pubtime << std::endl;
     message->setLongProperty("PUBTIME", pubtime);
 
-    psp = event.getPropertySet();
+    psp = event.getCustomPropertySet();
     std::string payload = marshall(*psp);
     message->setText(payload);
 
@@ -258,7 +257,7 @@ std::string EventTransmitter::marshall(const PropertySet& ps) {
     // TODO: optimize this to get use getArray only when necessary
     std::ostringstream payload;
     unsigned int i;
-    payload << "nodelist||nodelist||" << (v.size()-1) << "~~";
+    payload << "nodelist||nodelist||" << (v.size()) << "~~";
     for (i = 0; i < v.size(); i++) {
         std::string name = v[i];
         if (ps.typeOf(name) == typeid(bool)) {

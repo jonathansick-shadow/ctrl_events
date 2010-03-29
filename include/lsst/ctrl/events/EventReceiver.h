@@ -49,8 +49,8 @@ public:
     PropertySet::Ptr receive();
     PropertySet::Ptr receive(long timeout);
 
-    Event receiveEvent();
-    Event receiveEvent(long timeout);
+    Event* receiveEvent();
+    Event* receiveEvent(long timeout);
 
     std::string getTopicName();
 

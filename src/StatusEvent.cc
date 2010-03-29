@@ -14,6 +14,7 @@
 #include <limits>
 #include <cstring>
 
+#include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/daf/base/DateTime.h"
@@ -41,44 +42,77 @@ namespace events {
   *
   */
 
-StatusEvent::StatusEvent() {
+StatusEvent::StatusEvent() : Event() {
     _init();
 }
 
+
 void StatusEvent::_init() {
-    _keywords.push_back("ORIGINATOR");
+    _keywords.push_back("ORIGINATORID");
     _keywords.push_back("LOCALID");
     _keywords.push_back("PROCESSID");
+    _keywords.push_back("IPID");
 }
 
 StatusEvent::StatusEvent(cms::TextMessage *msg, const PropertySet::Ptr psp) : Event(msg, psp) {
+    _init();
 
     _psp = psp;
 
-    _originator = msg->getLongProperty("ORIGINATOR");
-    _eventTime = msg->getShortProperty("LOCALID") ;
-    _hostId = msg->getShortProperty("PROCESSID") ;
+    _originatorId = msg->getLongProperty("ORIGINATORID");
+    _localId = msg->getShortProperty("LOCALID") ;
+    _processId = msg->getShortProperty("PROCESSID") ;
+    _IPId = msg->getIntProperty("IPID") ;
+}
 
-    _psp->set("ORIGINATOR", _originator);
-    _psp->set("LOCALID", _localId);
-    _psp->set("PROCESSID", _processId);
+void StatusEvent::setKeywords(PropertySet::Ptr psp) const {
+
+    Event::setKeywords(psp);
+
+    psp->set("ORIGINATORID", _originatorId);
+    psp->set("LOCALID", _localId);
+    psp->set("PROCESSID", _processId);
+    psp->set("IPID", _IPId);
 }
 
 StatusEvent::StatusEvent( const std::string& runId, const PropertySet::Ptr psp) : Event(runId, psp) {
     _init();
+
+
     EventSystem eventSystem = EventSystem().getDefaultEventSystem();
-    _originator = eventSystem.createOriginatorId();
-    _psp->set("ORIGINATOR",_originator);
-    _psp->set("LOCALID",eventSystem.extractLocalId(_originator));
-    _psp->set("PROCESSID",eventSystem.extractProcessId(_originator));
+
+    _originatorId = eventSystem.createOriginatorId();
+
+    _localId = eventSystem.extractLocalId(_originatorId);
+    _processId = eventSystem.extractProcessId(_originatorId);
+    _IPId = eventSystem.extractHostId(_originatorId);
+    _type = "_status";
+
 }
 
 void StatusEvent::populateHeader(cms::TextMessage* msg) const {
     Event::populateHeader(msg);
 
-    msg->setStringProperty("ORIGINATOR", _type);
-    msg->setStringProperty("LOCALID", _topic);
-    msg->setLongProperty("PROCESSID", _eventTime);
+    msg->setLongProperty("ORIGINATORID", _originatorId);
+    msg->setShortProperty("LOCALID", _localId);
+    msg->setShortProperty("PROCESSID", _processId);
+    msg->setIntProperty("IPID", _IPId);
+}
+
+unsigned long StatusEvent::getOriginatorId() {
+    return _originatorId;
+}
+
+unsigned short StatusEvent::getLocalId() {
+    return _localId;
+}
+
+unsigned short StatusEvent::getProcessId() {
+    return _processId;
+}
+
+unsigned int StatusEvent::getIPId() {
+    return _IPId;
 }
 
 /** \brief destructor

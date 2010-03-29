@@ -79,12 +79,6 @@ Event::Event(cms::TextMessage *msg, const PropertySet::Ptr psp) {
     _topic = msg->getStringProperty("TOPIC") ;
     _pubTime = msg->getLongProperty("PUBTIME") ;
 
-    _psp->set("TYPE", _type);
-    _psp->set("EVENTTIME", _eventTime);
-    _psp->set("HOSTID", _hostId);
-    _psp->set("RUNID", _runId);
-    _psp->set("STATUS", _status);
-    _psp->set("TOPIC", _topic);
 }
 
 vector<std::string> Event::getFilterablePropertyNames() {
@@ -116,18 +110,22 @@ Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
 
     _init();
     
+    // do NOT alter the property set we were given. Make a copy of it,
+    // and modify that one.
     _psp = psp->deepCopy();
 
     if (!_psp->exists("STATUS"))
         throw LSST_EXCEPT(pexExceptions::NotFoundException, "'STATUS' not found in PropertySet");
     else {
         _status = _psp->get<std::string>("STATUS");
+        _psp->remove("STATUS");
     }
 
     if (!_psp->exists("EVENTTIME"))
         _eventTime = time(&rawtime); // current time in ns
     else {
         _eventTime = _psp->get<long>("EVENTTIME");
+        _psp->remove("EVENTTIME");
     }
 
     if (!psp->exists("HOSTID")) {
@@ -135,41 +133,38 @@ Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
        _hostId = hostname;
     } else {
        _hostId = _psp->get<std::string>("HOSTID");
+       _psp->remove("HOSTID");
     }
 
     // _runId is filled in here and is ignored in the passed PropertySet
     _runId = runId;
+    _psp->remove("RUNID");
 
     // _type is filled in here and is ignored in the passed PropertySet
     _type = "_event"; // EventTypes::EVENT;
+    _psp->remove("TYPE");
 
     // _topic is filled in on publish and is ignored in the passed PropertySet
     _topic = "meps";
+    _psp->remove("TOPIC");
 
     // _pubTime is filled in on publish and is ignored in the passed PropertySet
     _pubTime = 0L;
+    _psp->remove("PUBTIME");
 
-    // do NOT alter the property set we were given. Make a copy of it,
-    // and modify that one.
-    // PropertySet ps = new PropertySet(psp);
-
-    _psp = psp->deepCopy();
-    
-    setKeywords();
 }
 
-void Event::setKeywords() {
-    _psp->set("TYPE", _type);
-    _psp->set("TOPIC", _topic);
-    _psp->set("EVENTTIME", _eventTime);
-    _psp->set("HOSTID", _hostId);
-    _psp->set("RUNID", _runId);
-    _psp->set("STATUS", _status);
-    _psp->set("PUBTIME", _pubTime);
+void Event::setKeywords(PropertySet::Ptr psp)  const {
+    psp->set("TYPE", _type);
+    psp->set("TOPIC", _topic);
+    psp->set("EVENTTIME", _eventTime);
+    psp->set("HOSTID", _hostId);
+    psp->set("RUNID", _runId);
+    psp->set("STATUS", _status);
+    psp->set("PUBTIME", _pubTime);
 }
 
 void Event::populateHeader(cms::TextMessage* msg) const {
-
     msg->setStringProperty("TYPE", _type);
     msg->setStringProperty("TOPIC", _topic);
     msg->setLongProperty("EVENTTIME", _eventTime);
@@ -191,8 +186,15 @@ std::string Event::getEventDate() {
 }
 
 
-PropertySet::Ptr Event::getPropertySet() const {
+PropertySet::Ptr Event::getCustomPropertySet() const {
     return _psp;
+}
+
+PropertySet::Ptr Event::getPropertySet() const {
+    PropertySet::Ptr psp = _psp->deepCopy();
+    setKeywords(psp);
+
+    return psp;
 }
 
 void Event::setPubTime(long t) {

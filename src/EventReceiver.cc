@@ -187,31 +187,32 @@ PropertySet::Ptr EventReceiver::_receive(long timeout) {
     }
 }
 
-Event EventReceiver::receiveEvent() {
+Event* EventReceiver::receiveEvent() {
     return receiveEvent(infiniteTimeout);
 }
 
-Event EventReceiver::receiveEvent(long timeout) {
+Event* EventReceiver::receiveEvent(long timeout) {
     PropertySet::Ptr psp;
 
     if (_turnEventsOff == true)
-        return Event();
+        return new Event();
 
-    std::cout << "0" << std::endl;
+    
     cms::TextMessage* textMessage;
     try {
             textMessage = dynamic_cast<cms::TextMessage* >(_consumer->receive(timeout));
-    std::cout << "0a" << std::endl;
+   
             psp =  processTextMessage(textMessage);
-    std::cout << "0b" << std::endl;
+  
     } catch (activemq::exceptions::ActiveMQException& e) {
             throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
     }
 
-    std::cout << "1" << std::endl;
-    Event event = EventFactory().createEvent(textMessage, psp);
-    std::cout << "2" << std::endl;
+ 
+    std::cout << "about to create event" << std::endl;
+    Event* event = EventFactory().createEvent(textMessage, psp);
 
+    std::cout << "done creating event" << std::endl;
     return event;
 }
 
@@ -223,7 +224,6 @@ PropertySet::Ptr EventReceiver::processTextMessage(cms::TextMessage* textMessage
 
     std::string text = textMessage->getText();
 
-    std::cout << "text = " << text << std::endl;
     return unmarshall(text);
 }
 

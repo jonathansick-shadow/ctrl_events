@@ -24,16 +24,12 @@ def getHostAddr():
 if __name__ == "__main__":
     eventSystem = events.EventSystem().getDefaultEventSystem()
 
-    myaddr = getHostAddr()
-
     originatorId = eventSystem.createOriginatorId()
 
     localId = eventSystem.extractLocalId(originatorId)
     assert localId == 0
     processId = eventSystem.extractProcessId(originatorId)
     assert processId == os.getpid()
-    hostId = eventSystem.extractHostId(originatorId)
-    assert hostId == myaddr
 
     originatorId2 = eventSystem.createOriginatorId()
 
@@ -41,5 +37,3 @@ if __name__ == "__main__":
     assert localId == 1
     processId = eventSystem.extractProcessId(originatorId2)
     assert processId == os.getpid()
-    hostId = eventSystem.extractHostId(originatorId2)
-    assert hostId == myaddr

@@ -17,7 +17,7 @@ def sendEvent(hostName, topic):
     root.set("STATUS", "my special status")
     root.set("RUNID","srptestrun")
     
-    event = events.Event("srptestrun", root)
+    event = events.StatusEvent("srptestrun", root)
 
     # wait a short time so we can see the difference between the time 
     # the event is created and the time it is published
@@ -61,4 +61,3 @@ if __name__ == "__main__":
     print "PropertySet"
     ps = val.getPropertySet()
     print ps.toString()
-

@@ -70,23 +70,18 @@ public:
 
     vector<std::string> getFilterablePropertyNames();
     vector<std::string> getCustomPropertyNames();
-
-    void populateHeader(cms::TextMessage* msg) const;
-
-private:
-
-    void _init();
-    void setKeywords();
-
-    //vector<std::string> _keywords;
-
+    PropertySet::Ptr getCustomPropertySet() const;
+    virtual void populateHeader(cms::TextMessage* msg) const;
 
 
 
 protected:
     PropertySet::Ptr _psp;
-    long _eventTime;
     vector<std::string> _keywords;
+    void _init();
+    virtual void setKeywords(PropertySet::Ptr psp) const;
+
+    long _eventTime;
     std::string _type;
     std::string _topic;
     std::string _hostId;

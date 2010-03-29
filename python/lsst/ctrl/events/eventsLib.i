@@ -18,6 +18,7 @@ Access to the lsst::ctrl::events classes
 #include "lsst/pex/logging/Debug.h"
 #include "lsst/pex/logging/DualLog.h"
 #include "lsst/ctrl/events/Event.h"
+#include "lsst/ctrl/events/StatusEvent.h"
 /* #include "lsst/ctrl/events/EventTypes.h" */
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/ctrl/events/EventReceiver.h"
@@ -50,8 +51,13 @@ namespace lsst {
     }
 }
 %}
+%nothread lsst::ctrl::events::EventTransmitter::EventTransmitter;
+%nothread lsst::ctrl::events::EventSystem::createTransmitter;
+%nothread lsst::ctrl::events::EventSystem::createLocalTransmitter;
+%nothread lsst::ctrl::events::EventSystem::createLocalReceiver;
 
 %include "lsst/ctrl/events/Event.h"
+%include "lsst/ctrl/events/StatusEvent.h"
 /* %include "lsst/ctrl/events/EventTypes.h" */
 %include "lsst/ctrl/events/EventTransmitter.h"
 %include "lsst/ctrl/events/EventReceiver.h"
