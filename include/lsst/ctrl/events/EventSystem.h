@@ -59,13 +59,13 @@ public:
     void publish(const std::string& topicName, const PropertySet::Ptr psp);
     void publish(const std::string& topicName, const pexLogging::LogRecord& rec);
 
-    // void publishEvent(const std::string& topicName, const Event& event);
+    void publishEvent(const std::string& topicName, const Event& event);
 
     PropertySet::Ptr receive(const std::string& topicName);
     PropertySet::Ptr receive(const std::string& topicName, const long timeout);
 
-    // Event* receiveEvent(const std::string& topicName);
-    // Event* receiveEvent(const std::string& topicName, const long timeout);
+    Event* receiveEvent(const std::string& topicName);
+    Event* receiveEvent(const std::string& topicName, const long timeout);
 
     unsigned long createOriginatorId();
     unsigned int extractHostId(unsigned long identificationId);

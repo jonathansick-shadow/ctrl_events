@@ -161,7 +161,7 @@ void EventSystem::createReceiver(const std::string& hostName, const int hostPort
 }
 
 
-/** \brief send an event on a topic
+/** \brief send an PropertySet on a topic
   * \param topicName the topic to send messages to
   * \param psp the PropertySet to send
   * \throw Runtime exception if the topic wasn't already registered using 
@@ -170,9 +170,9 @@ void EventSystem::createReceiver(const std::string& hostName, const int hostPort
 void EventSystem::publish(const std::string& topicName, const PropertySet::Ptr psp) {
     boost::shared_ptr<EventTransmitter> transmitter;
     if ((transmitter = getTransmitter(topicName)) == 0) {
-    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
     }
-    transmitter->publish( psp);
+    transmitter->publish(psp);
 }
 
 /** \brief send an logging event
@@ -184,11 +184,24 @@ void EventSystem::publish(const std::string& topicName, const PropertySet::Ptr p
 void EventSystem::publish(const std::string& topicName, const pexLogging::LogRecord& rec) {
     boost::shared_ptr<EventTransmitter> transmitter;
     if ((transmitter = getTransmitter(topicName)) == 0) {
-    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
     }
     transmitter->publish(rec);
 }
 
+/** \brief send an event on a topic
+  * \param topicName the topic to send messages to
+  * \param event the Event to send
+  * \throw Runtime exception if the topic wasn't already registered using 
+  *        the createTransmitter method
+  */
+void EventSystem::publishEvent(const std::string& topicName, const Event& event) {
+    boost::shared_ptr<EventTransmitter> transmitter;
+    if ((transmitter = getTransmitter(topicName)) == 0) {
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
+    }
+    transmitter->publishEvent(event);
+}
 
 /** private method to retrieve a transmitter from the internal list
   */
@@ -226,6 +239,32 @@ PropertySet::Ptr EventSystem::receive(const std::string& topicName, const long t
     }
     return receiver->receive(timeout);
 }
+
+/** \brief blocking receive for events.  Waits until an event
+  *        is received for the topic specified in the constructor
+  * \param topicName the topic to listen on
+  * \return a PropertySet::Ptr object
+  */
+Event* EventSystem::receiveEvent(const std::string& topicName) {
+    return receiveEvent(topicName, EventReceiver::infiniteTimeout);
+}
+
+/** \brief blocking receive for events, with timeout (in milliseconds).  
+  *        Waits until an event is received for the topic specified
+  *        in the constructor, or until the timeout expires.      
+  * \param topicName the topic to listen on
+  * \param timeout the time in milliseconds to wait before returning
+  * \return a Property::Ptr object on success, 0 on failure  see note
+  *         in receive()
+  */
+Event* EventSystem::receiveEvent(const std::string& topicName, const long timeout) {
+    boost::shared_ptr<EventReceiver> receiver;
+    if ((receiver = getReceiver(topicName)) == 0) {
+    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
+    }
+    return receiver->receiveEvent(timeout);
+}
+
 
 /** private method used to retrieve the named EventReceiver object
   */

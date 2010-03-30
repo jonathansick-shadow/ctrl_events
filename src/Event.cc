@@ -110,23 +110,29 @@ Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
 
     _init();
     
-    // do NOT alter the property set we were given. Make a copy of it,
-    // and modify that one.
     _psp = psp->deepCopy();
 
-    if (!_psp->exists("STATUS"))
-        throw LSST_EXCEPT(pexExceptions::NotFoundException, "'STATUS' not found in PropertySet");
-    else {
+
+    // do NOT alter the property set we were given. Make a copy of it,
+    // and modify that one.
+
+    std::string foo = psp->toString();
+    std::cout << "foo = " << foo << std::endl;
+
+    if (!_psp->exists("STATUS")) {
+        throw LSST_EXCEPT(pexExceptions::NotFoundException, "STATUS not found in PropertySet");
+    } else {
         _status = _psp->get<std::string>("STATUS");
         _psp->remove("STATUS");
     }
-
+    
     if (!_psp->exists("EVENTTIME"))
         _eventTime = time(&rawtime); // current time in ns
     else {
         _eventTime = _psp->get<long>("EVENTTIME");
         _psp->remove("EVENTTIME");
     }
+   
 
     if (!psp->exists("HOSTID")) {
        gethostname(hostname, HOST_NAME_MAX);
