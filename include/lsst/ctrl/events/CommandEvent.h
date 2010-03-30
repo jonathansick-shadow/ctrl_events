@@ -41,31 +41,37 @@ namespace events {
 class CommandEvent : public Event
 {
 public:
-    CommandEvent(const std::string& runid, unsigned long destination, const PropertySet::Ptr psp);
+    CommandEvent();
+    CommandEvent(const std::string& runid, unsigned long destinationId, const PropertySet::Ptr psp);
+    CommandEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
+    virtual void populateHeader(cms::TextMessage *msg) const;
 
     ~CommandEvent();
 
-    unsigned long getOriginator();
+    unsigned long getOriginatorId();
     unsigned short getOriginatorLocalId();
     unsigned short getOriginatorProcessId();
-    unsigned int getOriginatorHostId();
+    unsigned int getOriginatorIPId();
 
-    unsigned long getDestination();
+    unsigned long getDestinationId();
     unsigned short getDestinationLocalId();
     unsigned short getDestinationProcessId();
-    unsigned int getDestinationHostId();
+    unsigned int getDestinationIPId();
 
 private:
+    virtual void setKeywords(PropertySet::Ptr psp) const;
+    void _init();
 
-    unsigned long _originator;      // long value of pid localid and hostid combined.
-    unsigned short _orig_localid;    // created by EventSystem
-    unsigned short _orig_pid;        // process id 
-    unsigned int _orig_hostid;     // hex value of ip addr
 
-    unsigned long _destination;     // long value of pid localid and hostid combined.
-    unsigned short _dest_localid;    // created by EventSystem
-    unsigned short _dest_pid;        // process id 
-    unsigned int _dest_hostid;     // hex value of ip addr
+    unsigned long _originatorId;      // long value of pid localid and hostid combined.
+    unsigned short _orig_localId;    // created by EventSystem
+    unsigned short _orig_processId;        // process id 
+    unsigned int _orig_IPId;     // hex value of ip addr
+
+    unsigned long _destinationId;     // long value of pid localid and hostid combined.
+    unsigned short _dest_localId;    // created by EventSystem
+    unsigned short _dest_processId;        // process id 
+    unsigned int _dest_IPId;     // hex value of ip addr
 
 };
 }

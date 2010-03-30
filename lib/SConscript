@@ -4,6 +4,7 @@ Import('env')
 env.SharedLibrary('ctrl_events', map(lambda str: "../src/" + str,
                             [
                              "StatusEvent.cc",
+                             "CommandEvent.cc",
                              "EventTransmitter.cc",
                              "EventReceiver.cc",
                              "EventFormatter.cc",

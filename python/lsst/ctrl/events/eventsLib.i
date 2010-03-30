@@ -19,7 +19,6 @@ Access to the lsst::ctrl::events classes
 #include "lsst/pex/logging/DualLog.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
-/* #include "lsst/ctrl/events/EventTypes.h" */
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/ctrl/events/EventReceiver.h"
 #include "lsst/ctrl/events/EventSystem.h"
@@ -29,6 +28,7 @@ Access to the lsst::ctrl::events classes
 %}
 
 %include "lsst/p_lsstSwig.i"
+%include "factory.i"
 %lsst_exceptions()
 
 SWIG_SHARED_PTR_DERIVED(EventFormatter, lsst::pex::logging::LogFormatter, lsst::ctrl::events::EventFormatter)
@@ -56,9 +56,11 @@ namespace lsst {
 %nothread lsst::ctrl::events::EventSystem::createLocalTransmitter;
 %nothread lsst::ctrl::events::EventSystem::createLocalReceiver;
 
+%newobject EventReceiver::receiveEvent;
+%factory(Event::Event * EventReceiver::receiveEvent, Status::StatusEvent, Event::Event);
+
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"
-/* %include "lsst/ctrl/events/EventTypes.h" */
 %include "lsst/ctrl/events/EventTransmitter.h"
 %include "lsst/ctrl/events/EventReceiver.h"
 %include "lsst/ctrl/events/EventLog.h"
