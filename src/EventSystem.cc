@@ -26,6 +26,8 @@
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/ctrl/events/EventLibrary.h"
+#include "lsst/ctrl/events/Event.h"
+#include "lsst/ctrl/events/StatusEvent.h"
 
 namespace pexLogging =lsst::pex::logging;
 namespace pexExceptions =lsst::pex::exceptions;
@@ -308,6 +310,12 @@ unsigned short EventSystem::extractProcessId(unsigned long identificationId) {
 unsigned short EventSystem::extractLocalId(unsigned long identificationId) {
     return identificationId & 0xFFFF;
 }
+
+/*
+StatusEvent* castToStatusEvent(Event* event) {
+    return (StatusEvent *)event;
+}
+*/
 
 }
 }

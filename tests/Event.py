@@ -7,7 +7,7 @@ from lsst.daf.base import PropertySet
 if __name__ == "__main__":
     root = PropertySet()
     root.set("myname","myname")
-    # root.set("STATUS", "my special status")
+    root.set("STATUS", "my special status")
     
     event = events.Event("srptestrun", root)
 
@@ -23,4 +23,3 @@ if __name__ == "__main__":
     print "getEventTime() = ",event.getEventTime()
     print "getEventDate() = ",event.getEventDate()
     print "getPubTime() = ",event.getPubTime()
-    print "getPubTime() = ",event.getPubDate()

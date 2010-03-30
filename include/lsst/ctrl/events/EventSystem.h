@@ -23,6 +23,8 @@
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/ctrl/events.h"
+#include "lsst/ctrl/events/Event.h"
+#include "lsst/ctrl/events/StatusEvent.h"
 
 using lsst::daf::base::PropertySet;
 namespace pexPolicy = lsst::pex::policy;
@@ -71,6 +73,8 @@ public:
     unsigned int extractHostId(unsigned long identificationId);
     unsigned short extractProcessId(unsigned long identificationId);
     unsigned short extractLocalId(unsigned long identificationId);
+
+    // StatusEvent* castToStatusEvent(Event* event);
 
     static const int DEFAULTHOSTPORT = 61616;
 private:
