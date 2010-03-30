@@ -74,7 +74,7 @@ public:
     unsigned short extractProcessId(unsigned long identificationId);
     unsigned short extractLocalId(unsigned long identificationId);
 
-    // StatusEvent* castToStatusEvent(Event* event);
+    StatusEvent* castToStatusEvent(Event* event);
 
     static const int DEFAULTHOSTPORT = 61616;
 private:

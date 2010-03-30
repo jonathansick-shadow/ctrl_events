@@ -49,5 +49,7 @@ if __name__ == "__main__":
     ps = val.getPropertySet()
     print ps.toString()
 
+    eventSystem = events.EventSystem().getDefaultEventSystem()
+    statusevent = eventSystem.castToStatusEvent(val)
     print "OriginatorId"
-    print val.getOriginatorId()
+    print statusevent.getOriginatorId()

@@ -311,11 +311,9 @@ unsigned short EventSystem::extractLocalId(unsigned long identificationId) {
     return identificationId & 0xFFFF;
 }
 
-/*
-StatusEvent* castToStatusEvent(Event* event) {
+StatusEvent* EventSystem::castToStatusEvent(Event* event) {
     return (StatusEvent *)event;
 }
-*/
 
 }
 }
