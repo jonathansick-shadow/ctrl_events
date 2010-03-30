@@ -20,7 +20,7 @@ def sendEvent(hostName, topic):
     trans.publishEvent(event)
 
 if __name__ == "__main__":
-    host = "fester.ncsa.uiuc.edu"
+    host = "lsst8.ncsa.uiuc.edu"
     topicA = "PIPELINE.A"
     topicB = "PIPELINE.*"
 

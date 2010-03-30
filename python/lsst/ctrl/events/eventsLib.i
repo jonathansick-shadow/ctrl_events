@@ -57,7 +57,7 @@ namespace lsst {
 %nothread lsst::ctrl::events::EventSystem::createLocalReceiver;
 
 %newobject EventReceiver::receiveEvent;
-%factory(Event::Event * EventReceiver::receiveEvent, Status::StatusEvent, Event::Event);
+%factory(lsst::ctrl::events::Event::Event * lsst::ctrl::events::EventReceiver::receiveEvent, lsst::ctrl::events::StatusEvent, lsst::ctrl::events::Event);
 
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"
