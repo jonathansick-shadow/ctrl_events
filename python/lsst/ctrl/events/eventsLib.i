@@ -28,7 +28,7 @@ Access to the lsst::ctrl::events classes
 %}
 
 %include "lsst/p_lsstSwig.i"
-%include "factory.i"
+
 %lsst_exceptions()
 
 SWIG_SHARED_PTR_DERIVED(EventFormatter, lsst::pex::logging::LogFormatter, lsst::ctrl::events::EventFormatter)
@@ -36,8 +36,6 @@ SWIG_SHARED_PTR_DERIVED(EventFormatter, lsst::pex::logging::LogFormatter, lsst::
 %import "lsst/daf/base/baseLib.i"
 %import "lsst/pex/logging/loggingLib.i"
 %import "lsst/pex/policy/policyLib.i"
-/*
-*/
 
 %inline %{
 namespace lsst {
@@ -51,13 +49,11 @@ namespace lsst {
     }
 }
 %}
+%nothread lsst::ctrl::events::Event::Event;
 %nothread lsst::ctrl::events::EventTransmitter::EventTransmitter;
 %nothread lsst::ctrl::events::EventSystem::createTransmitter;
 %nothread lsst::ctrl::events::EventSystem::createLocalTransmitter;
 %nothread lsst::ctrl::events::EventSystem::createLocalReceiver;
-
-%newobject EventReceiver::receiveEvent;
-%factory(lsst::ctrl::events::Event::Event * lsst::ctrl::events::EventReceiver::receiveEvent, lsst::ctrl::events::StatusEvent, lsst::ctrl::events::Event);
 
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"
