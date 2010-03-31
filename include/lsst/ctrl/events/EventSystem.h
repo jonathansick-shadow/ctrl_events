@@ -25,6 +25,7 @@
 #include "lsst/ctrl/events.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
+#include "lsst/ctrl/events/CommandEvent.h"
 
 using lsst::daf::base::PropertySet;
 namespace pexPolicy = lsst::pex::policy;
@@ -75,6 +76,7 @@ public:
     unsigned short extractLocalId(unsigned long identificationId);
 
     StatusEvent* castToStatusEvent(Event* event);
+    CommandEvent* castToCommandEvent(Event* event);
 
     static const int DEFAULTHOSTPORT = 61616;
 private:

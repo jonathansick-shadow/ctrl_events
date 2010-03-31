@@ -114,10 +114,10 @@ void CommandEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setShortProperty("ORIG_PROCESSID", _orig_processId);
     msg->setIntProperty("ORIG_IPID", _orig_IPId);
 
-    msg->setLongProperty("DESTINATIONID", _originatorId);
-    msg->setShortProperty("DEST_LOCALID", _orig_localId);
-    msg->setShortProperty("DEST_PROCESSID", _orig_processId);
-    msg->setIntProperty("DEST_IPID", _orig_IPId);
+    msg->setLongProperty("DESTINATIONID", _destinationId);
+    msg->setShortProperty("DEST_LOCALID", _dest_localId);
+    msg->setShortProperty("DEST_PROCESSID", _dest_processId);
+    msg->setIntProperty("DEST_IPID", _dest_IPId);
 }
 
 unsigned long CommandEvent::getOriginatorId() { return _originatorId; }

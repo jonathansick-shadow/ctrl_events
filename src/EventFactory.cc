@@ -19,6 +19,7 @@
 
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
+#include "lsst/ctrl/events/CommandEvent.h"
 
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventFactory.h"
@@ -55,6 +56,8 @@ Event* EventFactory::createEvent(cms::TextMessage* msg, const PropertySet::Ptr p
     std::string _type = msg->getStringProperty("TYPE");
     if (_type == "_status") {
         return new StatusEvent(msg, psp);
+    } else if (_type == "_command") {
+        return new CommandEvent(msg, psp);
     }
     return new Event(msg, psp);
 }

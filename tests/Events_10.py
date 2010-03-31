@@ -19,9 +19,6 @@ def sendEvent(hostName, topic):
     
     event = events.StatusEvent("srptestrun", root)
 
-    # wait a short time so we can see the difference between the time 
-    # the event is created and the time it is published
-    time.sleep(2)
 
     # ok...now publish it
     trans.publishEvent(event)
@@ -38,6 +35,11 @@ if __name__ == "__main__":
     # send a test event, and wait to receive it
     #
     sendEvent(host, topicA)
+
+    # wait a short time so we can see the difference between the time 
+    # the event is created and the time it is published
+    time.sleep(1)
+
     sendEvent(host, topicB)
 
     val = yC.receiveEvent()
