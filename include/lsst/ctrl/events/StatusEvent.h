@@ -41,13 +41,19 @@ namespace events {
 class StatusEvent : public Event
 {
 public:
+    static const std::string ORIGINATORID;
+    static const std::string LOCALID;
+    static const std::string PROCESSID;
+    static const std::string IPID;
+
     StatusEvent();
-    
+    ~StatusEvent();
+
     StatusEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
     StatusEvent(const std::string& runid, const PropertySet::Ptr psp);
+
     virtual void populateHeader(cms::TextMessage *msg) const;
 
-    ~StatusEvent();
 
     unsigned short getProcessId();
     unsigned short getLocalId();

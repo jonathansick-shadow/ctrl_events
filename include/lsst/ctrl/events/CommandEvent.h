@@ -9,8 +9,8 @@
   *
   */
 
-#ifndef LSST_CTRL_EVENTS_LOGEVENT_H
-#define LSST_CTRL_EVENTS_LOGEVENT_H
+#ifndef LSST_CTRL_EVENTS_COMMANDEVENT_H
+#define LSST_CTRL_EVENTS_COMMANDEVENT_H
 
 #include <cms/Connection.h>
 #include <cms/Session.h>
@@ -41,6 +41,16 @@ namespace events {
 class CommandEvent : public Event
 {
 public:
+    static const std::string ORIGINATORID;
+    static const std::string ORIG_LOCALID;
+    static const std::string ORIG_PROCESSID;
+    static const std::string ORIG_IPID;
+
+    static const std::string DESTINATIONID;
+    static const std::string DEST_LOCALID;
+    static const std::string DEST_PROCESSID;
+    static const std::string DEST_IPID;
+
     CommandEvent();
     CommandEvent(const std::string& runid, unsigned long destinationId, const PropertySet::Ptr psp);
     CommandEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
@@ -79,4 +89,4 @@ private:
 }
 
 
-#endif /*end LSST_CTRL_EVENTS_LOGEVENT_H*/
+#endif /*end LSST_CTRL_EVENTS_COMMANDEVENT_H*/

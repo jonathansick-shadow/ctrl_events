@@ -38,6 +38,11 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
+const std::string StatusEvent::ORIGINATORID = "ORIGINATORID";
+const std::string StatusEvent::LOCALID = "LOCALID";
+const std::string StatusEvent::PROCESSID = "PROCESSID";
+const std::string StatusEvent::IPID = "IPID";
+
 /** \brief Creates StatusEvent which contains a PropertySet
   *
   */
@@ -48,10 +53,10 @@ StatusEvent::StatusEvent() : Event() {
 
 
 void StatusEvent::_init() {
-    _keywords.push_back("ORIGINATORID");
-    _keywords.push_back("LOCALID");
-    _keywords.push_back("PROCESSID");
-    _keywords.push_back("IPID");
+    _keywords.push_back(ORIGINATORID);
+    _keywords.push_back(LOCALID);
+    _keywords.push_back(PROCESSID);
+    _keywords.push_back(IPID);
 }
 
 StatusEvent::StatusEvent(cms::TextMessage *msg, const PropertySet::Ptr psp) : Event(msg, psp) {
@@ -59,20 +64,20 @@ StatusEvent::StatusEvent(cms::TextMessage *msg, const PropertySet::Ptr psp) : Ev
 
     _psp = psp;
 
-    _originatorId = msg->getLongProperty("ORIGINATORID");
-    _localId = msg->getShortProperty("LOCALID") ;
-    _processId = msg->getShortProperty("PROCESSID") ;
-    _IPId = msg->getIntProperty("IPID") ;
+    _originatorId = msg->getLongProperty(ORIGINATORID);
+    _localId = msg->getShortProperty(LOCALID) ;
+    _processId = msg->getShortProperty(PROCESSID) ;
+    _IPId = msg->getIntProperty(IPID) ;
 }
 
 void StatusEvent::setKeywords(PropertySet::Ptr psp) const {
 
     Event::setKeywords(psp);
 
-    psp->set("ORIGINATORID", _originatorId);
-    psp->set("LOCALID", _localId);
-    psp->set("PROCESSID", _processId);
-    psp->set("IPID", _IPId);
+    psp->set(ORIGINATORID, _originatorId);
+    psp->set(LOCALID, _localId);
+    psp->set(PROCESSID, _processId);
+    psp->set(IPID, _IPId);
 }
 
 StatusEvent::StatusEvent( const std::string& runId, const PropertySet::Ptr psp) : Event(runId, psp) {
@@ -93,10 +98,10 @@ StatusEvent::StatusEvent( const std::string& runId, const PropertySet::Ptr psp) 
 void StatusEvent::populateHeader(cms::TextMessage* msg) const {
     Event::populateHeader(msg);
 
-    msg->setLongProperty("ORIGINATORID", _originatorId);
-    msg->setShortProperty("LOCALID", _localId);
-    msg->setShortProperty("PROCESSID", _processId);
-    msg->setIntProperty("IPID", _IPId);
+    msg->setLongProperty(ORIGINATORID, _originatorId);
+    msg->setShortProperty(LOCALID, _localId);
+    msg->setShortProperty(PROCESSID, _processId);
+    msg->setIntProperty(IPID, _IPId);
 }
 
 unsigned long StatusEvent::getOriginatorId() {

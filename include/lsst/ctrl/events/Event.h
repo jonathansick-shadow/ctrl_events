@@ -43,6 +43,15 @@ namespace events {
 class Event
 {
 public:
+
+    static const std::string TYPE;
+    static const std::string EVENTTIME;
+    static const std::string HOSTID;
+    static const std::string RUNID;
+    static const std::string STATUS;
+    static const std::string TOPIC;
+    static const std::string PUBTIME;
+
     Event();
     Event(const std::string& runid, const PropertySet::Ptr ps);
     Event(cms::TextMessage *msg, const PropertySet::Ptr ps);
