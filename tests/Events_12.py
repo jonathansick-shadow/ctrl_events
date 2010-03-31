@@ -53,3 +53,4 @@ if __name__ == "__main__":
     statusevent = eventSystem.castToStatusEvent(val)
     print "OriginatorId"
     print statusevent.getOriginatorId()
+

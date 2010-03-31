@@ -29,8 +29,6 @@ Access to the lsst::ctrl::events classes
 
 %include "lsst/p_lsstSwig.i"
 
-%lsst_exceptions()
-
 SWIG_SHARED_PTR_DERIVED(EventFormatter, lsst::pex::logging::LogFormatter, lsst::ctrl::events::EventFormatter)
 
 %import "lsst/daf/base/baseLib.i"
@@ -49,11 +47,27 @@ namespace lsst {
     }
 }
 %}
-%nothread lsst::ctrl::events::Event::Event;
-%nothread lsst::ctrl::events::EventTransmitter::EventTransmitter;
-%nothread lsst::ctrl::events::EventSystem::createTransmitter;
-%nothread lsst::ctrl::events::EventSystem::createLocalTransmitter;
-%nothread lsst::ctrl::events::EventSystem::createLocalReceiver;
+
+/* exception definitions for this package have to reaquire the GIL
+ * or we get segmentation faults.  Python expects to have the GIL  when
+ * we get back into it.
+ */
+%exception {
+    try {
+        $action
+    } catch (lsst::pex::exceptions::Exception &e) {
+        SWIG_PYTHON_THREAD_END_ALLOW;
+        SWIG_PYTHON_THREAD_END_BLOCK;
+        raiseLsstException(e);
+        SWIG_fail;
+    } catch (std::exception & e) {
+        SWIG_PYTHON_THREAD_END_ALLOW;
+        SWIG_PYTHON_THREAD_END_BLOCK;
+        PyErr_SetString(PyExc_Exception, e.what());
+        SWIG_fail;
+    }
+}
+
 
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"
