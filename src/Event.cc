@@ -155,7 +155,7 @@ Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
     _psp->remove(RUNID);
 
     // _type is filled in here and is ignored in the passed PropertySet
-    _type = "_event"; // EventTypes::EVENT;
+    _type = EventTypes::EVENT;
     _psp->remove(TYPE);
 
     // _topic is filled in on publish and is ignored in the passed PropertySet

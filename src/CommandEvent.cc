@@ -14,6 +14,7 @@
 #include <limits>
 #include <cstring>
 
+#include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/CommandEvent.h"
 #include "lsst/ctrl/events/EventSystem.h"
@@ -112,7 +113,7 @@ CommandEvent::CommandEvent( const std::string& runId, const unsigned long destin
     _dest_processId = eventSystem.extractProcessId(_destinationId);
     _dest_IPId = eventSystem.extractHostId(_destinationId);
 
-    _type = "_command";
+    _type = EventTypes::COMMAND;
 
 }
 

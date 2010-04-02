@@ -14,6 +14,7 @@
 #include <limits>
 #include <cstring>
 
+#include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/EventSystem.h"
@@ -91,7 +92,7 @@ StatusEvent::StatusEvent( const std::string& runId, const PropertySet::Ptr psp) 
     _localId = eventSystem.extractLocalId(_originatorId);
     _processId = eventSystem.extractProcessId(_originatorId);
     _IPId = eventSystem.extractHostId(_originatorId);
-    _type = "_status";
+    _type = EventTypes::STATUS;
 
 }
 
