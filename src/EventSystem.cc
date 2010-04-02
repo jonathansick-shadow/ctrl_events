@@ -12,12 +12,23 @@
 #include <sstream>
 #include <stdexcept>
 
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventSystem.h"
+#include "lsst/ctrl/events/EventLibrary.h"
+#include "lsst/ctrl/events/Event.h"
+#include "lsst/ctrl/events/StatusEvent.h"
+#include "lsst/ctrl/events/CommandEvent.h"
 
 namespace pexLogging =lsst::pex::logging;
 namespace pexExceptions =lsst::pex::exceptions;
@@ -33,6 +44,7 @@ namespace events {
   *        the topic to receive from or send on.
   */
 EventSystem::EventSystem() {
+    EventLibrary().initializeLibrary();
 }
 
 /** \brief destructor
@@ -45,17 +57,53 @@ EventSystem::~EventSystem() {
   * \return The EventSystem object
   */
 EventSystem& EventSystem::getDefaultEventSystem() {
-    if (defaultEventSystem == 0) defaultEventSystem = new EventSystem();
+    if (defaultEventSystem == 0) {
+
+        // create the _hostId here, rather than
+        // reconstructing it every time we create an
+        // identificationId
+
+        char buf [255];
+        struct hostent *ent;
+        unsigned char a,b,c,d;
+
+        gethostname(buf, 255) ;
+        ent = (struct hostent *)gethostbyname(buf) ;
+
+        a = ent->h_addr_list[0][0] & 0xFF;
+        b = ent->h_addr_list[0][1] & 0xFF;
+        c = ent->h_addr_list[0][2] & 0xFF;
+        d = ent->h_addr_list[0][3] & 0xFF;
+
+        _hostId = (a << 24) | (b << 16) | (c << 8) | d;
+  
+        // create the default EventSystem object
+        defaultEventSystem = new EventSystem();
+    }
     return *defaultEventSystem;
+
 }
+
 EventSystem *EventSystem::defaultEventSystem = 0;
+unsigned int EventSystem::_hostId = 0;
+unsigned int EventSystem::_localId = 0;
 
 /** \brief create an EventTransmitter to send messages to the message broker
   * \param hostName the location of the message broker to use
   * \param topicName the topic to transmit events to
   */ 
 void EventSystem::createTransmitter(const std::string& hostName, const std::string& topicName) {
-    boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(hostName, topicName));
+    boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(hostName, EventSystem::DEFAULTHOSTPORT, topicName));
+    _transmitters.push_back(transmitter);
+}
+
+/** \brief create an EventTransmitter to send messages to the message broker
+  * \param hostName the location of the message broker to use
+  * \param hostPort the port where the broker can be reached
+  * \param topicName the topic to transmit events to
+  */ 
+void EventSystem::createTransmitter(const std::string& hostName, const int hostPort, const std::string& topicName) {
+    boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(hostName, hostPort, topicName));
     _transmitters.push_back(transmitter);
 }
 
@@ -67,20 +115,22 @@ void EventSystem::createTransmitter(const pexPolicy::Policy& policy) {
     _transmitters.push_back(transmitter);
 }
 
-void EventSystem::createLocalTransmitter(const std::string& topicName) {
-    pexPolicy::Policy policy;
-    policy.set("useLocalSockets", true);
-    policy.set("topicName", topicName);
-    boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(policy));
-    _transmitters.push_back(transmitter);
-}
-
 /** \brief create an EventReceiver which will receive message
   * \param hostName the location of the message broker to use
   * \param topicName the topic to receive messages from
   */
 void EventSystem::createReceiver(const std::string& hostName, const std::string& topicName) {
-    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, topicName));
+    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, EventSystem::DEFAULTHOSTPORT, topicName));
+    _receivers.push_back(receiver);
+}
+
+/** \brief create an EventReceiver which will receive message
+  * \param hostName the location of the message broker to use
+  * \param hostPort the port where the broker can be reached
+  * \param topicName the topic to receive messages from
+  */
+void EventSystem::createReceiver(const std::string& hostName, const int hostPort, const std::string& topicName) {
+    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, hostPort, topicName));
     _receivers.push_back(receiver);
 }
 
@@ -92,18 +142,29 @@ void EventSystem::createReceiver(const pexPolicy::Policy& policy) {
     _receivers.push_back(receiver);
 }
 
-/** \brief create an EventReceiver that uses local sockets to communicate
-  * \param topicName the topic to receive messages on
+/** \brief create an EventReceiver which will receive message
+  * \param hostName the location of the message broker to use
+  * \param topicName the topic to receive messages from
+  * \param selector the message selector to specify which messages to receive
   */
-void EventSystem::createLocalReceiver(const std::string& topicName) {
-    pexPolicy::Policy policy;
-    policy.set("useLocalSockets", true);
-    policy.set("topicName", topicName);
-    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(policy));
+void EventSystem::createReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector) {
+    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, topicName, selector));
     _receivers.push_back(receiver);
 }
 
-/** \brief send an event on a topic
+/** \brief create an EventReceiver which will receive message
+  * \param hostName the location of the message broker to use
+  * \param hostPort the port where the broker can be reached
+  * \param topicName the topic to receive messages from
+  * \param selector the message selector to specify which messages to receive
+  */
+void EventSystem::createReceiver(const std::string& hostName, const int hostPort, const std::string& topicName, const std::string& selector) {
+    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, hostPort, topicName, selector));
+    _receivers.push_back(receiver);
+}
+
+
+/** \brief send an PropertySet on a topic
   * \param topicName the topic to send messages to
   * \param psp the PropertySet to send
   * \throw Runtime exception if the topic wasn't already registered using 
@@ -112,9 +173,9 @@ void EventSystem::createLocalReceiver(const std::string& topicName) {
 void EventSystem::publish(const std::string& topicName, const PropertySet::Ptr psp) {
     boost::shared_ptr<EventTransmitter> transmitter;
     if ((transmitter = getTransmitter(topicName)) == 0) {
-    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
     }
-    transmitter->publish( psp);
+    transmitter->publish(psp);
 }
 
 /** \brief send an logging event
@@ -126,11 +187,24 @@ void EventSystem::publish(const std::string& topicName, const PropertySet::Ptr p
 void EventSystem::publish(const std::string& topicName, const pexLogging::LogRecord& rec) {
     boost::shared_ptr<EventTransmitter> transmitter;
     if ((transmitter = getTransmitter(topicName)) == 0) {
-    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
     }
     transmitter->publish(rec);
 }
 
+/** \brief send an event on a topic
+  * \param topicName the topic to send messages to
+  * \param event the Event to send
+  * \throw Runtime exception if the topic wasn't already registered using 
+  *        the createTransmitter method
+  */
+void EventSystem::publishEvent(const std::string& topicName, const Event& event) {
+    boost::shared_ptr<EventTransmitter> transmitter;
+    if ((transmitter = getTransmitter(topicName)) == 0) {
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
+    }
+    transmitter->publishEvent(event);
+}
 
 /** private method to retrieve a transmitter from the internal list
   */
@@ -168,90 +242,32 @@ PropertySet::Ptr EventSystem::receive(const std::string& topicName, const long t
     }
     return receiver->receive(timeout);
 }
-// TODO: roll this back into the Template, once the swig stuff is working properly
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const int value) {
-    return _matchingReceive(topicName, name, value);
-}
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const long value) {
-    return _matchingReceive(topicName, name, value);
-}
 
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const float value) {
-    return _matchingReceive(topicName, name, value);
-}
-
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const double value) {
-    return _matchingReceive(topicName, name, value);
-}
-
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const long long value) {
-    return _matchingReceive(topicName, name, value);
-}
-
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const std::string& value) {
-    return _matchingReceive(topicName, name, value);
-}
-
-
-/** \brief Receives events matching both the name and string value
-  *             
-  * \param topicName the topic to receive messages on
-  * \param name the Property name to match
-  * \param value the string value to match
-  * \return the matching PropertySet::Ptr object
+/** \brief blocking receive for events.  Waits until an event
+  *        is received for the topic specified in the constructor
+  * \param topicName the topic to listen on
+  * \return a PropertySet::Ptr object
   */
-template <typename T>
-PropertySet::Ptr EventSystem::_matchingReceive(const std::string& topicName, const std::string& name, const T& value) {
+Event* EventSystem::receiveEvent(const std::string& topicName) {
+    return receiveEvent(topicName, EventReceiver::infiniteTimeout);
+}
+
+/** \brief blocking receive for events, with timeout (in milliseconds).  
+  *        Waits until an event is received for the topic specified
+  *        in the constructor, or until the timeout expires.      
+  * \param topicName the topic to listen on
+  * \param timeout the time in milliseconds to wait before returning
+  * \return a Property::Ptr object on success, 0 on failure  see note
+  *         in receive()
+  */
+Event* EventSystem::receiveEvent(const std::string& topicName, const long timeout) {
     boost::shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
     throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
     }
-    return receiver->matchingReceive(name, value);
+    return receiver->receiveEvent(timeout);
 }
 
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, int value, const long timeout) {
-    return _matchingReceive(topicName, name, value, timeout);
-}
-
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, long value, const long timeout) {
-    return _matchingReceive(topicName, name, value, timeout);
-}
-
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, double value, const long timeout) {
-    return _matchingReceive(topicName, name, value, timeout);
-}
-
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, float value, const long timeout) {
-    return _matchingReceive(topicName, name, value, timeout);
-}
-
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, long long value, const long timeout) {
-    return _matchingReceive(topicName, name, value, timeout);
-}
-
-PropertySet::Ptr EventSystem::matchingReceive(const std::string& topicName, const std::string& name, const std::string& value, const long timeout) {
-    return _matchingReceive(topicName, name, value, timeout);
-}
-
-/** \brief Receives events matching both the name and string value within
-  *        the specified timeout (in milliseconds). Waits until the
-  *        matching event arrives, or until the timeout expires
-  *  
-  * \param topicName the topic to receive messages on
-  * \param name the DataProperty name to match  
-  * \param value the string value to match
-  * \param timeout the time to wait (in milliseconds)
-  * \return the matching PropertySet::Ptr object, 
-  *         or a null PropertySet::Ptr object on timeout expiration
-  */
-template <typename T>
-PropertySet::Ptr EventSystem::_matchingReceive(const std::string& topicName, const std::string& name, const T& value, long timeout) {
-    boost::shared_ptr<EventReceiver> receiver;
-    if ((receiver = getReceiver(topicName)) == 0) {
-    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
-    }
-    return receiver->matchingReceive(name, value, timeout);
-}
 
 /** private method used to retrieve the named EventReceiver object
   */
@@ -262,6 +278,46 @@ boost::shared_ptr<EventReceiver> EventSystem::getReceiver(const std::string& nam
             return *i;
     }
     return boost::shared_ptr<EventReceiver>();
+}
+
+unsigned long EventSystem::createOriginatorId() {
+    int pid = getpid();
+    
+    unsigned long originatorId = _hostId & 0x00000000FFFFFFFF;
+    originatorId = (originatorId << 32) | (pid << 16) | _localId;
+    _localId++;
+    return originatorId;
+}
+
+/** \brief extract the 32-bit hostId embedded in this identificationId.
+  *        This is the integer representation of the IPV4 network address
+  *        of the host associated with this identificationId
+  * \return the 16-bit hostId
+  */
+unsigned int EventSystem::extractHostId(unsigned long identificationId) {
+    return (identificationId & 0xFFFFFFFF00000000) >> 32;
+}
+
+/** \brief extract the 16-bit processId embedded in this identificationId
+  * \return the 16-bit processId
+  */
+unsigned short EventSystem::extractProcessId(unsigned long identificationId) {
+    return (identificationId & 0xFFFF0000) >> 16;
+}
+
+/** \brief extract the 16-bit localId embedded in this identificationId
+  * \return the 16-bit localId
+  */
+unsigned short EventSystem::extractLocalId(unsigned long identificationId) {
+    return identificationId & 0xFFFF;
+}
+
+StatusEvent* EventSystem::castToStatusEvent(Event* event) {
+    return (StatusEvent *)event;
+}
+
+CommandEvent* EventSystem::castToCommandEvent(Event* event) {
+    return (CommandEvent *)event;
 }
 
 }

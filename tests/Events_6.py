@@ -28,19 +28,25 @@ if __name__ == "__main__":
     host = "lsst8.ncsa.uiuc.edu"
     topic1 = "test_events_3"
     topic2 = "test_events_3a"
+    print "1"
     y1 = events.EventReceiver(host, topic1)
+    print "2"
     y2 = events.EventReceiver(host, topic2)
 
+    print "3"
     #
     # send a test event on both topics at once, and have each receiver wait to
     # receive it
     #
     sendEvent(host, topic1+","+topic2)
 
+    print "4"
     val = y1.receive()
     assert val != None
     print val.toString()
 
+    print "5"
     val = y2.receive()
     assert val != None
     print val.toString()
+    print "6"

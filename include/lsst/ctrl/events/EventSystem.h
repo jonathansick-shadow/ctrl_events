@@ -23,6 +23,9 @@
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/ctrl/events.h"
+#include "lsst/ctrl/events/Event.h"
+#include "lsst/ctrl/events/StatusEvent.h"
+#include "lsst/ctrl/events/CommandEvent.h"
 
 using lsst::daf::base::PropertySet;
 namespace pexPolicy = lsst::pex::policy;
@@ -32,6 +35,7 @@ using namespace std;
 namespace lsst {
 namespace ctrl {
 namespace events {
+
 /**
  * @brief Coordinate publishing and receiving events
  */
@@ -43,61 +47,48 @@ public:
 
     static EventSystem& getDefaultEventSystem();
 
-    void createTransmitter(const std::string& hostName, 
-                           const std::string& topicName);
-
     void createTransmitter(const pexPolicy::Policy& policy);
+    void createTransmitter(const std::string& hostName, const std::string& topicName);
+    void createTransmitter(const std::string& hostName, const int hostPort, const std::string& topicName);
 
-    void createLocalTransmitter(const std::string& topicName);
-
-    void createReceiver(const std::string& hostName, 
-                        const std::string& topicName);
 
     void createReceiver(const pexPolicy::Policy& policy);
+    void createReceiver(const std::string& hostName, const std::string& topicName);
+    void createReceiver(const std::string& hostName, const int hostPort, const std::string& topicName);
+    void createReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector);
+    void createReceiver(const std::string& hostName, const int hostPort, const std::string& topicName, const std::string& selector);
 
-    void createLocalReceiver(const std::string& topicName);
 
     void publish(const std::string& topicName, const PropertySet::Ptr psp);
-
     void publish(const std::string& topicName, const pexLogging::LogRecord& rec);
 
+    void publishEvent(const std::string& topicName, const Event& event);
+
     PropertySet::Ptr receive(const std::string& topicName);
+    PropertySet::Ptr receive(const std::string& topicName, const long timeout);
 
-    PropertySet::Ptr receive(const std::string& topicName,
-                                  const long timeout);
+    Event* receiveEvent(const std::string& topicName);
+    Event* receiveEvent(const std::string& topicName, const long timeout);
 
+    unsigned long createOriginatorId();
+    unsigned int extractHostId(unsigned long identificationId);
+    unsigned short extractProcessId(unsigned long identificationId);
+    unsigned short extractLocalId(unsigned long identificationId);
 
-    // TODO: all these need to be eliminated once the SWIG incantation for templates is figured out
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const int value);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long value);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const float value);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const double value);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long long value);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const std::string& value);
+    StatusEvent* castToStatusEvent(Event* event);
+    CommandEvent* castToCommandEvent(Event* event);
 
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const int value, long timeout);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long value, long timeout);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const float value, long timeout);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const double value, long timeout);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const long long value, long timeout);
-    PropertySet::Ptr matchingReceive(const std::string& topicName, const std::string& name, const std::string& value, long timeout);
-
+    static const int DEFAULTHOSTPORT = 61616;
 private:
-    template <typename T>
-    PropertySet::Ptr _matchingReceive(const std::string& topicName,
-                                          const std::string& name,
-                                          const T& value);
-
-    template <typename T>
-    PropertySet::Ptr _matchingReceive(const std::string& topicName,
-                                          const std::string& name,
-                                          const T& value,
-                                          long timeout);
     boost::shared_ptr<EventTransmitter> getTransmitter(const std::string& name);
     boost::shared_ptr<EventReceiver> getReceiver(const std::string& name);
 
 protected:
     static EventSystem *defaultEventSystem;
+
+    static unsigned int _localId;
+    static unsigned int _hostId;
+
     list<boost::shared_ptr<EventTransmitter> >_transmitters;
     list<boost::shared_ptr<EventReceiver> >_receivers;
 };

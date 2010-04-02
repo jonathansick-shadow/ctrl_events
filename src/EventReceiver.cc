@@ -13,7 +13,9 @@
 #include <stdexcept>
 #include <cstring>
 
+#include "lsst/ctrl/events/EventFactory.h"
 #include "lsst/ctrl/events/EventReceiver.h"
+#include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/daf/base/DateTime.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
@@ -22,6 +24,7 @@
 #include "lsst/pex/logging/LogRecord.h"
 #include <sys/socket.h>
 #include <sys/un.h>
+#include "lsst/ctrl/events/EventLibrary.h"
 
 #include <activemq/core/ActiveMQConnectionFactory.h>
 #include <activemq/exceptions/ActiveMQException.h>
@@ -44,6 +47,9 @@ namespace events {
   */
 
 EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
+    //EventLibrary().initializeLibrary();
+    int hostPort;
+
     try {
         _turnEventsOff = policy.getBool("turnEventsOff");
     } catch (pexPolicy::NameNotFound& e) {
@@ -51,6 +57,7 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
     }
     if (_turnEventsOff == true)
         return;
+
     if (!policy.exists("topicName")) {
         throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName not found in policy");
     }
@@ -62,26 +69,25 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
         _turnEventsOff = false;
     }
 
-    try {
-        _useLocalSockets = policy.getBool("useLocalSockets");
-    } catch (pexPolicy::NameNotFound& e) {
-        _useLocalSockets = false;
-    }
-
-    if (_useLocalSockets == false) {
-        if (!policy.exists("hostName")) {
-            throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostName was not specified in policy file");
-        }
-    }
-
-
     std::string hostName;
     try {
         hostName = policy.getString("hostName");
     } catch (pexPolicy::NameNotFound& e) {
         hostName = "non";
     }
-    init(hostName, topicName);
+
+    try {
+        hostPort = policy.getInt("hostPort");
+    } catch (pexPolicy::NameNotFound& e) {
+        hostPort = EventSystem::DEFAULTHOSTPORT;
+    }
+
+    try {
+        _selector = policy.getString("selector");
+    } catch (pexPolicy::NameNotFound& e) {
+        _selector = "";
+    }
+    init(hostName, hostPort, topicName, _selector);
 }
 
 /** \brief Receives events from the specified host and topic
@@ -91,52 +97,77 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
   * \throw throws Runtime exception if connection fails to initialize
   */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName) {
+    //EventLibrary().initializeLibrary();
+
     _turnEventsOff = false;
-    _useLocalSockets = false;
-    init(hostName, topicName);
+
+    init(hostName, EventSystem::DEFAULTHOSTPORT, topicName, "");
 }
+
+/** \brief Receives events from the specified host and topic
+  *
+  * \param hostName the machine hosting the message broker
+  * \param hostPort the port which the message broker is listening on
+  * \param topicName the topic to receive events from
+  * \throw throws Runtime exception if connection fails to initialize
+  */
+EventReceiver::EventReceiver(const std::string& hostName, const int hostPort, const std::string& topicName) {
+    //EventLibrary().initializeLibrary();
+
+    _turnEventsOff = false;
+
+    init(hostName, hostPort, topicName, "");
+}
+
+/** \brief Receives events from the specified host and topic
+  *
+  * \param hostName the machine hosting the message broker
+  * \param topicName the topic to receive events from
+  * \param selector the message selector expression to use
+  * \throw throws Runtime exception if connection fails to initialize
+  */
+EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector) {
+    _turnEventsOff = false;
+    init(hostName, EventSystem::DEFAULTHOSTPORT, topicName, selector);
+}
+
+/** \brief Receives events from the specified host and topic
+  *
+  * \param hostName the machine hosting the message broker
+  * \param hostPort the port which the message broker is listening on
+  * \param topicName the topic to receive events from
+  * \param selector the message selector expression to use
+  * \throw throws Runtime exception if connection fails to initialize
+  */
+EventReceiver::EventReceiver(const std::string& hostName, const int hostPort, const std::string& topicName, const std::string& selector) {
+    _turnEventsOff = false;
+    init(hostName, hostPort, topicName, selector);
+}
+
 
 
 /** private method for initialization of EventReceiver.  Sets up use of local
   * sockets or activemq, depending on how the policy file was configured.  
   */
-void EventReceiver::init(const std::string& hostName, const std::string& topicName) {
+void EventReceiver::init(const std::string& hostName, const int hostPort, const std::string& topicName, const std::string& selector) {
 
+    EventLibrary().initializeLibrary();
     _connection = NULL;
     _session = NULL;
     _destination = NULL;
     _consumer = NULL;
-    _sock = 0;
     _topic = topicName;
+    _selector = selector;
 
     if (_turnEventsOff == true)
         return;
 
-    if (_useLocalSockets == true) {
-        struct sockaddr_un local;
-        _useLocalSockets = true;
-        _sock = socket(AF_UNIX, SOCK_STREAM, 0);
-        if (_sock == -1) {
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "couldn't create local socket");
-        }
-
-        // bzero(&local, sizeof(local));
-        memset(&local, 0, sizeof(local));
-        local.sun_family = AF_UNIX;
-
-        std::string unix_socket = "/tmp/"+topicName;
-
-        strcpy(local.sun_path,unix_socket.c_str());
-        unlink(local.sun_path);
-
-        int len = strlen(local.sun_path)+sizeof(local.sun_family)+1;
-        bind(_sock, (struct sockaddr *)&local, len);
-        listen(_sock, 5);
-        return;
-    }
     try {
+        std::stringstream ss;
 
-        string jmsURL = "tcp://"+hostName+":61616?wireFormat=openwire";
+        ss << hostPort;
+
+        string jmsURL = "tcp://"+hostName+":"+ss.str()+"?wireFormat=openwire";
 
         activemqCore::ActiveMQConnectionFactory* connectionFactory =
             new activemqCore::ActiveMQConnectionFactory( jmsURL );
@@ -150,7 +181,10 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
 
         _destination = _session->createTopic( topicName );
 
-        _consumer = _session->createConsumer( _destination );
+        if (_selector == "")
+            _consumer = _session->createConsumer( _destination );
+        else
+            _consumer = _session->createConsumer( _destination, selector );
 
     } catch ( cms::CMSException& e ) {
         e.printStackTrace();
@@ -163,26 +197,8 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
   * \throw throws Runtime exception if receive fails unexpectedly
   */
 PropertySet::Ptr EventReceiver::receive() {
-    if (_messageCache.size() != 0) {
-        PropertySet::Ptr psp = _messageCache.front();
-        if (psp.get() != 0) {
-            _messageCache.remove(psp);
-            return psp;
-        }
-    }
-    return _receive();
+    return _receive(infiniteTimeout);
 }
-
-PropertySet::Ptr EventReceiver::_receive() {
-    if (_useLocalSockets == false) {
-        const cms::TextMessage* textMessage =
-            dynamic_cast<const cms::TextMessage* >(_consumer->receive());
-            return processTextMessage(textMessage);
-    } else {
-        return _receive(infiniteTimeout);
-    }
-}
-
 
 /** \brief blocking receive for events, with timeout (in milliseconds).  
   *        Waits until an event is received or until the timeout expires.
@@ -191,83 +207,7 @@ PropertySet::Ptr EventReceiver::_receive() {
   * \throw throws Runtime exception if receive fails unexpectedly
   */
 PropertySet::Ptr EventReceiver::receive(long timeout) {
-    if (_messageCache.size() != 0) {
-        PropertySet::Ptr psp = _messageCache.front();
-        if (psp.get() != 0) {
-            _messageCache.remove(psp);
-            return psp;
-        }
-    }
     return _receive(timeout);
-}
-
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, int value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, float value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, double value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long long value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, const std::string& value, long timeout) { return _matchingReceiveTimeout(name, value, timeout); }
-
-/** \brief Receives events matching both the name and string value, with timeout (in milliseconds
-  *        Waits until a matching event is received or until the timeout expires.
-  * \param name the DataProperty name to match
-  * \param value the DataProperty value to match
-  * \param timeout the time to wait (in milliseconds)
-  * \return the matching DataProperty::PtrType object
-  * \throw throws Runtime exception if receive fails unexpectedly
-  */
-template <typename T>
-PropertySet::Ptr EventReceiver::_matchingReceiveTimeout(const std::string& name, const T& value, long timeout) {
-    struct timeval tvStart;
-    struct timezone tzStart;
-    int sec, usec, total_usec, total_msec;
-    int ret;
-
-    PropertySet::Ptr psp = checkMessageCache(name, value);
-    if (psp.get() != 0) {
-        _messageCache.remove(psp);
-        return psp;
-    }
-
-    /*
-     * Receiving with timeout is slightly more complex when you're matching.  Messages
-     * could come out of order, and if they do, you want to still wait for any time
-     * you might have remaining to be sure the event you want doesn't come in during
-     *  that time.
-     */
-
-    ret = gettimeofday(&tvStart, &tzStart);
-    long currentTimeout = timeout;
-    while (currentTimeout > 0) {
-            psp = _receive(currentTimeout);
-            if (psp.get() == 0) {
-                return PropertySet::Ptr();
-            }
-
-            if (matches(psp, name, value) == true) {
-                return psp;
-            }
-
-            _messageCache.push_back(psp);
-
-            struct timeval tvCurrent;
-            struct timezone tzCurrent;
-            ret = gettimeofday(&tvCurrent, &tzCurrent);
-
-            sec = tvCurrent.tv_sec-tvStart.tv_sec;
-            usec = tvCurrent.tv_usec-tvStart.tv_usec;
-
-            total_usec = sec*1000000+usec;
-            total_msec = total_usec/1000;
-
-
-            int timeLeft = timeout-total_msec;
-            currentTimeout = timeLeft;
-            if (currentTimeout <= 0) {
-                return PropertySet::Ptr();
-            }
-    }
-    return PropertySet::Ptr();
 }
 
 /** private method that performs a regular (non-matching) receive for all
@@ -277,150 +217,52 @@ PropertySet::Ptr EventReceiver::_receive(long timeout) {
     if (_turnEventsOff == true)
         return PropertySet::Ptr();
 
-    if (_useLocalSockets == false) {
-        try {
-                const cms::TextMessage* textMessage =
-                    dynamic_cast<const cms::TextMessage* >(_consumer->receive(timeout));
-                    return processTextMessage(textMessage);
-        } catch (activemq::exceptions::ActiveMQException& e) {
-                throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
-        }
-    } else {
-        struct timeval tv;
-        fd_set readfds;
-
-        if (timeout >= 0) {
-                tv.tv_sec = (int)(timeout/1000);
-                tv.tv_usec = (int)((timeout-(tv.tv_sec*1000))*1000);
-        }
-
-        FD_ZERO(&readfds);
-        FD_SET(_sock, &readfds);
-
-        int select_val;
-        if (timeout == infiniteTimeout) {
-            select_val = select(_sock+1, &readfds, (fd_set *)0, (fd_set *)0, NULL);
-        } else {
-            select_val = select(_sock+1, &readfds, (fd_set *)0, (fd_set *)0, &tv);
-        }
-        if (select_val == 0) {
-            return PropertySet::Ptr();
-        } else if (select_val < 0) {
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "error on local socket select");
-            // return DataProperty::PtrType();
-        }
-
-        if (FD_ISSET(_sock, &readfds)) {
-            struct sockaddr_un remote;
-            int len = sizeof(struct sockaddr_un);
-            int remote_sock = accept(_sock, (struct sockaddr *)&remote, (socklen_t *)&len);
-            if (remote_sock < 0)
-                throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "error on local socket accept");
-            return processStandaloneMessage(remote_sock);
-        }
-       return PropertySet::Ptr();
+    try {
+            cms::TextMessage* textMessage =
+                dynamic_cast<cms::TextMessage* >(_consumer->receive(timeout));
+            return processTextMessage(textMessage);
+    } catch (activemq::exceptions::ActiveMQException& e) {
+            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
     }
 }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, int value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, float value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, double value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, long long value) { return _matchingReceive(name, value); }
-PropertySet::Ptr EventReceiver::matchingReceive(const std::string& name, const std::string& value) { return _matchingReceive(name, value); }
 
-
-template <typename T>
-PropertySet::Ptr EventReceiver::_matchingReceive(const std::string& name, const T& value) {
-
-    // check queue first
-    PropertySet::Ptr psp = checkMessageCache(name, value);
-    if (psp.get() != 0) {
-        _messageCache.remove(psp);
-        return psp;
-    }
-    while (true) { 
-        psp = _receive();
-        if (matches(psp, name, value) == true) {
-                return psp;
-        }
-        _messageCache.push_back(psp);
-    }
-    return PropertySet::Ptr();
+Event* EventReceiver::receiveEvent() {
+    return receiveEvent(infiniteTimeout);
 }
 
-bool EventReceiver::matches(const PropertySet::Ptr& psp, const std::string& name, boost::any value) {
-    if (psp->exists(name) == false)
-        return false;
-    if (psp->typeOf(name) == typeid(int)) {
-        int v1 = boost::any_cast<int>(value);
-        int v2 = psp->get<int>(name);
-        return (v1 == v2);
-    } else if (psp->typeOf(name) == typeid(std::string)) {
-        std::string v1 = boost::any_cast<std::string>(value);
-        std::string v2 = psp->get<std::string>(name);
-        return (v1 == v2);
-    } else if (psp->typeOf(name) == typeid(double)) {
-        double v1 = boost::any_cast<double>(value);
-        double v2 = psp->get<double>(name);
-        return (v1 == v2);
-    } else if (psp->typeOf(name) == typeid(long)) {
-        long v1 = boost::any_cast<long>(value);
-        long v2 = psp->get<long>(name);
-        return (v1 == v2);
-    } else if (psp->typeOf(name) == typeid(long long)) {
-        long long v1 = boost::any_cast<long long>(value);
-        long long v2 = psp->get<long long>(name);
-        return (v1 == v2);
-    } else if (psp->typeOf(name) == typeid(bool)) {
-        bool v1 = boost::any_cast<bool>(value);
-        bool v2 = psp->get<bool>(name);
-        return (v1 == v2);
-    } else if (psp->typeOf(name) == typeid(float)) {
-        float v1 = boost::any_cast<float>(value);
-        float v2 = psp->get<float>(name);
-        return (v1 == v2);
+Event* EventReceiver::receiveEvent(long timeout) {
+    PropertySet::Ptr psp;
+
+    if (_turnEventsOff == true)
+        return new Event();
+
+    
+    cms::TextMessage* textMessage;
+    try {
+            textMessage = dynamic_cast<cms::TextMessage* >(_consumer->receive(timeout));
+   
+            psp =  processTextMessage(textMessage);
+  
+    } catch (activemq::exceptions::ActiveMQException& e) {
+            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
     }
-    return false;
-}
 
-/** private method to check the internal message cache to be sure that the
-  * message we're looking for hasn't already been received.
-  */
-PropertySet::Ptr EventReceiver::checkMessageCache(const std::string& name, boost::any value) {
-    list<PropertySet::Ptr>::iterator it;
-    for (it = _messageCache.begin(); it != _messageCache.end(); it++) {
-        if (matches(*it, name, value)) {
-                return (*it);
-        }
-    }
-    return PropertySet::Ptr();
-}
+ 
+    std::cout << "about to create event" << std::endl;
+    Event* event = EventFactory().createEvent(textMessage, psp);
 
-/** private method to handle reading a local message from a socket
-  */
-PropertySet::Ptr EventReceiver::processStandaloneMessage(int remoteSocket) {
-        int messageLength;
-
-        int len = read(remoteSocket, &messageLength, 4);
-        char *buf = (char *)malloc(messageLength+1);
-
-        len = read(remoteSocket, buf, messageLength);
-        buf[len] = 0;
-
-        std::string text(buf);
-        free(buf);
-
-        PropertySet::Ptr retVal = unmarshall(text);
-        return retVal;
+    std::cout << "done creating event" << std::endl;
+    return event;
 }
 
 /** private method unmarshall the DataProperty from the TextMessage
   */
-PropertySet::Ptr EventReceiver::processTextMessage(const cms::TextMessage* textMessage) {
+PropertySet::Ptr EventReceiver::processTextMessage(cms::TextMessage* textMessage) {
     if (textMessage == NULL)
         return PropertySet::Ptr();
 
     std::string text = textMessage->getText();
+
     return unmarshall(text);
 }
 
@@ -431,6 +273,7 @@ PropertySet::Ptr EventReceiver::unmarshall(const std::string& text) {
 
     // split the text into tuples
     splitString(text, "~~", tuples);
+
 
     PropertySet::Ptr psp(new PropertySet);
 
@@ -517,11 +360,6 @@ std::string EventReceiver::getTopicName() {
 /** \brief destructor method
   */
 EventReceiver::~EventReceiver() {
-
-    if (_useLocalSockets == true) {
-        close(_sock);
-        return;
-    }
 
     // Destroy resources.
     try {

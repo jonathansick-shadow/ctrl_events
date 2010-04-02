@@ -18,5 +18,5 @@ if __name__ == "__main__":
     while (True): 
         print "waiting on logging event...\n"
         val = x.receive()
-        if val.get() != None:
-            print val.toString("=", 1)
+        if val != None:
+            print val.toString()

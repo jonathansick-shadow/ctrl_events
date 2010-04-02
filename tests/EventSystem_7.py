@@ -30,24 +30,3 @@ if __name__ == "__main__":
     topic1 = "test_events_3"
     eventSystem = events.EventSystem.getDefaultEventSystem()
 
-    #
-    # create a transmitter that has no receiver 
-    # 
-    try:
-        eventSystem.createLocalTransmitter("moo")
-    except ex.LsstCppException, e:
-        pass
-    #
-    # Create a local receiver and sender
-    #
-    eventSystem.createLocalReceiver(topic1)
-    eventSystem.createLocalTransmitter(topic1)
-
-    #
-    # send a test event on both topics at once, and have each receiver wait to
-    # receive it
-    #
-    sendEvent(topic1)
-
-    val = eventSystem.receive(topic1)
-    assert val != None
