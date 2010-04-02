@@ -3,6 +3,7 @@
 import time
 import threading
 import lsst.ctrl.events as events
+import lsst.pex.policy as policy
 from lsst.daf.base import PropertySet
 
 #
@@ -10,7 +11,7 @@ from lsst.daf.base import PropertySet
 #
 def sendEvent(hostName, topic):
     trans = events.EventTransmitter(hostName, topic)
-    
+
     root = PropertySet()
     root.set("TOPIC",topic)
     root.set("myname","myname")

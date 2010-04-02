@@ -44,6 +44,6 @@ if __name__ == "__main__":
     # 
     # TODO: fix this logging transmission and reception
     #
-    # rec = logging.LogRecord(-1,10)
-    # rec.addComment("a comment")
-    # eventSystem.publish(topic, rec)
+    rec = logging.LogRecord(-1,10)
+    rec.addComment("a comment")
+    eventSystem.publish(topic, rec)

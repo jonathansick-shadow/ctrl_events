@@ -21,8 +21,9 @@ namespace events {
 class EventTypes {
 public:
     static const std::string EVENT;
+    static const std::string STATUS;
+    static const std::string COMMAND;
 };
-    const std::string EventTypes::EVENT = "_event";
 }
 }
 }
