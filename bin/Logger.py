@@ -33,7 +33,7 @@ dbLogger = DatabaseLogger(host, int(port))
 
 dbLogger.connect(user, password, "events")
 
-receiver = events.EventReceiver("lsst8.ncsa.uiuc.edu", "LSSTLogging")
+receiver = events.EventReceiver(broker, "LSSTLogging")
 while True:
    ps = receiver.receive()
    dbLogger.insertRecord(ps)
