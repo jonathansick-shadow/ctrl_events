@@ -124,8 +124,10 @@ Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
     // do NOT alter the property set we were given. Make a copy of it,
     // and modify that one.
 
+    /*
     std::string foo = psp->toString();
     std::cout << "foo = " << foo << std::endl;
+    */
 
     if (!_psp->exists(STATUS)) {
         throw LSST_EXCEPT(pexExceptions::NotFoundException, "STATUS not found in PropertySet");

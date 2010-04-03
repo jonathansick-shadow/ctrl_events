@@ -248,10 +248,10 @@ Event* EventReceiver::receiveEvent(long timeout) {
     }
 
  
-    std::cout << "about to create event" << std::endl;
+    // std::cout << "about to create event" << std::endl;
     Event* event = EventFactory().createEvent(textMessage, psp);
 
-    std::cout << "done creating event" << std::endl;
+    // std::cout << "done creating event" << std::endl;
     return event;
 }
 
