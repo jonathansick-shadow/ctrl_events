@@ -18,7 +18,9 @@ def sendEvent(hostName, topic):
     root.set("STATUS", "my special status")
     root.set("RUNID","srptestrun")
     
-    event = events.StatusEvent("srptestrun", root)
+    eventSystem = events.EventSystem.getDefaultEventSystem()
+    originatorId = eventSystem.createOriginatorId()
+    event = events.StatusEvent("srptestrun", originatorId, root)
 
     # ok...now publish it
     trans.publishEvent(event)

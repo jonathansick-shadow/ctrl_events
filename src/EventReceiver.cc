@@ -69,12 +69,11 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
         _turnEventsOff = false;
     }
 
-    std::string hostName;
-    try {
-        hostName = policy.getString("hostName");
-    } catch (pexPolicy::NameNotFound& e) {
-        hostName = "non";
+    if (!policy.exists("hostName")) {
+        throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostName not found in policy");
     }
+
+    std::string hostName = policy.getString("hostName");
 
     try {
         hostPort = policy.getInt("hostPort");
@@ -172,10 +171,19 @@ void EventReceiver::init(const std::string& hostName, const int hostPort, const 
         activemqCore::ActiveMQConnectionFactory* connectionFactory =
             new activemqCore::ActiveMQConnectionFactory( jmsURL );
 
-
-        _connection = connectionFactory->createConnection();
-        delete connectionFactory;
-        _connection->start();
+        _connection = 0;
+        try {
+            _connection = connectionFactory->createConnection();
+            _connection->start();
+            delete connectionFactory;
+        }
+        catch (cms::CMSException& e) {
+            delete connectionFactory;
+            std::string msg("Failed to connect to broker: ");
+            msg += e.getMessage();
+            msg += " (is broker running?)";
+            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, msg);
+        }
 
         _session = _connection->createSession( cms::Session::AUTO_ACKNOWLEDGE );
 
@@ -187,7 +195,7 @@ void EventReceiver::init(const std::string& hostName, const int hostPort, const 
             _consumer = _session->createConsumer( _destination, selector );
 
     } catch ( cms::CMSException& e ) {
-        e.printStackTrace();
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, std::string("Trouble creating EventReceiver: ") + e.getMessage());
     }
 }
 
@@ -234,24 +242,28 @@ Event* EventReceiver::receiveEvent(long timeout) {
     PropertySet::Ptr psp;
 
     if (_turnEventsOff == true)
-        return new Event();
+        return NULL;
 
     
     cms::TextMessage* textMessage;
     try {
-            textMessage = dynamic_cast<cms::TextMessage* >(_consumer->receive(timeout));
-   
-            psp =  processTextMessage(textMessage);
+        cms::Message* msg = _consumer->receive(timeout);
+        if (msg == NULL) return NULL;
+        textMessage = dynamic_cast<cms::TextMessage* >(msg);
+        if (textMessage == NULL)
+            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Unexpected JMS Message type");
+                              
+        psp =  processTextMessage(textMessage);
   
     } catch (activemq::exceptions::ActiveMQException& e) {
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
     }
 
  
-    std::cout << "about to create event" << std::endl;
+    // std::cout << "about to create event" << std::endl;
     Event* event = EventFactory().createEvent(textMessage, psp);
 
-    std::cout << "done creating event" << std::endl;
+    // std::cout << "done creating event" << std::endl;
     return event;
 }
 

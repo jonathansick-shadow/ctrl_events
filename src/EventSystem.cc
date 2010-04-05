@@ -93,8 +93,13 @@ unsigned int EventSystem::_localId = 0;
   * \param topicName the topic to transmit events to
   */ 
 void EventSystem::createTransmitter(const std::string& hostName, const std::string& topicName) {
-    boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(hostName, EventSystem::DEFAULTHOSTPORT, topicName));
-    _transmitters.push_back(transmitter);
+    boost::shared_ptr<EventTransmitter> transmitter;
+    if ((transmitter = getTransmitter(topicName)) == 0) {
+        boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(hostName, EventSystem::DEFAULTHOSTPORT, topicName));
+        _transmitters.push_back(transmitter);
+        return;
+    }
+    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is already registered with EventSystem");
 }
 
 /** \brief create an EventTransmitter to send messages to the message broker
@@ -103,8 +108,13 @@ void EventSystem::createTransmitter(const std::string& hostName, const std::stri
   * \param topicName the topic to transmit events to
   */ 
 void EventSystem::createTransmitter(const std::string& hostName, const int hostPort, const std::string& topicName) {
-    boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(hostName, hostPort, topicName));
-    _transmitters.push_back(transmitter);
+    boost::shared_ptr<EventTransmitter> transmitter;
+    if ((transmitter = getTransmitter(topicName)) == 0) {
+        boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(hostName, hostPort, topicName));
+        _transmitters.push_back(transmitter);
+        return;
+    }
+    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is already registered with EventSystem");
 }
 
 /** \brief create an EventTransmitter to send messages to the message broker
@@ -112,7 +122,12 @@ void EventSystem::createTransmitter(const std::string& hostName, const int hostP
   */
 void EventSystem::createTransmitter(const pexPolicy::Policy& policy) {
     boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(policy));
-    _transmitters.push_back(transmitter);
+    boost::shared_ptr<EventTransmitter> transmitter2;
+    if ((transmitter2 = getTransmitter(transmitter->getTopicName())) == 0) {
+        _transmitters.push_back(transmitter);
+        return;
+    }
+    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ transmitter->getTopicName() + " is already registered with EventSystem");
 }
 
 /** \brief create an EventReceiver which will receive message
@@ -120,8 +135,13 @@ void EventSystem::createTransmitter(const pexPolicy::Policy& policy) {
   * \param topicName the topic to receive messages from
   */
 void EventSystem::createReceiver(const std::string& hostName, const std::string& topicName) {
-    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, EventSystem::DEFAULTHOSTPORT, topicName));
-    _receivers.push_back(receiver);
+    boost::shared_ptr<EventReceiver> receiver;
+    if ((receiver = getReceiver(topicName)) == 0) {
+        boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, EventSystem::DEFAULTHOSTPORT, topicName));
+        _receivers.push_back(receiver);
+        return;
+    }
+    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is already registered with EventSystem");
 }
 
 /** \brief create an EventReceiver which will receive message
@@ -130,8 +150,13 @@ void EventSystem::createReceiver(const std::string& hostName, const std::string&
   * \param topicName the topic to receive messages from
   */
 void EventSystem::createReceiver(const std::string& hostName, const int hostPort, const std::string& topicName) {
-    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, hostPort, topicName));
-    _receivers.push_back(receiver);
+    boost::shared_ptr<EventReceiver> receiver;
+    if ((receiver = getReceiver(topicName)) == 0) {
+        boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, hostPort, topicName));
+        _receivers.push_back(receiver);
+        return;
+    }
+    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is already registered with EventSystem");
 }
 
 /** \brief create an EventReceiver to receive messages from the message broker
@@ -139,7 +164,12 @@ void EventSystem::createReceiver(const std::string& hostName, const int hostPort
   */
 void EventSystem::createReceiver(const pexPolicy::Policy& policy) {
     boost::shared_ptr<EventReceiver> receiver(new EventReceiver(policy));
-    _receivers.push_back(receiver);
+    boost::shared_ptr<EventReceiver> receiver2;
+    if ((receiver2 = getReceiver(receiver->getTopicName())) == 0) {
+        _receivers.push_back(receiver);
+        return;
+    }
+    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic " + receiver->getTopicName() + " is already registered with EventSystem");
 }
 
 /** \brief create an EventReceiver which will receive message
@@ -263,7 +293,7 @@ Event* EventSystem::receiveEvent(const std::string& topicName) {
 Event* EventSystem::receiveEvent(const std::string& topicName, const long timeout) {
     boost::shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
-    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
     }
     return receiver->receiveEvent(timeout);
 }

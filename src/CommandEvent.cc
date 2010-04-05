@@ -76,7 +76,7 @@ CommandEvent::CommandEvent(cms::TextMessage *msg, const PropertySet::Ptr psp) : 
     _orig_processId = msg->getShortProperty(ORIG_PROCESSID) ;
     _orig_IPId = msg->getIntProperty(ORIG_IPID) ;
 
-    _destinationId = msg->getLongProperty(ORIGINATORID);
+    _destinationId = msg->getLongProperty(DESTINATIONID);
     _dest_localId = msg->getShortProperty(DEST_LOCALID) ;
     _dest_processId = msg->getShortProperty(DEST_PROCESSID) ;
     _dest_IPId = msg->getIntProperty(DEST_IPID) ;
@@ -97,13 +97,14 @@ void CommandEvent::setKeywords(PropertySet::Ptr psp) const {
     psp->set(DEST_IPID, _dest_IPId);
 }
 
-CommandEvent::CommandEvent( const std::string& runId, const unsigned long destinationId, const PropertySet::Ptr psp) : Event(runId, psp) {
+CommandEvent::CommandEvent( const std::string& runId, const unsigned long originatorId, const unsigned long destinationId, const PropertySet::Ptr psp) : Event(runId, psp) {
     _init();
 
 
     EventSystem eventSystem = EventSystem().getDefaultEventSystem();
 
-    _originatorId = eventSystem.createOriginatorId();
+    //_originatorId = eventSystem.createOriginatorId();
+    _originatorId = originatorId;
     _orig_localId = eventSystem.extractLocalId(_originatorId);
     _orig_processId = eventSystem.extractProcessId(_originatorId);
     _orig_IPId = eventSystem.extractHostId(_originatorId);

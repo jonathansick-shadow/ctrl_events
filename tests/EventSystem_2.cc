@@ -45,6 +45,18 @@ int main() {
     } catch (NotFoundException&) { 
     } 
 
-    eventSystem.createReceiver("lsst8.ncsa.uiuc.edu", "EventSystem_2_test");
+    p.set("topicName", "EventSystem_2_test");
+    p.set("useLocalSockets", false);
+    p.set("hostName", "garbage");
+    try {
+        eventSystem.createReceiver(p);
+    } catch (RuntimeErrorException&) { 
+    } 
 
+    try {
+        eventSystem.createReceiver("lsst8.ncsa.uiuc.edu", "EventSystem_2_test");
+    } catch (RuntimeErrorException&) { 
+        // can't create a receiver if one already exists for that topic
+    } 
+    eventSystem.createReceiver("lsst8.ncsa.uiuc.edu", "EventSystem_2_test2");
 }

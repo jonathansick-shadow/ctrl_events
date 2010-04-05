@@ -43,6 +43,14 @@ int main() {
     } catch (pexExceptions::NotFoundException&) { 
     } 
 
+    p.set("topicName", "Events_1_test");
+    p.set("useLocalSockets", false);
+    p.set("hostName", "garbage");
+    try {
+        ctrlEvents::EventTransmitter et2(p);
+    } catch (pexExceptions::RuntimeErrorException&) { 
+    } 
+
     ctrlEvents::EventTransmitter et4("lsst8.ncsa.uiuc.edu", "Events_1_test");
 
     // test publish("string", PropertySet)
@@ -64,4 +72,5 @@ int main() {
     std::string topicName = et4.getTopicName();
     Assert(topicName == "Events_1_test", "Topic name does not match initial name");
     std::cout << topicName << std::endl;
+
 }

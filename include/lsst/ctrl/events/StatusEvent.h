@@ -50,7 +50,7 @@ public:
     ~StatusEvent();
 
     StatusEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
-    StatusEvent(const std::string& runid, const PropertySet::Ptr psp);
+    StatusEvent(const std::string& runid, unsigned long originator, const PropertySet::Ptr psp);
 
     virtual void populateHeader(cms::TextMessage *msg) const;
 
