@@ -40,6 +40,7 @@ int main() {
 
     p.set("topicName", "EventSystem_2_test");
     p.set("useLocalSockets", false);
+    p.set("hostName", "lsst8.ncsa.uiuc.edu");
     try {
         eventSystem.createReceiver(p);
     } catch (NotFoundException&) { 

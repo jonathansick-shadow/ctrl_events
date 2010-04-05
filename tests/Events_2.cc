@@ -39,6 +39,7 @@ int main() {
 
     p.set("topicName", "Events_1_test");
     p.set("useLocalSockets", false);
+    p.set("hostName", "lsst8.ncsa.uiuc.edu");
     try {
         EventReceiver er2(p);
     } catch (NotFoundException&) { 

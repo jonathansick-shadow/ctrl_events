@@ -157,10 +157,19 @@ void EventTransmitter::init( const std::string& hostName, const int hostPort, co
         activemq::core::ActiveMQConnectionFactory* connectionFactory =
             new activemq::core::ActiveMQConnectionFactory( brokerUri );
 
-        _connection = connectionFactory->createConnection();
-        _connection->start();
-
-        delete connectionFactory;
+        _connection = 0;
+        try {
+            _connection = connectionFactory->createConnection();
+            _connection->start();
+            delete connectionFactory;
+        }
+        catch (cms::CMSException& e) {
+            delete connectionFactory;
+            std::string msg("Failed to connect to broker: ");
+            msg += e.getMessage();
+            msg += " (is broker running?)";
+            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, msg);
+        }
 
         _session = _connection->createSession( cms::Session::AUTO_ACKNOWLEDGE );
        
@@ -175,7 +184,7 @@ void EventTransmitter::init( const std::string& hostName, const int hostPort, co
         _producer = _session->createProducer(NULL);
         _producer->setDeliveryMode( cms::DeliveryMode::NON_PERSISTENT );
     } catch ( cms::CMSException& e ) {
-        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
+        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, std::string("Trouble creating EventTransmitter: ") + e.getMessage());
     }
 }
 

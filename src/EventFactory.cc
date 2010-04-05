@@ -20,6 +20,7 @@
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
+#include "lsst/ctrl/events/EventTypes.h"
 
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventFactory.h"
@@ -50,13 +51,15 @@ EventFactory::~EventFactory() {
 Event* EventFactory::createEvent(cms::TextMessage* msg, const PropertySet::Ptr psp) {
     vector<std::string> names = msg->getPropertyNames();
 
+    /*
     for (unsigned int i = 0; i < names.size(); i++) 
         std::cout << names[i] << std::endl;
+    */
 
     std::string _type = msg->getStringProperty("TYPE");
-    if (_type == "_status") {
+    if (_type == EventTypes::STATUS) {
         return new StatusEvent(msg, psp);
-    } else if (_type == "_command") {
+    } else if (_type == EventTypes::COMMAND) {
         return new CommandEvent(msg, psp);
     }
     return new Event(msg, psp);

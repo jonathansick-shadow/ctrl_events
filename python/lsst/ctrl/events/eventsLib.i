@@ -69,7 +69,6 @@ namespace lsst {
     }
 }
 
-
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"
 %include "lsst/ctrl/events/CommandEvent.h"
@@ -78,6 +77,21 @@ namespace lsst {
 %include "lsst/ctrl/events/EventLog.h"
 %include "lsst/ctrl/events/EventFormatter.h"
 %include "lsst/ctrl/events/EventSystem.h"
+
+%extend lsst::ctrl::events::EventReceiver {
+    lsst::ctrl::events::StatusEvent *receiveStatusEvent() {
+        return dynamic_cast<lsst::ctrl::events::StatusEvent*>(self->receiveEvent());
+    }
+    lsst::ctrl::events::StatusEvent *receiveStatusEvent(long timeout) {
+        return dynamic_cast<lsst::ctrl::events::StatusEvent*>(self->receiveEvent(timeout));
+    }
+    lsst::ctrl::events::CommandEvent *receiveCommandEvent() {
+        return dynamic_cast<lsst::ctrl::events::CommandEvent*>(self->receiveEvent());
+    }
+    lsst::ctrl::events::CommandEvent *receiveCommandEvent(long timeout) {
+        return dynamic_cast<lsst::ctrl::events::CommandEvent*>(self->receiveEvent(timeout));
+    }
+}
 
 
 /******************************************************************************/
