@@ -43,6 +43,7 @@ int main() {
     try {
         eventSystem.createTransmitter(p);
     } catch (pexExceptions::NotFoundException&) { 
+        std::cout << "not created" << std::endl;
     } 
 
     eventSystem.createTransmitter("lsst8.ncsa.uiuc.edu", "EventSystem_1_test");

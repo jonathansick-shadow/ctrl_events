@@ -81,13 +81,14 @@ void StatusEvent::setKeywords(PropertySet::Ptr psp) const {
     psp->set(IPID, _IPId);
 }
 
-StatusEvent::StatusEvent( const std::string& runId, const PropertySet::Ptr psp) : Event(runId, psp) {
+StatusEvent::StatusEvent( const std::string& runId, const unsigned long originatorId, const PropertySet::Ptr psp) : Event(runId, psp) {
     _init();
 
 
     EventSystem eventSystem = EventSystem().getDefaultEventSystem();
 
-    _originatorId = eventSystem.createOriginatorId();
+    //_originatorId = eventSystem.createOriginatorId();
+    _originatorId = originatorId;
 
     _localId = eventSystem.extractLocalId(_originatorId);
     _processId = eventSystem.extractProcessId(_originatorId);

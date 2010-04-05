@@ -69,12 +69,11 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
         _turnEventsOff = false;
     }
 
-    std::string hostName;
-    try {
-        hostName = policy.getString("hostName");
-    } catch (pexPolicy::NameNotFound& e) {
-        hostName = "non";
+    if (!policy.exists("hostName")) {
+        throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostName not found in policy");
     }
+
+    std::string hostName = policy.getString("hostName");
 
     try {
         hostPort = policy.getInt("hostPort");

@@ -45,10 +45,26 @@ int main() {
     } catch (NotFoundException&) { 
     } 
 
+    p.set("topicName", "Events_1_test");
+    p.set("useLocalSockets", false);
+    p.set("hostName", "garbage");
+    try {
+        EventReceiver er2(p);
+    } catch (RuntimeErrorException&) { 
+    } 
+
+    p.set("topicName", "Events_1_test");
+    p.set("useLocalSockets", false);
+    p.set("hostName", "lsst8.ncsa.uiuc.edu");
+    try {
+        EventReceiver er2(p);
+    } catch (RuntimeErrorException&) { 
+    } 
 
     EventReceiver er3("lsst8.ncsa.uiuc.edu", "Events_2_test");
 
     // test getTopicName();
     std::string topicName = er3.getTopicName();
     Assert(topicName == "Events_2_test", "Topic name does not match initial name");
+
 }

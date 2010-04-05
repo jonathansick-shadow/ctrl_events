@@ -52,7 +52,7 @@ public:
     static const std::string DEST_IPID;
 
     CommandEvent();
-    CommandEvent(const std::string& runid, unsigned long destinationId, const PropertySet::Ptr psp);
+    CommandEvent(const std::string& runid, unsigned long originatorId, unsigned long destinationId, const PropertySet::Ptr psp);
     CommandEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
     virtual void populateHeader(cms::TextMessage *msg) const;
 

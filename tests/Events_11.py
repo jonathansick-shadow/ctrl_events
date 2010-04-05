@@ -16,12 +16,14 @@ def sendEvent(hostName, topic):
     root.set("myname","myname")
     root.set("STATUS", "my special status")
     
-    event = events.StatusEvent("srptestrun1", root)
+    eventSystem = events.EventSystem.getDefaultEventSystem()
+    originatorId = eventSystem.createOriginatorId();
+    event = events.StatusEvent("srptestrun1", originatorId, root)
 
     # ok...now publish it
     trans.publishEvent(event)
 
-    event = events.StatusEvent("srptestrun2", root)
+    event = events.StatusEvent("srptestrun2", originatorId, root)
 
     # ok...now publish it
     trans.publishEvent(event)
