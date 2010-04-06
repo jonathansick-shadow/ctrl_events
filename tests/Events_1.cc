@@ -84,4 +84,9 @@ int main() {
     ctrlEvents::LogEvent logEvent("myrunid", lr2);
     et4.publishEvent(logEvent);
 
+    std::vector<std::string>vec = logEvent.getComment();
+    std::vector<std::string>::iterator iter;
+    for (iter = vec.begin(); iter != vec.end(); iter++) {
+        std::cout << *iter << std::endl;
+    }
 }

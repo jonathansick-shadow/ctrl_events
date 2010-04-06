@@ -56,7 +56,23 @@ LogEvent::LogEvent(cms::TextMessage *msg, const PropertySet::Ptr psp) : Event(ms
 
     _psp = psp;
 
-    // _comment = msg->getStringProperty(COMMENT);
+    vector<std::string>results;
+
+    std::string str = msg->getStringProperty(COMMENT);
+
+    std::string::size_type cutAt;
+
+    std::string::size_type delim_len = LogEvent::DELIMITER.length();
+    while( (cutAt = str.find(LogEvent::DELIMITER)) != str.npos ) {
+        if(cutAt > 0) {
+            results.push_back(str.substr(0,cutAt));
+        }
+        str = str.substr(cutAt+delim_len);
+    }
+    if(str.length() > 0) {
+        results.push_back(str);
+    }
+    _comment = results;
     _level = msg->getIntProperty(LEVEL);
     _log = msg->getStringProperty(LogEvent::LOG);
 }
@@ -98,7 +114,6 @@ void LogEvent::populateHeader(cms::TextMessage* msg) const {
     for (iter = vec.begin(); iter != vec.end(); iter++) {
         comment << *iter << LogEvent::DELIMITER;
     }
-    std::cout << "populate Header comment = " << comment.str() << std::endl;
 
     msg->setStringProperty(COMMENT, comment.str());
     msg->setIntProperty(LEVEL, _level);
