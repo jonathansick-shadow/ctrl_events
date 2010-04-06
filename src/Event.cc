@@ -113,12 +113,20 @@ vector<std::string> Event::getCustomPropertyNames() {
 }
 
 Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
+    _constructor(runId, *psp);
+}
+
+Event::Event( const std::string& runId, const PropertySet& ps) {
+    _constructor(runId, ps);
+}
+
+void Event::_constructor( const std::string& runId, const PropertySet& ps) {
     char hostname[HOST_NAME_MAX];
     time_t rawtime;
 
     _init();
     
-    _psp = psp->deepCopy();
+    _psp = ps.deepCopy();
 
 
     // do NOT alter the property set we were given. Make a copy of it,
@@ -130,7 +138,7 @@ Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
     */
 
     if (!_psp->exists(STATUS)) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundException, "STATUS not found in PropertySet");
+        _status = "";
     } else {
         _status = _psp->get<std::string>(STATUS);
         _psp->remove(STATUS);
@@ -144,7 +152,7 @@ Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
     }
    
 
-    if (!psp->exists(HOSTID)) {
+    if (!_psp->exists(HOSTID)) {
        gethostname(hostname, HOST_NAME_MAX);
        _hostId = hostname;
     } else {

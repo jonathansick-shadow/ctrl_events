@@ -81,7 +81,15 @@ void StatusEvent::setKeywords(PropertySet::Ptr psp) const {
     psp->set(IPID, _IPId);
 }
 
-StatusEvent::StatusEvent( const std::string& runId, const unsigned long originatorId, const PropertySet::Ptr psp) : Event(runId, psp) {
+StatusEvent::StatusEvent( const std::string& runId, const unsigned long originatorId, const PropertySet::Ptr psp) : Event(runId, *psp) {
+    _constructor(runId, originatorId, *psp);
+}
+
+StatusEvent::StatusEvent( const std::string& runId, const unsigned long originatorId, const PropertySet& ps) : Event(runId, ps) {
+    _constructor(runId, originatorId, ps);
+}
+
+void StatusEvent::_constructor(const std::string& runId, const unsigned long originatorId, const PropertySet& ps) {
     _init();
 
 

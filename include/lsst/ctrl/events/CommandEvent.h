@@ -20,7 +20,6 @@
 #include <iostream>
 
 #include "lsst/ctrl/events/Event.h"
-#include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
@@ -52,6 +51,7 @@ public:
     static const std::string DEST_IPID;
 
     CommandEvent();
+    CommandEvent(const std::string& runid, unsigned long originatorId, unsigned long destinationId, const PropertySet& ps);
     CommandEvent(const std::string& runid, unsigned long originatorId, unsigned long destinationId, const PropertySet::Ptr psp);
     CommandEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
     virtual void populateHeader(cms::TextMessage *msg) const;

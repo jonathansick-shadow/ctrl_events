@@ -25,6 +25,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include "lsst/ctrl/events/EventLibrary.h"
+#include "lsst/ctrl/events/EventBroker.h"
 
 #include <activemq/core/ActiveMQConnectionFactory.h>
 #include <activemq/exceptions/ActiveMQException.h>
@@ -78,7 +79,7 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
     try {
         hostPort = policy.getInt("hostPort");
     } catch (pexPolicy::NameNotFound& e) {
-        hostPort = EventSystem::DEFAULTHOSTPORT;
+        hostPort = EventBroker::DEFAULTHOSTPORT;
     }
 
     try {
@@ -86,69 +87,38 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
     } catch (pexPolicy::NameNotFound& e) {
         _selector = "";
     }
-    init(hostName, hostPort, topicName, _selector);
+    init(hostName, topicName, _selector, hostPort);
 }
 
 /** \brief Receives events from the specified host and topic
   *
   * \param hostName the machine hosting the message broker
   * \param topicName the topic to receive events from
+  * \param hostPort the port the message broker is listening on 
   * \throw throws Runtime exception if connection fails to initialize
   */
-EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName) {
-    //EventLibrary().initializeLibrary();
-
+EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, int hostPort) {
     _turnEventsOff = false;
-
-    init(hostName, EventSystem::DEFAULTHOSTPORT, topicName, "");
-}
-
-/** \brief Receives events from the specified host and topic
-  *
-  * \param hostName the machine hosting the message broker
-  * \param hostPort the port which the message broker is listening on
-  * \param topicName the topic to receive events from
-  * \throw throws Runtime exception if connection fails to initialize
-  */
-EventReceiver::EventReceiver(const std::string& hostName, const int hostPort, const std::string& topicName) {
-    //EventLibrary().initializeLibrary();
-
-    _turnEventsOff = false;
-
-    init(hostName, hostPort, topicName, "");
+    init(hostName, topicName, "", hostPort);
 }
 
 /** \brief Receives events from the specified host and topic
   *
   * \param hostName the machine hosting the message broker
   * \param topicName the topic to receive events from
-  * \param selector the message selector expression to use
+  * \param selector the message selector expression to use.  A selector value of "" is equivalent to no selector.
+  * \param hostPort the port the message broker is listening on 
   * \throw throws Runtime exception if connection fails to initialize
   */
-EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector) {
+EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort) {
     _turnEventsOff = false;
-    init(hostName, EventSystem::DEFAULTHOSTPORT, topicName, selector);
+    init(hostName, topicName, selector, hostPort);
 }
-
-/** \brief Receives events from the specified host and topic
-  *
-  * \param hostName the machine hosting the message broker
-  * \param hostPort the port which the message broker is listening on
-  * \param topicName the topic to receive events from
-  * \param selector the message selector expression to use
-  * \throw throws Runtime exception if connection fails to initialize
-  */
-EventReceiver::EventReceiver(const std::string& hostName, const int hostPort, const std::string& topicName, const std::string& selector) {
-    _turnEventsOff = false;
-    init(hostName, hostPort, topicName, selector);
-}
-
-
 
 /** private method for initialization of EventReceiver.  Sets up use of local
   * sockets or activemq, depending on how the policy file was configured.  
   */
-void EventReceiver::init(const std::string& hostName, const int hostPort, const std::string& topicName, const std::string& selector) {
+void EventReceiver::init(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort) {
 
     EventLibrary().initializeLibrary();
     _connection = NULL;

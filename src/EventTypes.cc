@@ -16,6 +16,7 @@ namespace lsst {
 namespace ctrl {
 namespace events {
     const std::string EventTypes::EVENT = "_E";
+    const std::string EventTypes::LOG = "_L";
     const std::string EventTypes::STATUS = "_S";
     const std::string EventTypes::COMMAND = "_C";
 }

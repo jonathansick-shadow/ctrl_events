@@ -27,6 +27,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include "lsst/ctrl/events/EventLibrary.h"
+#include "lsst/ctrl/events/EventBroker.h"
 
 #include <activemq/core/ActiveMQConnectionFactory.h>
 
@@ -82,6 +83,7 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
     if (!policy.exists("topicName")) {
         throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName not found in policy");
     }
+    _topicName = policy.getString("topicName");
 
     std::string hostName;
     try {
@@ -93,45 +95,30 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
     try {
         hostPort = policy.getInt("hostPort");
     } catch (pexPolicy::NameNotFound& e) {
-        hostPort = EventSystem::DEFAULTHOSTPORT;
+        hostPort = EventBroker::DEFAULTHOSTPORT;
     }
-    init(hostName, hostPort, policy.getString("topicName"));
+    init(hostName, _topicName, hostPort);
 }
 
 /** \brief Transmits events to the specified host and topic
   *
   * \param hostName the machine hosting the message broker
   * \param topicName the topic to transmit events to
-  * \throw throws RuntimeErrorException if local socket can't be created
-  * \throw throws RuntimeErrorException if connect to local socket fails
-  * \throw throws RuntimeErrorException if connect to remote ActiveMQ host fails
-  */
-EventTransmitter::EventTransmitter( const std::string& hostName, const std::string& topicName) {
-    EventLibrary().initializeLibrary();
-
-    _turnEventsOff = false;
-    init(hostName, EventSystem::DEFAULTHOSTPORT, topicName);
-}
-
-/** \brief Transmits events to the specified host and topic
-  *
-  * \param hostName the machine hosting the message broker
   * \param hostPort the port number which the message broker is listening to
-  * \param topicName the topic to transmit events to
   * \throw throws RuntimeErrorException if local socket can't be created
   * \throw throws RuntimeErrorException if connect to local socket fails
   * \throw throws RuntimeErrorException if connect to remote ActiveMQ host fails
   */
-EventTransmitter::EventTransmitter( const std::string& hostName, const int hostPort, const std::string& topicName) {
+EventTransmitter::EventTransmitter( const std::string& hostName, const std::string& topicName, int hostPort) {
     EventLibrary().initializeLibrary();
 
     _turnEventsOff = false;
-    init(hostName, hostPort, topicName);
+    init(hostName, topicName, hostPort);
 }
 
 /** private initialization method for configuring EventTransmitter
   */
-void EventTransmitter::init( const std::string& hostName, const int hostPort, const std::string& topicName) {
+void EventTransmitter::init( const std::string& hostName, const std::string& topicName, int hostPort) {
     _connection = NULL;
     _session = NULL;
     // _destination = NULL;

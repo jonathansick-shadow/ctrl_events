@@ -54,6 +54,7 @@ public:
 
     Event();
     Event(const std::string& runid, const PropertySet::Ptr ps);
+    Event(const std::string& runid, const PropertySet& ps);
     Event(cms::TextMessage *msg, const PropertySet::Ptr ps);
     // Event(const std::string& runid, const PropertySet::Ptr& ps);
 
@@ -88,6 +89,7 @@ protected:
     PropertySet::Ptr _psp;
     vector<std::string> _keywords;
     void _init();
+    void _constructor(const std::string& runid, const PropertySet& ps);
     virtual void setKeywords(PropertySet::Ptr psp) const;
 
     long _eventTime;

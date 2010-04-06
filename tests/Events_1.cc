@@ -73,4 +73,15 @@ int main() {
     Assert(topicName == "Events_1_test", "Topic name does not match initial name");
     std::cout << topicName << std::endl;
 
+    // test publish("string", LogRecord)
+    pexLogging::LogRecord lr2(-1, 10);
+    const char *comment2 = "a comment";
+    lr2.addComment(comment2);
+    lr2.addComment("a second comment");
+    lr2.addProperty("LOG", "Log value");
+    lr2.addProperty("NAME", "name value");
+
+    ctrlEvents::LogEvent logEvent("myrunid", lr2);
+    et4.publishEvent(logEvent);
+
 }

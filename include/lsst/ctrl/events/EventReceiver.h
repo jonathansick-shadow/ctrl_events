@@ -40,10 +40,10 @@ namespace events {
 class EventReceiver {
 public:
     EventReceiver(const pexPolicy::Policy& policy);
-    EventReceiver(const std::string& hostName, const std::string& topicName);
-    EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector);
-    EventReceiver(const std::string& hostName, const int hostPort, const std::string& topicName);
-    EventReceiver(const std::string& hostName, const int hostPort, const std::string& topicName, const std::string& selector);
+
+    EventReceiver(const std::string& hostName, const std::string& topicName, int hostPort = EventBroker::DEFAULTHOSTPORT);
+
+    EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort = EventBroker::DEFAULTHOSTPORT);
 
     // virtual destructor
     virtual ~EventReceiver();
@@ -59,7 +59,7 @@ public:
     static const long infiniteTimeout = -1;
 
 private:
-    void init(const std::string& hostName, const int port, const std::string& topicName, const std::string& selector);
+    void init(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort);
     PropertySet::Ptr _receive(long timeout);
 
     PropertySet::Ptr unmarshall(const std::string& text);

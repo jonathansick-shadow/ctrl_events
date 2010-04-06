@@ -97,7 +97,10 @@ void CommandEvent::setKeywords(PropertySet::Ptr psp) const {
     psp->set(DEST_IPID, _dest_IPId);
 }
 
-CommandEvent::CommandEvent( const std::string& runId, const unsigned long originatorId, const unsigned long destinationId, const PropertySet::Ptr psp) : Event(runId, psp) {
+CommandEvent::CommandEvent( const std::string& runId, const unsigned long originatorId, const unsigned long destinationId, const PropertySet::Ptr psp) : Event(runId, *psp) {
+}
+
+CommandEvent::CommandEvent( const std::string& runId, const unsigned long originatorId, const unsigned long destinationId, const PropertySet& ps) : Event(runId, ps) {
     _init();
 
 
