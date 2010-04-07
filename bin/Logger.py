@@ -33,9 +33,9 @@ dbLogger = DatabaseLogger(host, int(port))
 
 dbLogger.connect(user, password, "events")
 
-receiver = events.EventReceiver(broker, "LSSTLogging")
+receiver = events.EventReceiver(broker, events.EventLog.LOGGING_TOPIC)
 while True:
-   ps = receiver.receive()
-   dbLogger.insertRecord(ps)
+   event = receiver.receiveEvent()
+   dbLogger.insertRecord(event.getPropertySet())
 
 dbLogger.disconnect()

@@ -193,6 +193,7 @@ void EventTransmitter::publish(const PropertySet& ps) {
   *            channels.
   * \throw throws Runtime exception if publish fails
   */
+/*
 void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
 
     if (_turnEventsOff == true)
@@ -201,6 +202,25 @@ void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
     const PropertySet& ps = rec.getProperties();
 
     publish("logging", ps);
+}
+*/
+void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
+
+    if (_turnEventsOff == true)
+        return;
+
+    const PropertySet& ps = rec.getProperties();
+
+    std::cout << "In EventTransmitter::publish, the rec looks like" << std::endl;
+    std::cout << ps.toString() << std::endl;
+    if (!ps.exists(Event::RUNID)) {
+        LogEvent event("unspecified",rec);
+        publishEvent(event);
+    } else {
+        std::string runid = ps.get<std::string>(Event::RUNID);
+        LogEvent event(runid,rec);
+        publishEvent(event);
+    }
 }
 
 void EventTransmitter::publishEvent(const Event& event) {

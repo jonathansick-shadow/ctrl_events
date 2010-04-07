@@ -138,7 +138,7 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
     */
 
     if (!_psp->exists(STATUS)) {
-        _status = "";
+        _status = "unknown";
     } else {
         _status = _psp->get<std::string>(STATUS);
         _psp->remove(STATUS);
@@ -169,7 +169,7 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
     _psp->remove(TYPE);
 
     // _topic is filled in on publish and is ignored in the passed PropertySet
-    _topic = "meps";
+    _topic = "uninitialized topic";
     _psp->remove(TOPIC);
 
     // _pubTime is filled in on publish and is ignored in the passed PropertySet

@@ -14,7 +14,7 @@ if __name__ == "__main__":
     else:
         host = sys.argv[1]
     print "listening on host "+host
-    x = events.EventReceiver(host, "LSSTLogging")
+    x = events.EventReceiver(host, event.EventLog.LOGGING_TOPIC)
     while (True): 
         print "waiting on logging event...\n"
         val = x.receive()

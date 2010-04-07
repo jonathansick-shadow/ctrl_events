@@ -39,7 +39,7 @@ EventFormatter::~EventFormatter() {}
   */
 void EventFormatter::write(ostream *os, const pexLogging::LogRecord& rec) {
     EventSystem system = EventSystem::getDefaultEventSystem();
-    system.publish(EventLog::getLoggingTopic(), rec);
+    system.publish(EventLog::LOGGING_TOPIC, rec);
 }
 
 }

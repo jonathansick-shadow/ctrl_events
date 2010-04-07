@@ -9,18 +9,22 @@ class DatabaseLogger(MySQLBase):
 
     def __init__(self, dbHostName, portNumber):
         MySQLBase.__init__(self, dbHostName, portNumber)
-        self.keywords = ['hostId', 'runId', 'sliceId', 'LEVEL', 'LOG', 'DATE', 'TIMESTAMP', 'COMMENT', 'STATUS', 'pipeline']
+        self.keywords = ['HOSTID', 'RUNID', 'SLICEID', 'LEVEL', 'LOG', 'DATE', 'NODE', 'TIMESTAMP', 'COMMENT', 'STATUS', 'pipeline']
         self.keywordSet = set(self.keywords)
 
     def insertRecord(self, ps):
 
-        hostId = ps.get("hostId")
-        runId = ps.get("runId")
-        sliceId = ps.get("sliceId")
+        hostId = ps.get("HOSTID")
+        runId = ps.get("RUNID")
+        sliceId = ps.get("SLICEID")
         level = ps.get("LEVEL")
         log = ps.get("LOG")
         date = ps.get("DATE")
         ts = ps.get("TIMESTAMP")
+        node = -1
+        if ps.exists("NODE"):
+            node = ps.get("NODE")
+
         timestamp = ts.nsecs()
 
         commentList = ps.get("COMMENT")
@@ -36,6 +40,8 @@ class DatabaseLogger(MySQLBase):
                     comment = comment+";"+i
 
 
+        if (ps.exists("TOPIC")):
+            ps.remove("TOPIC")
         if (ps.exists("STATUS")):
             status = ps.get("STATUS")
         else:
@@ -61,7 +67,7 @@ class DatabaseLogger(MySQLBase):
         if custom == "":
             custom = "NULL"
 
-        cmd = """INSERT INTO logs.logger(hostId, runId, sliceid, status, level, log, date, TIMESTAMP, custom, comment, pipeline) values("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")""" % (hostId, runId, sliceId, status, level, log, date, timestamp, custom, comment, pipeline)
+        cmd = """INSERT INTO logs.logger(hostId, runId, sliceid, status, level, log, date, node, TIMESTAMP, custom, comment, pipeline) values("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")""" % (hostId, runId, sliceId, status, level, log, date, node, timestamp, custom, comment, pipeline)
 
 
         print cmd
