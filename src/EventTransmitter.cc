@@ -211,8 +211,6 @@ void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
 
     const PropertySet& ps = rec.getProperties();
 
-    std::cout << "In EventTransmitter::publish, the rec looks like" << std::endl;
-    std::cout << ps.toString() << std::endl;
     if (!ps.exists(Event::RUNID)) {
         LogEvent event("unspecified",rec);
         publishEvent(event);
@@ -225,8 +223,7 @@ void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
 
 void EventTransmitter::publishEvent(const Event& event) {
     PropertySet::Ptr psp;
-    time_t _pubtime;
-    long pubtime;
+    long long pubtime;
     cms::TextMessage* message = _session->createTextMessage();
 
     // since we can only create TextMessage objects via a Session,
@@ -238,7 +235,7 @@ void EventTransmitter::publishEvent(const Event& event) {
 
     message->setStringProperty("TOPIC", _topicName);
     
-    pubtime = time(&_pubtime);
+    pubtime = dafBase::DateTime::now().nsecs();
     message->setLongProperty("PUBTIME", pubtime);
 
     psp = event.getCustomPropertySet();
