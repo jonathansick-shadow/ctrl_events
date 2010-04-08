@@ -106,7 +106,6 @@ CommandEvent::CommandEvent( const std::string& runId, const unsigned long origin
 void CommandEvent::_constructor( const std::string& runId, const unsigned long originatorId, const unsigned long destinationId, const PropertySet& ps) {
     _init();
 
-    std::cout << "would have set properties for command event" << std::endl;
     EventSystem eventSystem = EventSystem().getDefaultEventSystem();
 
     //_originatorId = eventSystem.createOriginatorId();

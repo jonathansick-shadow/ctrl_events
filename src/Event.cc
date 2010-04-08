@@ -77,7 +77,6 @@ void Event::_init() {
 Event::Event(cms::TextMessage *msg) {
     _init();
 
-    std::cout << "setting properties for generic event" << std::endl;
     _psp = processTextMessage(msg);
 
     _type = msg->getStringProperty(TYPE);
