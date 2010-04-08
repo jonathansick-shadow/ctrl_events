@@ -59,6 +59,7 @@ int main() {
     pexLogging::LogRecord lr(-1, 10);
     const char *comment = "a comment";
     lr.addComment(comment);
-    eventSystem.publish("EventSystem_1_test", lr);
+    ctrlEvents::LogEvent logEvent("logrec", lr);
+    eventSystem.publishEvent("EventSystem_1_test", logEvent);
 
 }

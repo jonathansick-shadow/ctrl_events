@@ -175,23 +175,6 @@ void EventTransmitter::init( const std::string& hostName, const std::string& top
     }
 }
 
-void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
-
-    if (_turnEventsOff == true)
-        return;
-
-    const PropertySet& ps = rec.getProperties();
-
-    if (!ps.exists(Event::RUNID)) {
-        LogEvent event("unspecified",rec);
-        publishEvent(event);
-    } else {
-        std::string runid = ps.get<std::string>(Event::RUNID);
-        LogEvent event(runid,rec);
-        publishEvent(event);
-    }
-}
-
 void EventTransmitter::publishEvent(Event& event) {
     long long pubtime;
     cms::TextMessage* message = _session->createTextMessage();

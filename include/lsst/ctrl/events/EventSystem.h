@@ -21,7 +21,6 @@
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/logging/LogRecord.h"
 #include "lsst/ctrl/events.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
@@ -57,8 +56,6 @@ public:
 
     void createReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort = EventBroker::DEFAULTHOSTPORT);
 
-
-    void publish(const std::string& topicName, const pexLogging::LogRecord& rec);
     void publishEvent(const std::string& topicName, Event& event);
 
     Event* receiveEvent(const std::string& topicName);

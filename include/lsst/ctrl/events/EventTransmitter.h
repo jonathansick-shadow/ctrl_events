@@ -51,7 +51,6 @@ public:
 
     std::string getTopicName();
 
-    void publish(const pexLogging::LogRecord& rec);
     void publishEvent(Event& event);
 
 private:

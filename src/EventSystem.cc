@@ -20,7 +20,6 @@
 #include <netdb.h>
 
 #include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/ctrl/events/EventLog.h"
@@ -30,7 +29,6 @@
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
 
-namespace pexLogging =lsst::pex::logging;
 namespace pexExceptions =lsst::pex::exceptions;
 
 using namespace std;
@@ -155,20 +153,6 @@ void EventSystem::createReceiver(const std::string& hostName, const std::string&
     _receivers.push_back(receiver);
 }
 
-
-/** \brief send an logging event
-  * \param topicName the topic to send messages to
-  * \param rec the LogRecord to send
-  * \throw Runtime exception if the topic wasn't already registered using 
-  *        the createTransmitter method
-  */
-void EventSystem::publish(const std::string& topicName, const pexLogging::LogRecord& rec) {
-    boost::shared_ptr<EventTransmitter> transmitter;
-    if ((transmitter = getTransmitter(topicName)) == 0) {
-        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
-    }
-    transmitter->publish(rec);
-}
 
 /** \brief send an event on a topic
   * \param topicName the topic to send messages to

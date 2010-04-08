@@ -47,4 +47,5 @@ if __name__ == "__main__":
     #
     rec = logging.LogRecord(-1,10)
     rec.addComment("a comment")
-    eventSystem.publish(topic, rec)
+    event = events.LogEvent("runid_es3_log", rec)
+    eventSystem.publishEvent(topic, event)

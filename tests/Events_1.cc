@@ -69,7 +69,8 @@ int main() {
     pexLogging::LogRecord lr(-1, 10);
     const char *comment = "a comment";
     lr.addComment(comment);
-    et4.publish(lr);
+    ctrlEvents::LogEvent logEvent("logrec", lr);
+    et4.publishEvent(logEvent);
 
     // test getTopicName();
     std::string topicName = et4.getTopicName();
@@ -84,8 +85,8 @@ int main() {
     lr2.addProperty("LOG", "Log value");
     lr2.addProperty("NAME", "name value");
 
-    ctrlEvents::LogEvent logEvent("myrunid", lr2);
-    et4.publishEvent(logEvent);
+    ctrlEvents::LogEvent logEvent2("myrunid", lr2);
+    et4.publishEvent(logEvent2);
 
     std::vector<std::string>vec = logEvent.getComment();
     std::vector<std::string>::iterator iter;

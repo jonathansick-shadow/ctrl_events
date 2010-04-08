@@ -58,7 +58,7 @@ Event* EventFactory::createEvent(cms::TextMessage* msg) {
     */
 
     std::string _type = msg->getStringProperty("TYPE");
-    std::cout << "TYPE: " << _type << std::endl;
+
     if (_type == EventTypes::LOG) {
         return new LogEvent(msg);
     } else if (_type == EventTypes::STATUS) {
