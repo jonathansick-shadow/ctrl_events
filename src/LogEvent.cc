@@ -51,10 +51,8 @@ void LogEvent::_init() {
     _keywords.push_back(LogEvent::LOG);
 }
 
-LogEvent::LogEvent(cms::TextMessage *msg, const PropertySet::Ptr psp) : Event(msg, psp) {
+LogEvent::LogEvent(cms::TextMessage *msg) : Event(msg) {
     _init();
-
-    _psp = psp;
 
     vector<std::string>results;
 
@@ -115,7 +113,7 @@ LogEvent::LogEvent( const std::string& runId, const pexLogging::LogRecord& rec) 
 
 }
 
-void LogEvent::populateHeader(cms::TextMessage* msg) const {
+void LogEvent::populateHeader(cms::TextMessage* msg) {
     Event::populateHeader(msg);
 
     std::vector<std::string> vec  = _comment;

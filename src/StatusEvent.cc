@@ -60,10 +60,8 @@ void StatusEvent::_init() {
     _keywords.push_back(IPID);
 }
 
-StatusEvent::StatusEvent(cms::TextMessage *msg, const PropertySet::Ptr psp) : Event(msg, psp) {
+StatusEvent::StatusEvent(cms::TextMessage *msg) : Event(msg) {
     _init();
-
-    _psp = psp;
 
     _originatorId = msg->getLongProperty(ORIGINATORID);
     _localId = msg->getShortProperty(LOCALID) ;
@@ -105,7 +103,7 @@ void StatusEvent::_constructor(const std::string& runId, const unsigned long ori
 
 }
 
-void StatusEvent::populateHeader(cms::TextMessage* msg) const {
+void StatusEvent::populateHeader(cms::TextMessage* msg) {
     Event::populateHeader(msg);
 
     msg->setLongProperty(ORIGINATORID, _originatorId);

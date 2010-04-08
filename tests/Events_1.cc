@@ -56,11 +56,14 @@ int main() {
     // test publish("string", PropertySet)
     PropertySet::Ptr psp1(new PropertySet);
     psp1->set("test2",12);
-    et4.publish(psp1);
+
+    ctrlEvents::Event event1("event1", psp1);
+    et4.publishEvent(event1);
 
     PropertySet::Ptr psp2(new PropertySet);
     psp2->set("test3",(long)13);
-    et4.publish(psp2);
+    ctrlEvents::Event event2("event2", psp2);
+    et4.publishEvent(event2);
 
     // test publish("string", LogRecord)
     pexLogging::LogRecord lr(-1, 10);

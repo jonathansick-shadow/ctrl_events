@@ -74,10 +74,11 @@ void Event::_init() {
     _keywords.push_back(PUBTIME);
 }
 
-Event::Event(cms::TextMessage *msg, const PropertySet::Ptr psp) {
+Event::Event(cms::TextMessage *msg) {
     _init();
 
-    _psp = psp;
+    std::cout << "setting properties for generic event" << std::endl;
+    _psp = processTextMessage(msg);
 
     _type = msg->getStringProperty(TYPE);
     _eventTime = msg->getLongProperty(EVENTTIME) ;
@@ -190,7 +191,7 @@ void Event::setKeywords(PropertySet::Ptr psp)  const {
     psp->set(PUBTIME, _pubTime);
 }
 
-void Event::populateHeader(cms::TextMessage* msg) const {
+void Event::populateHeader(cms::TextMessage* msg) {
     msg->setStringProperty(TYPE, _type);
     msg->setLongProperty(EVENTTIME, _eventTime);
     msg->setStringProperty(HOSTID, _hostId);
@@ -272,7 +273,171 @@ std::string Event::getTopic() {
     return _topic;
 }
 
+void Event::marshall(cms::TextMessage *msg) {
+    PropertySet::Ptr psp;
 
+    populateHeader(msg);
+    psp = getCustomPropertySet();
+    std::string payload = marshall(*psp);
+    msg->setText(payload);
+}
+
+
+std::string Event::marshall(const PropertySet& ps) {
+    std::vector<std::string> v = ps.paramNames(false);
+
+    // TODO: optimize this to get use getArray only when necessary
+    std::ostringstream payload;
+    unsigned int i;
+    payload << "nodelist||nodelist||" << (v.size()) << "~~";
+    for (i = 0; i < v.size(); i++) {
+        std::string name = v[i];
+        if (ps.typeOf(name) == typeid(bool)) {
+            std::vector<bool> vec  = ps.getArray<bool>(name);
+            std::vector<bool>::iterator iter;
+            for (iter = vec.begin(); iter != vec.end(); iter++) {
+                payload << "bool||"<< name << "||" << *iter << "~~";
+            }
+        } else if (ps.typeOf(name) == typeid(long)) {
+            std::vector<long> vec  = ps.getArray<long>(name);
+            std::vector<long>::iterator iter;
+            for (iter = vec.begin(); iter != vec.end(); iter++) {
+                payload << "long||" << name << "||"<< *iter << "~~";
+            }
+        } else if (ps.typeOf(name) == typeid(int)) {
+            std::vector<int> vec  = ps.getArray<int>(name);
+            std::vector<int>::iterator iter;
+            for (iter = vec.begin(); iter != vec.end(); iter++) {
+                payload << "int||" << name << "||"<< *iter << "~~";
+            }
+        } else if (ps.typeOf(name) == typeid(float)) {
+            std::vector<float> vec  = ps.getArray<float>(name);
+            std::vector<float>::iterator iter;
+            payload.precision(numeric_limits<float>::digits10+1);
+            for (iter = vec.begin(); iter != vec.end(); iter++) {
+                payload << "float||"<< name << "||"<< *iter << "~~";
+            }
+        } else if (ps.typeOf(name) == typeid(double)) {
+            std::vector<double> vec  = ps.getArray<double>(name);
+            std::vector<double>::iterator iter;
+            payload.precision(numeric_limits<double>::digits10+1);
+            for (iter = vec.begin(); iter != vec.end(); iter++) {
+                payload << "double||"<< name << "||"<< *iter << "~~";
+            }
+        } else if (ps.typeOf(name) == typeid(std::string)) {
+            std::vector<std::string> vec  = ps.getArray<std::string>(name);
+            std::vector<std::string>::iterator iter;
+            for (iter = vec.begin(); iter != vec.end(); iter++) {
+                payload << "string||" << name << "||"<< *iter << "~~";
+            }
+        } else if (ps.typeOf(name) == typeid(lsst::daf::base::DateTime)) {
+            std::vector<lsst::daf::base::DateTime> vec  = ps.getArray<lsst::daf::base::DateTime>(name);
+            std::vector<lsst::daf::base::DateTime>::iterator iter;
+            for (iter = vec.begin(); iter != vec.end(); iter++) {
+                payload << "datetime||" << name << "||"<< (*iter).nsecs() << "~~";
+            }
+        } else {
+            std::cout << "Couldn't marshall "<< name << std::endl;
+        }
+    }
+    return payload.str();
+}
+
+/** private method unmarshall the DataProperty from the TextMessage
+  */
+PropertySet::Ptr Event::processTextMessage(cms::TextMessage* textMessage) {
+    if (textMessage == NULL)
+        return PropertySet::Ptr();
+
+    std::string text = textMessage->getText();
+
+    return unmarshall(text);
+}
+
+/** private method unmarshall the DataProperty from a text string
+  */
+PropertySet::Ptr Event::unmarshall(const std::string& text) {
+    std::vector<string> tuples;
+
+    // split the text into tuples
+    splitString(text, "~~", tuples);
+
+
+    PropertySet::Ptr psp(new PropertySet);
+
+    unsigned int i;
+    for (i = 0; i < tuples.size(); i++) {
+        std::string line = tuples.at(i);
+        std::vector<string> vec;
+        splitString(line, "||", vec);
+
+        std::string type = vec.at(0);
+        std::string key = vec.at(1);
+        std::string val = vec.at(2);
+
+        std::istringstream iss(val);
+        boost::any value;
+
+        if (type == "int") {
+            int int_value;
+            iss >> int_value;
+            value = boost::any(int_value);
+            psp->add(key, int_value);
+        } else if (type == "bool") {
+            bool bool_value;
+            iss >> bool_value;
+            value = boost::any(bool_value);
+            psp->add(key, bool_value);
+        } else if (type == "long long") {
+            long long longlong_value;
+            iss >> longlong_value;
+            value = boost::any(longlong_value);
+            psp->add(key, longlong_value);
+        } else if (type == "long") {
+            long long_value;
+            iss >> long_value;
+            value = boost::any(long_value);
+            psp->add(key, long_value);
+        } else if (type == "float") {
+            float float_value;
+            iss >> float_value;
+            value = boost::any(float_value);
+            psp->add(key, float_value);
+        } else if (type == "double") {
+            double double_value;
+            iss >> double_value;
+            value = boost::any(double_value);
+            psp->add(key, double_value);
+        } else if (type == "string") {
+            psp->add(key, val);
+        } else if (type == "datetime") {
+            long long longlong_value;
+            iss >> longlong_value;
+            psp->add(key, lsst::daf::base::DateTime(longlong_value, lsst::daf::base::DateTime::UTC));
+        }
+        // type == nodelist can be ignored
+    }
+        
+    return psp;
+}
+
+/** private method to split a string along it's delimitors and return the
+  * results in a vector
+  */
+void Event::splitString(std::string str, std::string delim, 
+                                std::vector<std::string>&results) {
+    std::string::size_type cutAt;
+    std::string::size_type delim_len = delim.length();
+    while( (cutAt = str.find(delim)) != str.npos ) {
+        if(cutAt > 0) {
+            results.push_back(str.substr(0,cutAt));
+        }
+        str = str.substr(cutAt+delim_len);
+    }
+    if(str.length() > 0) {
+        results.push_back(str);
+    }
+}
 
 /** \brief destructor
   */
@@ -282,3 +447,4 @@ Event::~Event() {
 }
 }
 }
+

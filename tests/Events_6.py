@@ -22,7 +22,8 @@ def sendEvent(hostName, topicName):
     root.set("misc2","data 2")
     root.setFloat("float_value", 3.14)
     
-    trans.publish(root)
+    event = events.Event("runid_test6",root)
+    trans.publishEvent(event)
 
 if __name__ == "__main__":
     host = "lsst8.ncsa.uiuc.edu"
@@ -41,12 +42,14 @@ if __name__ == "__main__":
     sendEvent(host, topic1+","+topic2)
 
     print "4"
-    val = y1.receive()
+    val = y1.receiveEvent()
     assert val != None
-    print val.toString()
+    ps = val.getPropertySet()
+    print ps.toString()
 
     print "5"
-    val = y2.receive()
+    val = y2.receiveEvent()
     assert val != None
-    print val.toString()
+    ps = val.getPropertySet()
+    print ps.toString()
     print "6"

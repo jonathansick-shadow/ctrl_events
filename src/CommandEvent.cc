@@ -66,10 +66,8 @@ void CommandEvent::_init() {
     _keywords.push_back(DEST_IPID);
 }
 
-CommandEvent::CommandEvent(cms::TextMessage *msg, const PropertySet::Ptr psp) : Event(msg, psp) {
+CommandEvent::CommandEvent(cms::TextMessage *msg) : Event(msg) {
     _init();
-
-    _psp = psp;
 
     _originatorId = msg->getLongProperty(ORIGINATORID);
     _orig_localId = msg->getShortProperty(ORIG_LOCALID) ;
@@ -98,12 +96,17 @@ void CommandEvent::setKeywords(PropertySet::Ptr psp) const {
 }
 
 CommandEvent::CommandEvent( const std::string& runId, const unsigned long originatorId, const unsigned long destinationId, const PropertySet::Ptr psp) : Event(runId, *psp) {
+    _constructor(runId, originatorId, destinationId, *psp);
 }
 
 CommandEvent::CommandEvent( const std::string& runId, const unsigned long originatorId, const unsigned long destinationId, const PropertySet& ps) : Event(runId, ps) {
+    _constructor(runId, originatorId, destinationId, ps);
+}
+
+void CommandEvent::_constructor( const std::string& runId, const unsigned long originatorId, const unsigned long destinationId, const PropertySet& ps) {
     _init();
 
-
+    std::cout << "would have set properties for command event" << std::endl;
     EventSystem eventSystem = EventSystem().getDefaultEventSystem();
 
     //_originatorId = eventSystem.createOriginatorId();
@@ -121,7 +124,7 @@ CommandEvent::CommandEvent( const std::string& runId, const unsigned long origin
 
 }
 
-void CommandEvent::populateHeader(cms::TextMessage* msg) const {
+void CommandEvent::populateHeader(cms::TextMessage* msg) {
     Event::populateHeader(msg);
 
     msg->setLongProperty(ORIGINATORID, _originatorId);

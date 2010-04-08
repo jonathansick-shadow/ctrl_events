@@ -48,11 +48,11 @@ public:
     StatusEvent();
     ~StatusEvent();
 
-    StatusEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
+    StatusEvent(cms::TextMessage *msg);
     StatusEvent(const std::string& runid, unsigned long originator, const PropertySet& ps);
     StatusEvent(const std::string& runid, unsigned long originator, const PropertySet::Ptr psp);
 
-    virtual void populateHeader(cms::TextMessage *msg) const;
+    virtual void populateHeader(cms::TextMessage *msg);
 
 
     unsigned short getProcessId();

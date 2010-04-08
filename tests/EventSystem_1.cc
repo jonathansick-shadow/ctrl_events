@@ -52,7 +52,8 @@ int main() {
     PropertySet::Ptr psp(new PropertySet);
     psp->add("test", 12);
 
-    eventSystem.publish("EventSystem_1_test", psp);
+    ctrlEvents::Event event("runid1",psp);
+    eventSystem.publishEvent("EventSystem_1_test", event);
 
     // test publish("string", LogRecord)
     pexLogging::LogRecord lr(-1, 10);

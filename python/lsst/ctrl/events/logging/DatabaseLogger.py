@@ -9,7 +9,7 @@ class DatabaseLogger(MySQLBase):
 
     def __init__(self, dbHostName, portNumber):
         MySQLBase.__init__(self, dbHostName, portNumber)
-        self.keywords = ['HOSTID', 'RUNID', 'SLICEID', 'LEVEL', 'LOG', 'DATE', 'NODE', 'TIMESTAMP', 'COMMENT', 'STATUS', 'pipeline']
+        self.keywords = ['HOSTID', 'RUNID', 'SLICEID', 'LEVEL', 'LOG', 'DATE', 'NODE', 'TIMESTAMP', 'COMMENT', 'STATUS', 'PIPELINE']
         self.keywordSet = set(self.keywords)
 
     def insertRecord(self, ps):
@@ -47,8 +47,8 @@ class DatabaseLogger(MySQLBase):
         else:
             status = "NULL"
 
-        if (ps.exists("pipeline")):
-            pipeline = ps.get("pipeline")
+        if (ps.exists("PIPELINE")):
+            pipeline = ps.get("PIPELINE")
         else:
             pipeline = "NULL"
 

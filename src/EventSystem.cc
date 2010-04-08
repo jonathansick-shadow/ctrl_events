@@ -156,20 +156,6 @@ void EventSystem::createReceiver(const std::string& hostName, const std::string&
 }
 
 
-/** \brief send an PropertySet on a topic
-  * \param topicName the topic to send messages to
-  * \param psp the PropertySet to send
-  * \throw Runtime exception if the topic wasn't already registered using 
-  *        the createTransmitter method
-  */
-void EventSystem::publish(const std::string& topicName, const PropertySet::Ptr psp) {
-    boost::shared_ptr<EventTransmitter> transmitter;
-    if ((transmitter = getTransmitter(topicName)) == 0) {
-        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
-    }
-    transmitter->publish(psp);
-}
-
 /** \brief send an logging event
   * \param topicName the topic to send messages to
   * \param rec the LogRecord to send
@@ -190,7 +176,7 @@ void EventSystem::publish(const std::string& topicName, const pexLogging::LogRec
   * \throw Runtime exception if the topic wasn't already registered using 
   *        the createTransmitter method
   */
-void EventSystem::publishEvent(const std::string& topicName, const Event& event) {
+void EventSystem::publishEvent(const std::string& topicName, Event& event) {
     boost::shared_ptr<EventTransmitter> transmitter;
     if ((transmitter = getTransmitter(topicName)) == 0) {
         throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "topic "+ topicName + " is not registered with EventSystem");
@@ -209,31 +195,6 @@ boost::shared_ptr<EventTransmitter> EventSystem::getTransmitter(const std::strin
     return boost::shared_ptr<EventTransmitter>();
 }
 
-
-/** \brief blocking receive for events.  Waits until an event
-  *        is received for the topic specified in the constructor
-  * \param topicName the topic to listen on
-  * \return a PropertySet::Ptr object
-  */
-PropertySet::Ptr EventSystem::receive(const std::string& topicName) {
-    return receive(topicName, EventReceiver::infiniteTimeout);
-}
-
-/** \brief blocking receive for events, with timeout (in milliseconds).  
-  *        Waits until an event is received for the topic specified
-  *        in the constructor, or until the timeout expires.      
-  * \param topicName the topic to listen on
-  * \param timeout the time in milliseconds to wait before returning
-  * \return a Property::Ptr object on success, 0 on failure  see note
-  *         in receive()
-  */
-PropertySet::Ptr EventSystem::receive(const std::string& topicName, const long timeout) {
-    boost::shared_ptr<EventReceiver> receiver;
-    if ((receiver = getReceiver(topicName)) == 0) {
-    throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
-    }
-    return receiver->receive(timeout);
-}
 
 /** \brief blocking receive for events.  Waits until an event
   *        is received for the topic specified in the constructor

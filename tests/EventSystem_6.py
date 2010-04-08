@@ -22,7 +22,8 @@ def sendEvent(topicName):
     root.setFloat("float_value", 3.14)
     
     eventSystem = events.EventSystem.getDefaultEventSystem()
-    eventSystem.publish(topicName, root)
+    event = events.Event("runid_es6", root)
+    eventSystem.publishEvent(topicName, event)
 
 if __name__ == "__main__":
     host = "lsst8.ncsa.uiuc.edu"
@@ -40,11 +41,13 @@ if __name__ == "__main__":
     #
     sendEvent(combinedTopic)
 
-    val = eventSystem.receive(topic1)
+    val = eventSystem.receiveEvent(topic1)
     assert val != None
-    print val.toString()
+    ps = val.getPropertySet()
+    print ps.toString()
 
-    val = eventSystem.receive(topic2)
+    val = eventSystem.receiveEvent(topic2)
     assert val != None
-    print val.toString()
+    ps = val.getPropertySet()
+    print ps.toString()
 
