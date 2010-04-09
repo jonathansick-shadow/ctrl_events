@@ -61,14 +61,8 @@ public:
     unsigned long getOriginatorId();
 
 private:
-    virtual void setKeywords(PropertySet::Ptr psp) const;
     void _init();
     void _constructor(const std::string& runid, unsigned long originator, const PropertySet& ps);
-
-    unsigned short _processId;        // process id 
-    unsigned short _localId;    // created by EventSystem
-    unsigned int _IPId;     // hex value of ip addr
-    unsigned long _originatorId; // long value of pid localid and hostid combined.
 
 };
 }

@@ -35,8 +35,7 @@ if __name__ == "__main__":
 
     val = y.receiveEvent()
     assert val != None
-    print type(val)
-    print dir(val)
+
     ps = val.getPropertySet()
     print ps.toString()
 

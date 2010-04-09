@@ -46,9 +46,9 @@ LogEvent::LogEvent() : Event() {
 
 
 void LogEvent::_init() {
-    _keywords.push_back(LogEvent::COMMENT);
-    _keywords.push_back(LogEvent::LEVEL);
-    _keywords.push_back(LogEvent::LOG);
+    _keywords.insert(LogEvent::COMMENT);
+    _keywords.insert(LogEvent::LEVEL);
+    _keywords.insert(LogEvent::LOG);
 }
 
 LogEvent::LogEvent(cms::TextMessage *msg) : Event(msg) {
@@ -70,18 +70,11 @@ LogEvent::LogEvent(cms::TextMessage *msg) : Event(msg) {
     if(str.length() > 0) {
         results.push_back(str);
     }
-    _comment = results;
-    _level = msg->getIntProperty(LogEvent::LEVEL);
-    _log = msg->getStringProperty(LogEvent::LOG);
-}
 
-void LogEvent::setKeywords(PropertySet::Ptr psp) const {
+    _psp->set(LogEvent::COMMENT, results);
+    _psp->set(LogEvent::LEVEL, msg->getIntProperty(LogEvent::LEVEL));
+    _psp->set(LogEvent::LOG, msg->getStringProperty(LogEvent::LOG));
 
-    Event::setKeywords(psp);
-
-    psp->set(LogEvent::COMMENT, _comment);
-    psp->set(LogEvent::LEVEL, _level);
-    psp->set(LogEvent::LOG, _log);
 }
 
 LogEvent::LogEvent( const std::string& runId, const pexLogging::LogRecord& rec) : Event(runId, rec.getProperties()) {
@@ -90,33 +83,31 @@ LogEvent::LogEvent( const std::string& runId, const pexLogging::LogRecord& rec) 
 
     const PropertySet& ps = rec.getProperties();
 
-    _type = EventTypes::LOG;
+    _psp->set(TYPE, EventTypes::LOG);
 
-
-    _level = rec.getImportance();
     if (!ps.exists(LogEvent::LOG))
-        _log = "default";
+        _psp->set(LogEvent::LOG, "default");
     else
-        _log = ps.getAsString(LogEvent::LOG);
+        _psp->set(LogEvent::LOG, ps.getAsString(LogEvent::LOG));
 
     if (!ps.exists(LogEvent::LEVEL))
-        _level = -1;
+        _psp->set(LogEvent::LEVEL, -1);
     else
-        _level = ps.getAsInt(LogEvent::LEVEL);
+        _psp->set(LogEvent::LEVEL, rec.getImportance());
+
 
     if (!ps.exists(LogEvent::COMMENT)) {
         std::vector<std::string> commentArray = ps.getArray<std::string>(LogEvent::COMMENT);
     
-        _comment = commentArray;
+        _psp->set(LogEvent::COMMENT, commentArray);
     } else
-        _comment = std::vector<std::string>();
-
+         _psp->set(LogEvent::COMMENT, std::vector<std::string>());
 }
 
 void LogEvent::populateHeader(cms::TextMessage* msg) {
     Event::populateHeader(msg);
 
-    std::vector<std::string> vec  = _comment;
+    std::vector<std::string> vec  = _psp->getArray<std::string>(LogEvent::COMMENT);
     std::ostringstream comment;
     std::vector<std::string>::iterator iter;
     for (iter = vec.begin(); iter != vec.end(); iter++) {
@@ -124,20 +115,20 @@ void LogEvent::populateHeader(cms::TextMessage* msg) {
     }
 
     msg->setStringProperty(LogEvent::COMMENT, comment.str());
-    msg->setIntProperty(LogEvent::LEVEL, _level);
-    msg->setStringProperty(LogEvent::LOG, _log);
+    msg->setIntProperty(LogEvent::LEVEL, _psp->get<int>(LogEvent::LEVEL));
+    msg->setStringProperty(LogEvent::LOG, _psp->get<std::string>(LogEvent::LOG));
 }
 
 std::vector<std::string> LogEvent::getComment() {
-    return _comment;
+    return _psp->getArray<std::string>(LogEvent::COMMENT);
 }
 
 int LogEvent::getLevel() {
-    return _level;
+    return _psp->get<int>(LogEvent::LEVEL);
 }
 
 std::string LogEvent::getLog() {
-    return _log;
+    return _psp->get<std::string>(LogEvent::LOG);
 }
 
 /** \brief destructor

@@ -64,14 +64,13 @@ Event::Event() {
 }
 
 void Event::_init() {
-    _keywords.push_back(TYPE);
-    _keywords.push_back(EVENTTIME);
-    _keywords.push_back(HOSTID);
-    _keywords.push_back(RUNID);
-    _keywords.push_back(STATUS);
-
-    _keywords.push_back(TOPIC);
-    _keywords.push_back(PUBTIME);
+    _keywords.insert(TYPE);
+    _keywords.insert(EVENTTIME);
+    _keywords.insert(HOSTID);
+    _keywords.insert(RUNID);
+    _keywords.insert(STATUS);
+    _keywords.insert(TOPIC);
+    _keywords.insert(PUBTIME);
 }
 
 Event::Event(cms::TextMessage *msg) {
@@ -79,36 +78,38 @@ Event::Event(cms::TextMessage *msg) {
 
     _psp = processTextMessage(msg);
 
-    _type = msg->getStringProperty(TYPE);
-    _eventTime = msg->getLongProperty(EVENTTIME) ;
-    _hostId = msg->getStringProperty(HOSTID) ;
-    _runId = msg->getStringProperty(RUNID) ;
-    _status = msg->getStringProperty(STATUS) ;
-
-    _topic = msg->getStringProperty(TOPIC) ;
-    _pubTime = msg->getLongProperty(PUBTIME) ;
-
+    _psp->set(TYPE, msg->getStringProperty(TYPE));
+    _psp->set(HOSTID, msg->getStringProperty(HOSTID));
+    _psp->set(RUNID, msg->getStringProperty(RUNID));
+    _psp->set(STATUS, msg->getStringProperty(STATUS));
+    _psp->set(TOPIC, msg->getStringProperty(TOPIC));
+    _psp->set(EVENTTIME, msg->getLongProperty(EVENTTIME));
+    _psp->set(PUBTIME, msg->getLongProperty(PUBTIME));
+/*
+*/
 }
 
 vector<std::string> Event::getFilterablePropertyNames() {
-    return _keywords;
+    vector<std::string> _names;
+    set<std::string>::iterator keyIterator;
+    for (keyIterator = _keywords.begin(); keyIterator != _keywords.end(); keyIterator++) {
+        _names.push_back(*keyIterator);
+    }
+    return _names;
 }
 
 vector<std::string> Event::getCustomPropertyNames() {
     vector<std::string> names = _psp->names();
 
     vector<std::string>::iterator nameIterator;
-    vector<std::string>::iterator keyIterator;
+    set<std::string>::iterator keyIterator;
 
-    for (keyIterator = _keywords.begin(); keyIterator != _keywords.end(); keyIterator++) {
-        for (nameIterator = names.begin(); nameIterator != names.end();) {
-                std::string key = *keyIterator;
-                std::string name = *nameIterator;
-                if (key.compare(name) == 0)
-                    names.erase(nameIterator);
-                else
-                    nameIterator++;
-        }
+    for (nameIterator = names.begin(); nameIterator != names.end();) {
+            keyIterator = _keywords.find(*nameIterator);
+            if (keyIterator == _keywords.end())
+                nameIterator++;
+            else
+                names.erase(nameIterator);
     }
     return names;
 }
@@ -139,76 +140,53 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
     */
 
     if (!_psp->exists(STATUS)) {
-        _status = "unknown";
-    } else {
-        _status = _psp->get<std::string>(STATUS);
-        _psp->remove(STATUS);
+        _psp->set(STATUS, "unknown");
     }
     
-    if (!_psp->exists(EVENTTIME))
-        //_eventTime = time(&rawtime); // current time in ns
-        _eventTime = dafBase::DateTime::now().nsecs();
-    else {
-        _eventTime = _psp->get<long long>(EVENTTIME);
-        _psp->remove(EVENTTIME);
+    if (!_psp->exists(EVENTTIME)) {
+        _psp->set(EVENTTIME,  dafBase::DateTime::now().nsecs());
     }
    
 
     if (!_psp->exists(HOSTID)) {
-       gethostname(hostname, HOST_NAME_MAX);
-       _hostId = hostname;
-    } else {
-       _hostId = _psp->get<std::string>(HOSTID);
-       _psp->remove(HOSTID);
+        std::string name;
+        gethostname(hostname, HOST_NAME_MAX);
+        name = hostname;
+        _psp->set(HOSTID, name);
     }
 
     // _runId is filled in here and is ignored in the passed PropertySet
-    _runId = runId;
-    _psp->remove(RUNID);
+    _psp->set(RUNID, runId);
 
     // _type is filled in here and is ignored in the passed PropertySet
-    _type = EventTypes::EVENT;
-    _psp->remove(TYPE);
+    _psp->set(TYPE, EventTypes::EVENT);
 
     // _topic is filled in on publish and is ignored in the passed PropertySet
-    _topic = "uninitialized topic";
-    _psp->remove(TOPIC);
+    _psp->set(TOPIC, "uninitialized");
 
     // _pubTime is filled in on publish and is ignored in the passed PropertySet
-    _pubTime = 0L;
-    _psp->remove(PUBTIME);
-
-}
-
-void Event::setKeywords(PropertySet::Ptr psp)  const {
-    psp->set(TYPE, _type);
-    psp->set(EVENTTIME, _eventTime);
-    psp->set(HOSTID, _hostId);
-    psp->set(RUNID, _runId);
-    psp->set(STATUS, _status);
-    psp->set(TOPIC, _topic);
-    psp->set(PUBTIME, _pubTime);
+    _psp->set(PUBTIME, (long long)0);
 }
 
 void Event::populateHeader(cms::TextMessage* msg) {
-    msg->setStringProperty(TYPE, _type);
-    msg->setLongProperty(EVENTTIME, _eventTime);
-    msg->setStringProperty(HOSTID, _hostId);
-    msg->setStringProperty(RUNID, _runId);
-    msg->setStringProperty(STATUS, _status);
-    msg->setStringProperty(TOPIC, _topic);
-    msg->setLongProperty(PUBTIME, _pubTime);
+    msg->setStringProperty(TYPE, _psp->get<std::string>(TYPE));
+    msg->setLongProperty(EVENTTIME, _psp->get<long long>(EVENTTIME));
+    msg->setStringProperty(HOSTID, _psp->get<std::string>(HOSTID));
+    msg->setStringProperty(RUNID, _psp->get<std::string>(RUNID));
+    msg->setStringProperty(STATUS, _psp->get<std::string>(STATUS));
+    msg->setStringProperty(TOPIC, _psp->get<std::string>(TOPIC));
+    msg->setLongProperty(PUBTIME, _psp->get<long long>(PUBTIME));
 }
 
-long Event::getEventTime() {
-    return _eventTime;
+long long Event::getEventTime() {
+    return _psp->get<long long>(EVENTTIME);
 }
 
 /** \brief Get the creation date of this event
   * \return A formatted date string representing the event creation time
   */
 std::string Event::getEventDate() {
-    dafBase::DateTime dateTime(_eventTime);
+    dafBase::DateTime dateTime(_psp->get<long long>(EVENTTIME));
     
     struct tm eventTime = dateTime.gmtime();
     return asctime(&eventTime);
@@ -216,28 +194,33 @@ std::string Event::getEventDate() {
 
 
 PropertySet::Ptr Event::getCustomPropertySet() const {
-    return _psp;
+    PropertySet::Ptr psp = _psp->deepCopy();
+
+    set<std::string>::iterator keyIterator;
+    for (keyIterator = _keywords.begin(); keyIterator != _keywords.end(); keyIterator++) 
+        psp->remove(*keyIterator);
+    return psp;
 }
 
 PropertySet::Ptr Event::getPropertySet() const {
     PropertySet::Ptr psp = _psp->deepCopy();
-    setKeywords(psp);
 
     return psp;
 }
 
 void Event::setPubTime(long long t) {
-    _pubTime = t;
+    _psp->set(PUBTIME, t);
 }
 
 long long Event::getPubTime() {
-    return _pubTime;
+    return _psp->get<long long>(PUBTIME);
 }
 
 /** \brief Get the publication date of this event
   * \return A formatted date string represeting the publication time
   */
 std::string Event::getPubDate() {
+    long long _pubTime = _psp->get<long long>(PUBTIME);
     if (_pubTime == 0)
         return std::string();
 
@@ -249,27 +232,27 @@ std::string Event::getPubDate() {
 
 
 std::string Event::getHostId() {
-    return _hostId;
+    return _psp->get<std::string>(HOSTID);
 }
 
 std::string Event::getRunId() {
-    return _runId;
+    return _psp->get<std::string>(RUNID);
 }
 
 std::string Event::getType() {
-    return _type;
+    return _psp->get<std::string>(TYPE);
 }
 
 std::string Event::getStatus() {
-    return _status;
+    return _psp->get<std::string>(STATUS);
 }
 
 void Event::setTopic(std::string topic) {
-    _topic = topic;
+    _psp->set(TOPIC, topic);
 }
 
 std::string Event::getTopic() {
-    return _topic;
+    return _psp->get<std::string>(TOPIC);
 }
 
 void Event::marshall(cms::TextMessage *msg) {

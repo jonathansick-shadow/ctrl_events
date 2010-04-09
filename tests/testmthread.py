@@ -35,7 +35,7 @@ class EventThread(Thread):
             self.flag.lock.notifyAll()
 
         # we will wait 1 second (5x what the main thread is sleeping)
-        esys.receive(testtopic, 1000)
+        esys.receiveEvent(testtopic, 1000)
         # print "receive timed out"
         # sys.stdout.flush()
         self.flag.markers.append("timeout")

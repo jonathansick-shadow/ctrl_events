@@ -64,12 +64,7 @@ public:
 private:
     static const std::string DELIMITER;
 
-    virtual void setKeywords(PropertySet::Ptr psp) const;
     void _init();
-
-    vector<std::string> _comment;
-    int _level;
-    std::string _log;
 
 };
 }

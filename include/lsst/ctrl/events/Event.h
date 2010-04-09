@@ -18,6 +18,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <set>
 
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy.h"
@@ -67,7 +68,7 @@ public:
     long long getPubTime();
     void setPubTime(long long t);
 
-    long getEventTime();
+    long long getEventTime();
     std::string getEventDate();
 
     std::string getHostId();
@@ -88,19 +89,10 @@ public:
 
 protected:
     PropertySet::Ptr _psp;
-    vector<std::string> _keywords;
+    set<std::string> _keywords;
     void _init();
     void _constructor(const std::string& runid, const PropertySet& ps);
-    virtual void setKeywords(PropertySet::Ptr psp) const;
     void splitString(std::string str, std::string delim, std::vector<std::string>&results);
-
-    long long _eventTime;
-    std::string _type;
-    std::string _topic;
-    std::string _hostId;
-    std::string _runId;
-    std::string _status;
-    long long _pubTime;
 
 private:
     std::string marshall(const PropertySet& ps);
