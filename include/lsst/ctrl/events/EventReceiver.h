@@ -48,9 +48,6 @@ public:
     // virtual destructor
     virtual ~EventReceiver();
 
-    PropertySet::Ptr receive();
-    PropertySet::Ptr receive(long timeout);
-
     Event* receiveEvent();
     Event* receiveEvent(long timeout);
 
@@ -60,9 +57,6 @@ public:
 
 private:
     void init(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort);
-    PropertySet::Ptr _receive(long timeout);
-
-    PropertySet::Ptr unmarshall(const std::string& text);
 
     // connection to the JMS broker
     cms::Connection* _connection;
@@ -75,10 +69,6 @@ private:
 
     // Object that receives the messages
     cms::MessageConsumer* _consumer;
-
-    PropertySet::Ptr processTextMessage(cms::TextMessage* textMessage);
-
-    void splitString(std::string str, std::string delim, std::vector<std::string>&results);
 
     // used to completely turn off event  transmission
     bool _turnEventsOff;

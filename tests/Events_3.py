@@ -20,7 +20,8 @@ def sendEvent(hostName, topicName):
     root.set("misc2","data 2")
     root.setFloat("float_value", 3.14)
     
-    trans.publish(root)
+    event = events.Event("test3_runid", root)
+    trans.publishEvent(event)
 
 if __name__ == "__main__":
     host = "lsst8.ncsa.uiuc.edu"
@@ -32,17 +33,17 @@ if __name__ == "__main__":
     #
     sendEvent(host, topic)
 
-    val = y.receive()
+    val = y.receiveEvent()
     assert val != None
-    print type(val)
-    print dir(val)
-    print val.toString()
+
+    ps = val.getPropertySet()
+    print ps.toString()
 
 
     #
     # wait a short time to receive an event.  none was sent, so we should
     # time out and confirm that we didn't get anything
     #
-    val = y.receive(100)
+    val = y.receiveEvent(100)
     assert val == None
 

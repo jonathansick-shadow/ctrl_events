@@ -175,153 +175,20 @@ void EventTransmitter::init( const std::string& hostName, const std::string& top
     }
 }
 
-void EventTransmitter::publish(const PropertySet::Ptr& psp) {
-    publish(*psp);
-}
-
-void EventTransmitter::publish(const PropertySet& ps) {
-    if (_turnEventsOff == true)
-        return;
-
-    publish("event", ps);
-}
-
-/** \brief publish an event of "type"        
-  *
-  * \param rec The LogRecord to send.  This is used internally by the logging
-  *            subsystem and is exposed here to send LogRecord through event
-  *            channels.
-  * \throw throws Runtime exception if publish fails
-  */
-/*
-void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
-
-    if (_turnEventsOff == true)
-        return;
-
-    const PropertySet& ps = rec.getProperties();
-
-    publish("logging", ps);
-}
-*/
-void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
-
-    if (_turnEventsOff == true)
-        return;
-
-    const PropertySet& ps = rec.getProperties();
-
-    if (!ps.exists(Event::RUNID)) {
-        LogEvent event("unspecified",rec);
-        publishEvent(event);
-    } else {
-        std::string runid = ps.get<std::string>(Event::RUNID);
-        LogEvent event(runid,rec);
-        publishEvent(event);
-    }
-}
-
-void EventTransmitter::publishEvent(const Event& event) {
-    PropertySet::Ptr psp;
+void EventTransmitter::publishEvent(Event& event) {
     long long pubtime;
     cms::TextMessage* message = _session->createTextMessage();
 
-    // since we can only create TextMessage objects via a Session,
-    // create the object, and pass it to the Event to be populated.
-    // The event, knowing the type that it is, can populate the
-    // message properly itself.
-
-    event.populateHeader(message);
+    event.marshall(message);
 
     message->setStringProperty("TOPIC", _topicName);
-    
+
+    // wait until the last moment to timestamp publication time
     pubtime = dafBase::DateTime::now().nsecs();
     message->setLongProperty("PUBTIME", pubtime);
 
-    psp = event.getCustomPropertySet();
-    std::string payload = marshall(*psp);
-    message->setText(payload);
-
     _producer->send(_topic, message);
     delete message;
-}
-
-/** private method used to send event out on the wire.
-  */
-void EventTransmitter::publish(const std::string& type, const PropertySet& ps) {
-
-    if (_session == 0)
-        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Not connected to event server");
-
-    // Sending the message to the ActiveMQ server
-    cms::TextMessage* message = _session->createTextMessage();
-    message->setCMSType(type);
-    std::string payload = marshall(ps);
-
-    message->setText(payload);
-    _producer->send(_topic, message );
-
-    delete message;
-}
-
-std::string EventTransmitter::marshall(const PropertySet& ps) {
-    std::vector<std::string> v = ps.paramNames(false);
-
-    // TODO: optimize this to get use getArray only when necessary
-    std::ostringstream payload;
-    unsigned int i;
-    payload << "nodelist||nodelist||" << (v.size()) << "~~";
-    for (i = 0; i < v.size(); i++) {
-        std::string name = v[i];
-        if (ps.typeOf(name) == typeid(bool)) {
-            std::vector<bool> vec  = ps.getArray<bool>(name);
-            std::vector<bool>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "bool||"<< name << "||" << *iter << "~~";
-            }
-        } else if (ps.typeOf(name) == typeid(long)) {
-            std::vector<long> vec  = ps.getArray<long>(name);
-            std::vector<long>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "long||" << name << "||"<< *iter << "~~";
-            }
-        } else if (ps.typeOf(name) == typeid(int)) {
-            std::vector<int> vec  = ps.getArray<int>(name);
-            std::vector<int>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "int||" << name << "||"<< *iter << "~~";
-            }
-        } else if (ps.typeOf(name) == typeid(float)) {
-            std::vector<float> vec  = ps.getArray<float>(name);
-            std::vector<float>::iterator iter;
-            payload.precision(numeric_limits<float>::digits10+1);
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "float||"<< name << "||"<< *iter << "~~";
-            }
-        } else if (ps.typeOf(name) == typeid(double)) {
-            std::vector<double> vec  = ps.getArray<double>(name);
-            std::vector<double>::iterator iter;
-            payload.precision(numeric_limits<double>::digits10+1);
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "double||"<< name << "||"<< *iter << "~~";
-            }
-        } else if (ps.typeOf(name) == typeid(std::string)) {
-            std::vector<std::string> vec  = ps.getArray<std::string>(name);
-            std::vector<std::string>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "string||" << name << "||"<< *iter << "~~";
-            }
-        } else if (ps.typeOf(name) == typeid(lsst::daf::base::DateTime)) {
-            std::vector<lsst::daf::base::DateTime> vec  = ps.getArray<lsst::daf::base::DateTime>(name);
-            std::vector<lsst::daf::base::DateTime>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "datetime||" << name << "||"<< (*iter).nsecs() << "~~";
-            }
-        } else {
-            std::cout << "Couldn't marshall "<< name << std::endl;
-        }
-    }
-    return payload.str();
 }
 
 /** \brief get the topic name of this EventTransmitter

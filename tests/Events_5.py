@@ -12,7 +12,8 @@ import time
 #
 def sendEvent(hostName, topicName, ps):
     trans = events.EventTransmitter(hostName, topicName)
-    trans.publish(ps)
+    event = events.Event("myrunid",ps)
+    trans.publishEvent(event)
 
 def createIntProperty(name, value):
     root = base.PropertySet()

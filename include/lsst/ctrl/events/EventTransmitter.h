@@ -49,19 +49,12 @@ public:
     EventTransmitter(const std::string& hostName, const std::string& topicName, int hostPort = EventBroker::DEFAULTHOSTPORT);
     ~EventTransmitter();
 
-    void publish(const PropertySet::Ptr& psp);
-    void publish(const PropertySet& ps);
-    void publish(const pexLogging::LogRecord& rec);
-    void publish(const std::string& type, const PropertySet& ps);
-
     std::string getTopicName();
 
-    void publishEvent(const Event& event);
+    void publishEvent(Event& event);
 
 private:
     void init( const std::string& hostName, const std::string& topicName, int port);
-
-    std::string marshall(const PropertySet& ds);
 
     // Connection to JMS broker
     cms::Connection* _connection;

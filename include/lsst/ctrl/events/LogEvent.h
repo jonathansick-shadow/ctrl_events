@@ -50,11 +50,11 @@ public:
 
     LogEvent();
     LogEvent(const std::string& runid, const pexLogging::LogRecord& rec);
-    LogEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
+    LogEvent(cms::TextMessage *msg);
 
     ~LogEvent();
 
-    void populateHeader(cms::TextMessage *msg) const;
+    void populateHeader(cms::TextMessage *msg);
 
     int getLevel();
 
@@ -64,12 +64,7 @@ public:
 private:
     static const std::string DELIMITER;
 
-    virtual void setKeywords(PropertySet::Ptr psp) const;
     void _init();
-
-    vector<std::string> _comment;
-    int _level;
-    std::string _log;
 
 };
 }

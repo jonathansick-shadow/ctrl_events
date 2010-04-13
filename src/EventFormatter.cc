@@ -39,7 +39,17 @@ EventFormatter::~EventFormatter() {}
   */
 void EventFormatter::write(ostream *os, const pexLogging::LogRecord& rec) {
     EventSystem system = EventSystem::getDefaultEventSystem();
-    system.publish(EventLog::LOGGING_TOPIC, rec);
+
+    const PropertySet& ps = rec.getProperties();
+    
+    if (!ps.exists(Event::RUNID)) {
+        LogEvent event("unspecified",rec);
+        system.publishEvent(EventLog::LOGGING_TOPIC, event);
+        return;
+    } 
+    std::string runid = ps.get<std::string>(Event::RUNID);
+    LogEvent event(runid,rec);
+    system.publishEvent(EventLog::LOGGING_TOPIC, event);
 }
 
 }

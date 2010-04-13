@@ -53,8 +53,8 @@ public:
     CommandEvent();
     CommandEvent(const std::string& runid, unsigned long originatorId, unsigned long destinationId, const PropertySet& ps);
     CommandEvent(const std::string& runid, unsigned long originatorId, unsigned long destinationId, const PropertySet::Ptr psp);
-    CommandEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
-    virtual void populateHeader(cms::TextMessage *msg) const;
+    CommandEvent(cms::TextMessage *msg);
+    virtual void populateHeader(cms::TextMessage *msg);
 
     ~CommandEvent();
 
@@ -68,20 +68,11 @@ public:
     unsigned short getDestinationProcessId();
     unsigned int getDestinationIPId();
 
+protected:
+    void _constructor(const std::string& runId, unsigned long originatorId, unsigned long destinationId, const PropertySet& ps);
+
 private:
-    virtual void setKeywords(PropertySet::Ptr psp) const;
     void _init();
-
-
-    unsigned long _originatorId;      // long value of pid localid and hostid combined.
-    unsigned short _orig_localId;    // created by EventSystem
-    unsigned short _orig_processId;        // process id 
-    unsigned int _orig_IPId;     // hex value of ip addr
-
-    unsigned long _destinationId;     // long value of pid localid and hostid combined.
-    unsigned short _dest_localId;    // created by EventSystem
-    unsigned short _dest_processId;        // process id 
-    unsigned int _dest_IPId;     // hex value of ip addr
 
 };
 }
