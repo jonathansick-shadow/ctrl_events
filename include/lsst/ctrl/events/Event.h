@@ -67,6 +67,9 @@ public:
     void setPubTime(long long t);
 
     long long getEventTime();
+    void setEventTime(long long nsecs);
+    void updateEventTime();
+
     std::string getEventDate();
 
     std::string getHostId();

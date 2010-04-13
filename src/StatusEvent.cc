@@ -84,7 +84,6 @@ void StatusEvent::_constructor(const std::string& runId, const unsigned long ori
 
     EventSystem eventSystem = EventSystem().getDefaultEventSystem();
 
-    //_originatorId = eventSystem.createOriginatorId();
     _psp->set(ORIGINATORID, originatorId);
 
     _psp->set(LOCALID, eventSystem.extractLocalId(originatorId));

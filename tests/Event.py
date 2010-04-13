@@ -22,6 +22,7 @@ if __name__ == "__main__":
 
     print "Custom names = ",event.getCustomPropertyNames()
 
+    eventTime = event.getEventTime()
     print "getEventTime() = ",event.getEventTime()
     print "getEventDate() = ",event.getEventDate()
     print "getPubTime() = ",event.getPubTime()
@@ -32,3 +33,9 @@ if __name__ == "__main__":
     assert event.getRunId() == runid
     assert event.getType() == events.EventTypes.EVENT
     assert event.getStatus() == status
+
+    event.updateEventTime()
+
+    assert eventTime < event.getEventTime()
+    event.setEventTime(0)
+    assert event.getEventTime() == 0

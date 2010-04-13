@@ -144,7 +144,7 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
     }
     
     if (!_psp->exists(EVENTTIME)) {
-        _psp->set(EVENTTIME,  dafBase::DateTime::now().nsecs());
+        updateEventTime();
     }
    
 
@@ -180,6 +180,14 @@ void Event::populateHeader(cms::TextMessage* msg) {
 
 long long Event::getEventTime() {
     return _psp->get<long long>(EVENTTIME);
+}
+
+void Event::setEventTime(long long nsecs) {
+    _psp->set(EVENTTIME,  nsecs);
+}
+
+void Event::updateEventTime() {
+    _psp->set(EVENTTIME,  dafBase::DateTime::now().nsecs());
 }
 
 /** \brief Get the creation date of this event
