@@ -21,6 +21,7 @@
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
 #include "lsst/ctrl/events/LogEvent.h"
+#include "lsst/ctrl/events/PipelineLogEvent.h"
 #include "lsst/ctrl/events/EventTypes.h"
 
 #include "lsst/ctrl/events/EventLog.h"
@@ -52,10 +53,10 @@ EventFactory::~EventFactory() {
 Event* EventFactory::createEvent(cms::TextMessage* msg) {
     vector<std::string> names = msg->getPropertyNames();
 
-    /*
+/*
     for (unsigned int i = 0; i < names.size(); i++) 
         std::cout << names[i] << std::endl;
-    */
+*/
 
     std::string _type = msg->getStringProperty("TYPE");
 
@@ -65,6 +66,8 @@ Event* EventFactory::createEvent(cms::TextMessage* msg) {
         return new StatusEvent(msg);
     } else if (_type == EventTypes::COMMAND) {
         return new CommandEvent(msg);
+    } else if (_type == EventTypes::PIPELINELOG) {
+        return new PipelineLogEvent(msg);
     }
     return new Event(msg);
 }

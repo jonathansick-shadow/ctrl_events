@@ -72,7 +72,9 @@ LogEvent::LogEvent(cms::TextMessage *msg) : Event(msg) {
     }
 
     _psp->set(LogEvent::COMMENT, results);
+
     _psp->set(LogEvent::LEVEL, msg->getIntProperty(LogEvent::LEVEL));
+
     _psp->set(LogEvent::LOG, msg->getStringProperty(LogEvent::LOG));
 
 }
@@ -96,12 +98,14 @@ LogEvent::LogEvent( const std::string& runId, const pexLogging::LogRecord& rec) 
         _psp->set(LogEvent::LEVEL, rec.getImportance());
 
 
+
     if (!ps.exists(LogEvent::COMMENT)) {
         std::vector<std::string> commentArray = ps.getArray<std::string>(LogEvent::COMMENT);
     
         _psp->set(LogEvent::COMMENT, commentArray);
-    } else
-         _psp->set(LogEvent::COMMENT, std::vector<std::string>());
+    } else {
+        _psp->set(LogEvent::COMMENT, "none|@|");
+    }
 }
 
 void LogEvent::populateHeader(cms::TextMessage* msg) {
@@ -115,8 +119,11 @@ void LogEvent::populateHeader(cms::TextMessage* msg) {
     }
 
     msg->setStringProperty(LogEvent::COMMENT, comment.str());
+
     msg->setIntProperty(LogEvent::LEVEL, _psp->get<int>(LogEvent::LEVEL));
+
     msg->setStringProperty(LogEvent::LOG, _psp->get<std::string>(LogEvent::LOG));
+
 }
 
 std::vector<std::string> LogEvent::getComment() {

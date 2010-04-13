@@ -202,6 +202,7 @@ Event* EventSystem::receiveEvent(const std::string& topicName, const long timeou
     if ((receiver = getReceiver(topicName)) == 0) {
         throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Topic "+ topicName +" is not registered with EventSystem");
     }
+
     return receiver->receiveEvent(timeout);
 }
 
