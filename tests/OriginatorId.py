@@ -6,6 +6,7 @@ import lsst.daf.base as base
 import lsst.pex.exceptions
 import lsst.pex.logging as logging
 import lsst.pex.policy as policy
+from lsst.daf.base import PropertySet
 
 
 # return the ip address in an integer
@@ -37,3 +38,26 @@ if __name__ == "__main__":
     assert localId == 1
     processId = eventSystem.extractProcessId(originatorId2)
     assert processId == os.getpid()
+
+    IPId = eventSystem.extractIPId(originatorId2)
+
+
+
+    root = PropertySet()
+    root.set("myname","myname")
+    status = "my special status"
+    root.set(events.Event.STATUS, status)
+
+    statusEvent = events.StatusEvent("my runid", originatorId2, root)
+
+    transmitter = events.EventTransmitter("lsst8.ncsa.uiuc.edu", "mytopic")
+
+    sel = "ORIGINATORID = %d" % originatorId2
+    receiver = events.EventReceiver("lsst8.ncsa.uiuc.edu", "mytopic", sel)
+
+    transmitter.publishEvent(statusEvent)
+    returnedEvent = receiver.receiveEvent(2000)
+
+    assert returnedEvent != None
+
+    print "done"

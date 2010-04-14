@@ -70,10 +70,10 @@ public:
     Event* receiveEvent(const std::string& topicName);
     Event* receiveEvent(const std::string& topicName, const long timeout);
 
-    unsigned long createOriginatorId();
-    unsigned int extractHostId(unsigned long identificationId);
-    unsigned short extractProcessId(unsigned long identificationId);
-    unsigned short extractLocalId(unsigned long identificationId);
+    long createOriginatorId();
+    int extractIPId(long identificationId);
+    short extractProcessId(long identificationId);
+    short extractLocalId(long identificationId);
 
     StatusEvent* castToStatusEvent(Event* event);
     CommandEvent* castToCommandEvent(Event* event);
@@ -86,8 +86,8 @@ private:
 protected:
     static EventSystem *defaultEventSystem;
 
-    static unsigned int _localId;
-    static unsigned int _hostId;
+    static short _localId;
+    static int _IPId;
 
     list<boost::shared_ptr<EventTransmitter> >_transmitters;
     list<boost::shared_ptr<EventReceiver> >_receivers;
