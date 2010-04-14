@@ -97,7 +97,7 @@ void CommandEvent::setKeywords(PropertySet::Ptr psp) const {
     psp->set(DEST_IPID, _dest_IPId);
 }
 
-CommandEvent::CommandEvent( const std::string& runId, const unsigned long originatorId, const unsigned long destinationId, const PropertySet::Ptr psp) : Event(runId, psp) {
+CommandEvent::CommandEvent( const std::string& runId, const long originatorId, const long destinationId, const PropertySet::Ptr psp) : Event(runId, psp) {
     _init();
 
 
@@ -107,12 +107,12 @@ CommandEvent::CommandEvent( const std::string& runId, const unsigned long origin
     _originatorId = originatorId;
     _orig_localId = eventSystem.extractLocalId(_originatorId);
     _orig_processId = eventSystem.extractProcessId(_originatorId);
-    _orig_IPId = eventSystem.extractHostId(_originatorId);
+    _orig_IPId = eventSystem.extractIPId(_originatorId);
 
     _destinationId = destinationId;
     _dest_localId = eventSystem.extractLocalId(_destinationId);
     _dest_processId = eventSystem.extractProcessId(_destinationId);
-    _dest_IPId = eventSystem.extractHostId(_destinationId);
+    _dest_IPId = eventSystem.extractIPId(_destinationId);
 
     _type = EventTypes::COMMAND;
 
@@ -132,15 +132,15 @@ void CommandEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setIntProperty(DEST_IPID, _dest_IPId);
 }
 
-unsigned long CommandEvent::getOriginatorId() { return _originatorId; }
-unsigned short CommandEvent::getOriginatorLocalId() { return _orig_localId; }
-unsigned short CommandEvent::getOriginatorProcessId() { return _orig_processId; }
-unsigned int CommandEvent::getOriginatorIPId() { return _orig_IPId; }
+long CommandEvent::getOriginatorId() { return _originatorId; }
+short CommandEvent::getOriginatorLocalId() { return _orig_localId; }
+short CommandEvent::getOriginatorProcessId() { return _orig_processId; }
+int CommandEvent::getOriginatorIPId() { return _orig_IPId; }
 
-unsigned long CommandEvent::getDestinationId() { return _destinationId; }
-unsigned short CommandEvent::getDestinationLocalId() { return _dest_localId; }
-unsigned short CommandEvent::getDestinationProcessId() { return _dest_processId; }
-unsigned int CommandEvent::getDestinationIPId() { return _dest_IPId; }
+long CommandEvent::getDestinationId() { return _destinationId; }
+short CommandEvent::getDestinationLocalId() { return _dest_localId; }
+short CommandEvent::getDestinationProcessId() { return _dest_processId; }
+int CommandEvent::getDestinationIPId() { return _dest_IPId; }
 
 /** \brief destructor
   */

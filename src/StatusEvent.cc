@@ -81,7 +81,7 @@ void StatusEvent::setKeywords(PropertySet::Ptr psp) const {
     psp->set(IPID, _IPId);
 }
 
-StatusEvent::StatusEvent( const std::string& runId, const unsigned long originatorId, const PropertySet::Ptr psp) : Event(runId, psp) {
+StatusEvent::StatusEvent( const std::string& runId, const long originatorId, const PropertySet::Ptr psp) : Event(runId, psp) {
     _init();
 
 
@@ -92,7 +92,7 @@ StatusEvent::StatusEvent( const std::string& runId, const unsigned long originat
 
     _localId = eventSystem.extractLocalId(_originatorId);
     _processId = eventSystem.extractProcessId(_originatorId);
-    _IPId = eventSystem.extractHostId(_originatorId);
+    _IPId = eventSystem.extractIPId(_originatorId);
     _type = EventTypes::STATUS;
 
 }
@@ -106,19 +106,19 @@ void StatusEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setIntProperty(IPID, _IPId);
 }
 
-unsigned long StatusEvent::getOriginatorId() {
+long StatusEvent::getOriginatorId() {
     return _originatorId;
 }
 
-unsigned short StatusEvent::getLocalId() {
+short StatusEvent::getLocalId() {
     return _localId;
 }
 
-unsigned short StatusEvent::getProcessId() {
+short StatusEvent::getProcessId() {
     return _processId;
 }
 
-unsigned int StatusEvent::getIPId() {
+int StatusEvent::getIPId() {
     return _IPId;
 }
 

@@ -50,24 +50,24 @@ public:
     ~StatusEvent();
 
     StatusEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
-    StatusEvent(const std::string& runid, unsigned long originator, const PropertySet::Ptr psp);
+    StatusEvent(const std::string& runid, long originator, const PropertySet::Ptr psp);
 
     virtual void populateHeader(cms::TextMessage *msg) const;
 
 
-    unsigned short getProcessId();
-    unsigned short getLocalId();
-    unsigned int getIPId();
-    unsigned long getOriginatorId();
+    short getProcessId();
+    short getLocalId();
+    int getIPId();
+    long getOriginatorId();
 
 private:
     virtual void setKeywords(PropertySet::Ptr psp) const;
     void _init();
 
-    unsigned short _processId;        // process id 
-    unsigned short _localId;    // created by EventSystem
-    unsigned int _IPId;     // hex value of ip addr
-    unsigned long _originatorId; // long value of pid localid and hostid combined.
+    short _processId;        // process id 
+    short _localId;    // created by EventSystem
+    int _IPId;     // hex value of ip addr
+    long _originatorId; // long value of pid localid and hostid combined.
 
 };
 }

@@ -59,7 +59,7 @@ EventSystem::~EventSystem() {
 EventSystem& EventSystem::getDefaultEventSystem() {
     if (defaultEventSystem == 0) {
 
-        // create the _hostId here, rather than
+        // create the _IPId here, rather than
         // reconstructing it every time we create an
         // identificationId
 
@@ -75,7 +75,7 @@ EventSystem& EventSystem::getDefaultEventSystem() {
         c = ent->h_addr_list[0][2] & 0xFF;
         d = ent->h_addr_list[0][3] & 0xFF;
 
-        _hostId = (a << 24) | (b << 16) | (c << 8) | d;
+        _IPId = (a << 24) | (b << 16) | (c << 8) | d;
   
         // create the default EventSystem object
         defaultEventSystem = new EventSystem();
@@ -85,8 +85,8 @@ EventSystem& EventSystem::getDefaultEventSystem() {
 }
 
 EventSystem *EventSystem::defaultEventSystem = 0;
-unsigned int EventSystem::_hostId = 0;
-unsigned int EventSystem::_localId = 0;
+int EventSystem::_IPId = 0;
+short EventSystem::_localId = 0;
 
 /** \brief create an EventTransmitter to send messages to the message broker
   * \param hostName the location of the message broker to use
@@ -310,10 +310,10 @@ boost::shared_ptr<EventReceiver> EventSystem::getReceiver(const std::string& nam
     return boost::shared_ptr<EventReceiver>();
 }
 
-unsigned long EventSystem::createOriginatorId() {
+long EventSystem::createOriginatorId() {
     int pid = getpid();
     
-    unsigned long originatorId = _hostId & 0x00000000FFFFFFFF;
+   long originatorId = _IPId & 0x0FFFFFFFF;
     originatorId = (originatorId << 32) | (pid << 16) | _localId;
     _localId++;
     return originatorId;
@@ -324,21 +324,21 @@ unsigned long EventSystem::createOriginatorId() {
   *        of the host associated with this identificationId
   * \return the 16-bit hostId
   */
-unsigned int EventSystem::extractHostId(unsigned long identificationId) {
+int EventSystem::extractIPId(long identificationId) {
     return (identificationId & 0xFFFFFFFF00000000) >> 32;
 }
 
 /** \brief extract the 16-bit processId embedded in this identificationId
   * \return the 16-bit processId
   */
-unsigned short EventSystem::extractProcessId(unsigned long identificationId) {
+short EventSystem::extractProcessId(long identificationId) {
     return (identificationId & 0xFFFF0000) >> 16;
 }
 
 /** \brief extract the 16-bit localId embedded in this identificationId
   * \return the 16-bit localId
   */
-unsigned short EventSystem::extractLocalId(unsigned long identificationId) {
+short EventSystem::extractLocalId(long identificationId) {
     return identificationId & 0xFFFF;
 }
 
