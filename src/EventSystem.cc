@@ -314,7 +314,11 @@ long EventSystem::createOriginatorId() {
     int pid = getpid();
     
    long originatorId = _IPId & 0x0FFFFFFFF;
-    originatorId = (originatorId << 32) | (pid << 16) | _localId;
+//
+//  switching order of the identifiers to avoid overflow problems.
+//
+//    originatorId = (originatorId << 32) | (pid << 16) | _localId;
+    originatorId = (_localId << 48) | (pid << 32) | originatorId;
     _localId++;
     return originatorId;
 }
@@ -325,21 +329,24 @@ long EventSystem::createOriginatorId() {
   * \return the 16-bit hostId
   */
 int EventSystem::extractIPId(long identificationId) {
-    return (identificationId & 0xFFFFFFFF00000000) >> 32;
+    return identificationId & 0xFFFFFFFF;
+//    return (identificationId & 0xFFFFFFFF00000000) >> 32;
 }
 
 /** \brief extract the 16-bit processId embedded in this identificationId
   * \return the 16-bit processId
   */
 short EventSystem::extractProcessId(long identificationId) {
-    return (identificationId & 0xFFFF0000) >> 16;
+    return (identificationId & 0xFFFF00000000) >> 32;
+//    return (identificationId & 0xFFFF0000) >> 16;
 }
 
 /** \brief extract the 16-bit localId embedded in this identificationId
   * \return the 16-bit localId
   */
 short EventSystem::extractLocalId(long identificationId) {
-    return identificationId & 0xFFFF;
+    return (identificationId & 0xFFFF000000000000) >> 48;
+//    return identificationId & 0xFFFF;
 }
 
 StatusEvent* EventSystem::castToStatusEvent(Event* event) {
