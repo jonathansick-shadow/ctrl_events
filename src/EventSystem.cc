@@ -311,14 +311,15 @@ boost::shared_ptr<EventReceiver> EventSystem::getReceiver(const std::string& nam
 }
 
 long EventSystem::createOriginatorId() {
-    int pid = getpid();
+    long pid = getpid();
     
    long originatorId = _IPId & 0x0FFFFFFFF;
+   long locid = _localId;
 //
 //  switching order of the identifiers to avoid overflow problems.
 //
 //    originatorId = (originatorId << 32) | (pid << 16) | _localId;
-    originatorId = (_localId << 48) | (pid << 32) | originatorId;
+    originatorId = (locid << 48) | (pid << 32) | originatorId;
     _localId++;
     return originatorId;
 }
