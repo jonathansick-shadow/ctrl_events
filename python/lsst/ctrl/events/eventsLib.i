@@ -47,12 +47,12 @@ namespace lsst {
         namespace policy {}
     }
 }
-#ifdef LONG_MAX > 2200000000
+#if LONG_MAX > 2200000000
 /* 64-bit machine */
 typedef long int int64_t;
 #else
 /* 32-bit machine */
-typedef long int int64_t;
+typedef long long int64_t;
 #endif
 %}
 
