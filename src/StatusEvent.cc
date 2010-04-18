@@ -81,7 +81,7 @@ void StatusEvent::setKeywords(PropertySet::Ptr psp) const {
     psp->set(IPID, _IPId);
 }
 
-StatusEvent::StatusEvent( const std::string& runId, const long originatorId, const PropertySet::Ptr psp) : Event(runId, psp) {
+StatusEvent::StatusEvent( const std::string& runId, const int64_t originatorId, const PropertySet::Ptr psp) : Event(runId, psp) {
     _init();
 
 
@@ -106,7 +106,7 @@ void StatusEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setIntProperty(IPID, _IPId);
 }
 
-long StatusEvent::getOriginatorId() {
+int64_t StatusEvent::getOriginatorId() {
     return _originatorId;
 }
 

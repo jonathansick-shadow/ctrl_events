@@ -310,11 +310,11 @@ boost::shared_ptr<EventReceiver> EventSystem::getReceiver(const std::string& nam
     return boost::shared_ptr<EventReceiver>();
 }
 
-long EventSystem::createOriginatorId() {
-    long pid = getpid();
+int64_t EventSystem::createOriginatorId() {
+    int64_t pid = getpid();
     
-   long originatorId = _IPId & 0x0FFFFFFFF;
-   long locid = _localId;
+   int64_t originatorId = _IPId & 0x0FFFFFFFF;
+   int64_t locid = _localId;
 //
 //  switching order of the identifiers to avoid overflow problems.
 //
@@ -329,7 +329,7 @@ long EventSystem::createOriginatorId() {
   *        of the host associated with this identificationId
   * \return the 16-bit hostId
   */
-int EventSystem::extractIPId(long identificationId) {
+int EventSystem::extractIPId(int64_t identificationId) {
     return identificationId & 0xFFFFFFFF;
 //    return (identificationId & 0xFFFFFFFF00000000) >> 32;
 }
@@ -337,16 +337,16 @@ int EventSystem::extractIPId(long identificationId) {
 /** \brief extract the 16-bit processId embedded in this identificationId
   * \return the 16-bit processId
   */
-short EventSystem::extractProcessId(long identificationId) {
-    return (identificationId & 0xFFFF00000000) >> 32;
+short EventSystem::extractProcessId(int64_t identificationId) {
+    return (identificationId & 0xFFFF00000000LL) >> 32;
 //    return (identificationId & 0xFFFF0000) >> 16;
 }
 
 /** \brief extract the 16-bit localId embedded in this identificationId
   * \return the 16-bit localId
   */
-short EventSystem::extractLocalId(long identificationId) {
-    return (identificationId & 0xFFFF000000000000) >> 48;
+short EventSystem::extractLocalId(int64_t identificationId) {
+    return (identificationId & 0xFFFF000000000000LL) >> 48;
 //    return identificationId & 0xFFFF;
 }
 
