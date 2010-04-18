@@ -137,7 +137,7 @@ Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
     }
     
     if (!_psp->exists(EVENTTIME))
-        _eventTime = time(&rawtime); // current time in ns
+        _eventTime = ::time(&rawtime); // current time in ns
     else {
         _eventTime = _psp->get<long>(EVENTTIME);
         _psp->remove(EVENTTIME);
@@ -198,7 +198,7 @@ long Event::getEventTime() {
   * \return A formatted date string representing the event creation time
   */
 std::string Event::getEventDate() {
-    return std::string(ctime(&_eventTime));
+    return std::string(::ctime(&_eventTime));
 }
 
 

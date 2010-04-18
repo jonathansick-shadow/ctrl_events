@@ -97,7 +97,7 @@ void CommandEvent::setKeywords(PropertySet::Ptr psp) const {
     psp->set(DEST_IPID, _dest_IPId);
 }
 
-CommandEvent::CommandEvent( const std::string& runId, const long originatorId, const long destinationId, const PropertySet::Ptr psp) : Event(runId, psp) {
+CommandEvent::CommandEvent( const std::string& runId, const int64_t originatorId, const int64_t destinationId, const PropertySet::Ptr psp) : Event(runId, psp) {
     _init();
 
 
@@ -132,12 +132,12 @@ void CommandEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setIntProperty(DEST_IPID, _dest_IPId);
 }
 
-long CommandEvent::getOriginatorId() { return _originatorId; }
+int64_t CommandEvent::getOriginatorId() { return _originatorId; }
 short CommandEvent::getOriginatorLocalId() { return _orig_localId; }
 short CommandEvent::getOriginatorProcessId() { return _orig_processId; }
 int CommandEvent::getOriginatorIPId() { return _orig_IPId; }
 
-long CommandEvent::getDestinationId() { return _destinationId; }
+int64_t CommandEvent::getDestinationId() { return _destinationId; }
 short CommandEvent::getDestinationLocalId() { return _dest_localId; }
 short CommandEvent::getDestinationProcessId() { return _dest_processId; }
 int CommandEvent::getDestinationIPId() { return _dest_IPId; }

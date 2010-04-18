@@ -47,6 +47,13 @@ namespace lsst {
         namespace policy {}
     }
 }
+#if LONG_MAX > 2200000000
+/* 64-bit machine */
+typedef long int int64_t;
+#else
+/* 32-bit machine */
+typedef long long int64_t;
+#endif
 %}
 
 /* exception definitions for this package have to reaquire the GIL

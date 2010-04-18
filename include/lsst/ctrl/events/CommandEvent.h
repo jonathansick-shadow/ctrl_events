@@ -52,18 +52,18 @@ public:
     static const std::string DEST_IPID;
 
     CommandEvent();
-    CommandEvent(const std::string& runid, long originatorId, long destinationId, const PropertySet::Ptr psp);
+    CommandEvent(const std::string& runid, int64_t originatorId, int64_t destinationId, const PropertySet::Ptr psp);
     CommandEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
     virtual void populateHeader(cms::TextMessage *msg) const;
 
-    ~CommandEvent();
+    virtual ~CommandEvent();
 
-    long getOriginatorId();
+    int64_t getOriginatorId();
     short getOriginatorLocalId();
     short getOriginatorProcessId();
     int getOriginatorIPId();
 
-    long getDestinationId();
+    int64_t getDestinationId();
     short getDestinationLocalId();
     short getDestinationProcessId();
     int getDestinationIPId();
@@ -73,12 +73,12 @@ private:
     void _init();
 
 
-    long _originatorId;      // long value of pid localid and hostid combined.
+    int64_t _originatorId;      // int64_t value of pid localid and hostid combined.
     short _orig_localId;    // created by EventSystem
     short _orig_processId;        // process id 
     int _orig_IPId;     // hex value of ip addr
 
-    long _destinationId;     // long value of pid localid and hostid combined.
+    int64_t _destinationId;     // int64_t value of pid localid and hostid combined.
     short _dest_localId;    // created by EventSystem
     short _dest_processId;        // process id 
     int _dest_IPId;     // hex value of ip addr

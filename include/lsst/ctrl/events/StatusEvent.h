@@ -47,10 +47,10 @@ public:
     static const std::string IPID;
 
     StatusEvent();
-    ~StatusEvent();
+    virtual ~StatusEvent();
 
     StatusEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
-    StatusEvent(const std::string& runid, long originator, const PropertySet::Ptr psp);
+    StatusEvent(const std::string& runid, int64_t originator, const PropertySet::Ptr psp);
 
     virtual void populateHeader(cms::TextMessage *msg) const;
 
@@ -58,7 +58,7 @@ public:
     short getProcessId();
     short getLocalId();
     int getIPId();
-    long getOriginatorId();
+    int64_t getOriginatorId();
 
 private:
     virtual void setKeywords(PropertySet::Ptr psp) const;
@@ -67,7 +67,7 @@ private:
     short _processId;        // process id 
     short _localId;    // created by EventSystem
     int _IPId;     // hex value of ip addr
-    long _originatorId; // long value of pid localid and hostid combined.
+    int64_t _originatorId; // int64_t value of pid localid and hostid combined.
 
 };
 }
