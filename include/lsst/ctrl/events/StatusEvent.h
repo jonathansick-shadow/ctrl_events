@@ -47,7 +47,7 @@ public:
     static const std::string IPID;
 
     StatusEvent();
-    ~StatusEvent();
+    virtual ~StatusEvent();
 
     StatusEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
     StatusEvent(const std::string& runid, int64_t originator, const PropertySet::Ptr psp);

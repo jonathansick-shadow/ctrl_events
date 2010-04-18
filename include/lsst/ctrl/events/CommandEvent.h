@@ -56,7 +56,7 @@ public:
     CommandEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
     virtual void populateHeader(cms::TextMessage *msg) const;
 
-    ~CommandEvent();
+    virtual ~CommandEvent();
 
     int64_t getOriginatorId();
     short getOriginatorLocalId();

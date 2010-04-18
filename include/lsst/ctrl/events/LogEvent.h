@@ -46,7 +46,7 @@ class LogEvent : public Event
 public:
     LogEvent(const std::string& runid, const pexLogging::LogRecord& rec);
 
-    ~LogEvent();
+    virtual ~LogEvent();
 
     int getLevel();
     std::string getLog();

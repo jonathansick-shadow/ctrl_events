@@ -57,7 +57,7 @@ public:
     Event(cms::TextMessage *msg, const PropertySet::Ptr ps);
     // Event(const std::string& runid, const PropertySet::Ptr& ps);
 
-    ~Event();
+    virtual ~Event();
 
     // StringArray getCustomPropertyNames()
     PropertySet::Ptr getPropertySet() const;
