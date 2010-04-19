@@ -187,17 +187,18 @@ void Event::setEventTime(long long nsecs) {
 }
 
 void Event::updateEventTime() {
-    _psp->set(EVENTTIME,  dafBase::DateTime::now().nsecs());
+    _psp->set(EVENTTIME,  (long long)dafBase::DateTime::now().nsecs());
 }
 
 /** \brief Get the creation date of this event
   * \return A formatted date string representing the event creation time
   */
 std::string Event::getEventDate() {
-    dafBase::DateTime dateTime(_psp->get<long long>(EVENTTIME));
+    long long eventTime = _psp->get<long long>(EVENTTIME);
+    dafBase::DateTime dateTime(eventTime);
     
-    struct tm eventTime = dateTime.gmtime();
-    return asctime(&eventTime);
+    struct tm gmTime = dateTime.gmtime();
+    return asctime(&gmTime);
 }
 
 

@@ -29,6 +29,26 @@ namespace events {
 
 class ExceptionEvent :: public Event
 {
+
+public:
+    static const std::string EXCEPTIONTYPE;
+    static const std::string STACKTRACE;
+
+    ExceptionEvent();
+    ExceptionEvent(const std::string& runid, const LSSTException ex);
+    ExceptionEvent(cms::TextMessage *msg);
+
+    ~LogEvent();
+
+    void populateHeader(cms::TextMessage *msg);
+
+    std::string getExceptionType();
+    std::string getStackTrace();
+
+private:
+
+    void _init();
+
 };
 }
 }

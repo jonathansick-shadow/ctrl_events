@@ -51,25 +51,25 @@ public:
     static const std::string DEST_IPID;
 
     CommandEvent();
-    CommandEvent(const std::string& runid, unsigned long originatorId, unsigned long destinationId, const PropertySet& ps);
-    CommandEvent(const std::string& runid, unsigned long originatorId, unsigned long destinationId, const PropertySet::Ptr psp);
+    CommandEvent(const std::string& runid, const int64_t originatorId, const int64_t destinationId, const PropertySet& ps);
+    CommandEvent(const std::string& runid, const int64_t originatorId, const int64_t destinationId, const PropertySet::Ptr psp);
     CommandEvent(cms::TextMessage *msg);
     virtual void populateHeader(cms::TextMessage *msg);
 
     ~CommandEvent();
 
-    unsigned long getOriginatorId();
-    unsigned short getOriginatorLocalId();
-    unsigned short getOriginatorProcessId();
-    unsigned int getOriginatorIPId();
+    int64_t getOriginatorId();
+    short getOriginatorLocalId();
+    short getOriginatorProcessId();
+    int getOriginatorIPId();
 
-    unsigned long getDestinationId();
-    unsigned short getDestinationLocalId();
-    unsigned short getDestinationProcessId();
-    unsigned int getDestinationIPId();
+    int64_t getDestinationId();
+    short getDestinationLocalId();
+    short getDestinationProcessId();
+    int getDestinationIPId();
 
 protected:
-    void _constructor(const std::string& runId, unsigned long originatorId, unsigned long destinationId, const PropertySet& ps);
+    void _constructor(const std::string& runId, const int64_t originatorId, const int64_t destinationId, const PropertySet& ps);
 
 private:
     void _init();

@@ -18,9 +18,21 @@ if __name__ == "__main__":
     print props.toString()
     print
 
-    print "Filterable names = ",event.getFilterablePropertyNames()
+    filterableNames = event.getFilterablePropertyNames()
+    print "Filterable names = ",filterableNames
+    filterableNames.remove('EVENTTIME')
+    filterableNames.remove('HOSTID')
+    filterableNames.remove('PUBTIME')
+    filterableNames.remove('RUNID')
+    filterableNames.remove('STATUS')
+    filterableNames.remove('TOPIC')
+    filterableNames.remove('TYPE')
+    assert len(filterableNames) == 0
 
-    print "Custom names = ",event.getCustomPropertyNames()
+    customNames = event.getCustomPropertyNames()
+    print "Custom names = ",customNames
+
+    assert len(customNames) == 1
 
     eventTime = event.getEventTime()
     print "getEventTime() = ",event.getEventTime()
@@ -34,8 +46,16 @@ if __name__ == "__main__":
     assert event.getType() == events.EventTypes.EVENT
     assert event.getStatus() == status
 
+    # check to be sure we really update the time
     event.updateEventTime()
-
     assert eventTime < event.getEventTime()
+
+    # set the time to zero, and make sure we get back the same time.
     event.setEventTime(0)
     assert event.getEventTime() == 0
+
+    # reset the time to eventTime, and make sure we get back the same time.
+    event.setEventTime(eventTime)
+    assert event.getEventTime() == eventTime
+
+

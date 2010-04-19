@@ -49,20 +49,21 @@ public:
     ~StatusEvent();
 
     StatusEvent(cms::TextMessage *msg);
-    StatusEvent(const std::string& runid, unsigned long originator, const PropertySet& ps);
-    StatusEvent(const std::string& runid, unsigned long originator, const PropertySet::Ptr psp);
+    StatusEvent(const std::string& runid, int64_t originator, const PropertySet& ps);
+    StatusEvent(const std::string& runid, int64_t originator, const PropertySet::Ptr psp);
 
     virtual void populateHeader(cms::TextMessage *msg);
 
 
-    unsigned short getProcessId();
-    unsigned short getLocalId();
-    unsigned int getIPId();
-    unsigned long getOriginatorId();
+    short getProcessId();
+    short getLocalId();
+    int getIPId();
+    int64_t getOriginatorId();
+    void setOriginatorId(int64_t id);
 
 private:
     void _init();
-    void _constructor(const std::string& runid, unsigned long originator, const PropertySet& ps);
+    void _constructor(const std::string& runid, int64_t originator, const PropertySet& ps);
 
 };
 }
