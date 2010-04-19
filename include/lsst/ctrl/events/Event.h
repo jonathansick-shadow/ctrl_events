@@ -63,10 +63,13 @@ public:
     PropertySet::Ptr getPropertySet() const;
 
     std::string getPubDate();
-    long getPubTime();
-    void setPubTime(long t);
+    long long getPubTime();
+    void setPubTime(long long t);
 
-    long getEventTime();
+    long long getEventTime();
+    void setEventTime(long long nsecs);
+    void updateEventTime();
+
     std::string getEventDate();
 
     std::string getHostId();
@@ -90,13 +93,13 @@ protected:
     void _init();
     virtual void setKeywords(PropertySet::Ptr psp) const;
 
-    long _eventTime;
+    long long _eventTime;
     std::string _type;
     std::string _topic;
     std::string _hostId;
     std::string _runId;
     std::string _status;
-    long _pubTime;
+    long long _pubTime;
 /*
 protected:
     void init(const std::string& runId);
