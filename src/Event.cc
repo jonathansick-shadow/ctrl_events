@@ -14,6 +14,7 @@
 #include <limits>
 #include <cstring>
 
+#include "lsst/daf/base/DateTime.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/daf/base/DateTime.h"
@@ -29,6 +30,7 @@
 
 namespace pexExceptions = lsst::pex::exceptions;
 namespace pexLogging = lsst::pex::logging;
+namespace dafBase = lsst::daf::base;
 
 
 using namespace std;
@@ -114,7 +116,6 @@ vector<std::string> Event::getCustomPropertyNames() {
 
 Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
     char hostname[HOST_NAME_MAX];
-    time_t rawtime;
 
     _init();
     
@@ -137,9 +138,9 @@ Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
     }
     
     if (!_psp->exists(EVENTTIME))
-        _eventTime = ::time(&rawtime); // current time in ns
+        _eventTime = dafBase::DateTime::now().nsecs();
     else {
-        _eventTime = _psp->get<long>(EVENTTIME);
+        _eventTime = _psp->get<long long>(EVENTTIME);
         _psp->remove(EVENTTIME);
     }
    
@@ -190,15 +191,25 @@ void Event::populateHeader(cms::TextMessage* msg) const {
     msg->setLongProperty(PUBTIME, _pubTime);
 }
 
-long Event::getEventTime() {
+long long Event::getEventTime() {
     return _eventTime;
 }
+
+void Event::setEventTime(long long nsecs) {
+    _eventTime = nsecs;
+}   
+
+void Event::updateEventTime() {
+    _eventTime = dafBase::DateTime::now().nsecs();
+} 
 
 /** \brief Get the creation date of this event
   * \return A formatted date string representing the event creation time
   */
 std::string Event::getEventDate() {
-    return std::string(::ctime(&_eventTime));
+    dafBase::DateTime dateTime(_eventTime);
+    struct tm eventTime = dateTime.gmtime();
+    return ::asctime(&eventTime);
 }
 
 
@@ -213,11 +224,11 @@ PropertySet::Ptr Event::getPropertySet() const {
     return psp;
 }
 
-void Event::setPubTime(long t) {
+void Event::setPubTime(long long t) {
     _pubTime = t;
 }
 
-long Event::getPubTime() {
+long long Event::getPubTime() {
     return _pubTime;
 }
 
@@ -225,9 +236,12 @@ long Event::getPubTime() {
   * \return A formatted date string represeting the publication time
   */
 std::string Event::getPubDate() {
-    if (_pubTime == 0L)
+    if (_pubTime == 0LL)
         return std::string();
-    return std::string(ctime(&_pubTime));
+
+    dafBase::DateTime dateTime(_pubTime);
+    struct tm pubTime = dateTime.gmtime();
+    return std::string(asctime(&pubTime));
 }
 
 

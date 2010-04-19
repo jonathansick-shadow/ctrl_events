@@ -229,10 +229,10 @@ void EventTransmitter::publishEvent(const Event& event) {
 
     event.populateHeader(message);
 
-    message->setStringProperty("TOPIC", _topicName);
+    message->setStringProperty(Event::TOPIC, _topicName);
     
-    pubtime = time(&_pubtime);
-    message->setLongProperty("PUBTIME", pubtime);
+    pubtime = dafBase::DateTime::now().nsecs();
+    message->setLongProperty(Event::PUBTIME, pubtime);
 
     psp = event.getCustomPropertySet();
     std::string payload = marshall(*psp);
