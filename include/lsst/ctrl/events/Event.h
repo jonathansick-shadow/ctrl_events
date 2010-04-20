@@ -70,6 +70,8 @@ public:
     void setEventTime(long long nsecs);
     void updateEventTime();
 
+    void setStatus(std::string status);
+
     std::string getEventDate();
 
     std::string getHostId();

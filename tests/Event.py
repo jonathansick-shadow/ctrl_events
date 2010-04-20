@@ -58,4 +58,7 @@ if __name__ == "__main__":
     event.setEventTime(eventTime)
     assert event.getEventTime() == eventTime
 
+    status2 = "hello there"
+    event.setStatus(status2)
+    assert event.getStatus() == status2
 

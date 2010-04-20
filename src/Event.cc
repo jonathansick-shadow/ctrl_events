@@ -261,6 +261,10 @@ std::string Event::getStatus() {
     return _status;
 }
 
+void Event::setStatus(std::string status) {
+    _status = status;
+}
+
 void Event::setTopic(std::string topic) {
     _topic = topic;
 }
