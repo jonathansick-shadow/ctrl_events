@@ -218,7 +218,6 @@ void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
 
 void EventTransmitter::publishEvent(const Event& event) {
     PropertySet::Ptr psp;
-    time_t _pubtime;
     long pubtime;
     cms::TextMessage* message = _session->createTextMessage();
 
