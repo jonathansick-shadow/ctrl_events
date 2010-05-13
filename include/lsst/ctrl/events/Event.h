@@ -52,13 +52,14 @@ public:
     static const std::string STATUS;
     static const std::string TOPIC;
     static const std::string PUBTIME;
+    static const std::string UNINITIALIZED;
 
     Event();
     Event(const std::string& runid, const PropertySet::Ptr ps);
     Event(const std::string& runid, const PropertySet& ps);
     Event(cms::TextMessage *msg);
 
-    ~Event();
+    virtual ~Event();
 
     PropertySet::Ptr getPropertySet() const;
 
@@ -84,7 +85,7 @@ public:
     vector<std::string> getFilterablePropertyNames();
     vector<std::string> getCustomPropertyNames();
     PropertySet::Ptr getCustomPropertySet() const;
-    virtual void populateHeader(cms::TextMessage* msg);
+    virtual void populateHeader(cms::TextMessage* msg) const;
     void marshall(cms::TextMessage *msg);
 
 

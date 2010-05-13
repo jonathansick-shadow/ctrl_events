@@ -59,6 +59,8 @@ const std::string Event::STATUS = "STATUS";
 const std::string Event::TOPIC = "TOPIC";
 const std::string Event::PUBTIME = "PUBTIME";
 
+const std::string Event::UNINITIALIZED = "uninitialized";
+
 Event::Event() {
     _init();
 }
@@ -162,13 +164,13 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
     _psp->set(TYPE, EventTypes::EVENT);
 
     // _topic is filled in on publish and is ignored in the passed PropertySet
-    _psp->set(TOPIC, "uninitialized");
+    _psp->set(TOPIC, Event::UNINITIALIZED);
 
     // _pubTime is filled in on publish and is ignored in the passed PropertySet
     _psp->set(PUBTIME, (long long)0);
 }
 
-void Event::populateHeader(cms::TextMessage* msg) {
+void Event::populateHeader(cms::TextMessage* msg)  const {
     msg->setStringProperty(TYPE, _psp->get<std::string>(TYPE));
     msg->setLongProperty(EVENTTIME, _psp->get<long long>(EVENTTIME));
     msg->setStringProperty(HOSTID, _psp->get<std::string>(HOSTID));

@@ -104,7 +104,7 @@ PipelineLogEvent::PipelineLogEvent( const std::string& runId, const pexLogging::
 
 }
 
-void PipelineLogEvent::populateHeader(cms::TextMessage* msg) {
+void PipelineLogEvent::populateHeader(cms::TextMessage* msg) const {
     LogEvent::populateHeader(msg);
 
     msg->setStringProperty(PipelineLogEvent::DATAID, _psp->get<std::string>(PipelineLogEvent::DATAID));

@@ -54,9 +54,9 @@ public:
     CommandEvent(const std::string& runid, const int64_t originatorId, const int64_t destinationId, const PropertySet& ps);
     CommandEvent(const std::string& runid, const int64_t originatorId, const int64_t destinationId, const PropertySet::Ptr psp);
     CommandEvent(cms::TextMessage *msg);
-    virtual void populateHeader(cms::TextMessage *msg);
+    virtual void populateHeader(cms::TextMessage *msg) const;
 
-    ~CommandEvent();
+    virtual ~CommandEvent();
 
     int64_t getOriginatorId();
     short getOriginatorLocalId();

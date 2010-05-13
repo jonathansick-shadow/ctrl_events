@@ -108,7 +108,7 @@ LogEvent::LogEvent( const std::string& runId, const pexLogging::LogRecord& rec) 
     }
 }
 
-void LogEvent::populateHeader(cms::TextMessage* msg) {
+void LogEvent::populateHeader(cms::TextMessage* msg) const {
     Event::populateHeader(msg);
 
     std::vector<std::string> vec  = _psp->getArray<std::string>(LogEvent::COMMENT);

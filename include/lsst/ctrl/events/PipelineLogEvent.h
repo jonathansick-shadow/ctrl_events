@@ -55,9 +55,9 @@ public:
     PipelineLogEvent(const std::string& runid, const pexLogging::LogRecord& rec);
     PipelineLogEvent(cms::TextMessage *msg);
 
-    ~PipelineLogEvent();
+    virtual ~PipelineLogEvent();
 
-    void populateHeader(cms::TextMessage *msg);
+    virtual void populateHeader(cms::TextMessage *msg) const;
 
     std::string getDataId();
     int getLoopnum();

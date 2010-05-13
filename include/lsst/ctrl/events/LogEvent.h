@@ -52,9 +52,9 @@ public:
     LogEvent(const std::string& runid, const pexLogging::LogRecord& rec);
     LogEvent(cms::TextMessage *msg);
 
-    ~LogEvent();
+    virtual ~LogEvent();
 
-    void populateHeader(cms::TextMessage *msg);
+    virtual void populateHeader(cms::TextMessage *msg) const;
 
     int getLevel();
 

@@ -93,7 +93,7 @@ void StatusEvent::_constructor(const std::string& runId, const int64_t originato
 
 }
 
-void StatusEvent::populateHeader(cms::TextMessage* msg) {
+void StatusEvent::populateHeader(cms::TextMessage* msg) const {
     Event::populateHeader(msg);
 
     msg->setLongProperty(ORIGINATORID, _psp->get<int64_t>(ORIGINATORID));

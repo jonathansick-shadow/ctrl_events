@@ -45,7 +45,7 @@ class MonitorEvent : public Event
 public:
     MonitorEvent(const std::string& runid, const pexLogging::LogRecord& rec);
 
-    ~MonitorEvent();
+    virtual ~MonitorEvent();
 
     int getLevel();
     std::string getLog();

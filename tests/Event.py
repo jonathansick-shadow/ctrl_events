@@ -3,36 +3,48 @@
 import threading
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
+from socket import gethostname
 
 if __name__ == "__main__":
     runid = "srptestrun"
     status = "my special status"
     root = PropertySet()
-    root.set("myname","myname")
+    MYNAME = "myname"
+    root.set(MYNAME, MYNAME)
     root.set(events.Event.STATUS, status)
     
     event = events.Event(runid, root)
 
+    # return the property set
     props = event.getPropertySet()
     print "PropertySet: "
     print props.toString()
     print
+    assert props.get(events.Event.EVENTTIME) > 0
+    assert props.get(events.Event.HOSTID) == gethostname()
+    assert props.get(events.Event.PUBTIME) == 0
+    assert props.get(events.Event.RUNID) == runid
+    assert props.get(events.Event.STATUS) == status
+    assert props.get(events.Event.TOPIC) == events.Event.UNINITIALIZED
+    assert props.get(events.Event.TYPE) == events.EventTypes.EVENT
+    assert props.get(MYNAME) == MYNAME
 
     filterableNames = event.getFilterablePropertyNames()
     print "Filterable names = ",filterableNames
-    filterableNames.remove('EVENTTIME')
-    filterableNames.remove('HOSTID')
-    filterableNames.remove('PUBTIME')
-    filterableNames.remove('RUNID')
-    filterableNames.remove('STATUS')
-    filterableNames.remove('TOPIC')
-    filterableNames.remove('TYPE')
+    filterableNames.remove(events.Event.EVENTTIME)
+    filterableNames.remove(events.Event.HOSTID)
+    filterableNames.remove(events.Event.PUBTIME)
+    filterableNames.remove(events.Event.RUNID)
+    filterableNames.remove(events.Event.STATUS)
+    filterableNames.remove(events.Event.TOPIC)
+    filterableNames.remove(events.Event.TYPE)
     assert len(filterableNames) == 0
 
     customNames = event.getCustomPropertyNames()
     print "Custom names = ",customNames
 
     assert len(customNames) == 1
+    assert customNames[0] == MYNAME
 
     eventTime = event.getEventTime()
     print "getEventTime() = ",event.getEventTime()

@@ -46,13 +46,13 @@ public:
     static const std::string IPID;
 
     StatusEvent();
-    ~StatusEvent();
+    virtual ~StatusEvent();
 
     StatusEvent(cms::TextMessage *msg);
     StatusEvent(const std::string& runid, int64_t originator, const PropertySet& ps);
     StatusEvent(const std::string& runid, int64_t originator, const PropertySet::Ptr psp);
 
-    virtual void populateHeader(cms::TextMessage *msg);
+    virtual void populateHeader(cms::TextMessage *msg) const;
 
 
     short getProcessId();

@@ -110,7 +110,7 @@ void CommandEvent::_constructor( const std::string& runId, const int64_t origina
 
 }
 
-void CommandEvent::populateHeader(cms::TextMessage* msg) {
+void CommandEvent::populateHeader(cms::TextMessage* msg) const {
     Event::populateHeader(msg);
 
     msg->setLongProperty(ORIGINATORID, _psp->get<int64_t>(ORIGINATORID));
