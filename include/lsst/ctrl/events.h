@@ -15,5 +15,9 @@
 
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/ctrl/events/EventReceiver.h"
+#include "lsst/ctrl/events/EventSystem.h"
+#include "lsst/ctrl/events/LogEvent.h"
+#include "lsst/ctrl/events/StatusEvent.h"
+#include "lsst/ctrl/events/CommandEvent.h"
 
 #endif /*LSST_CTRL_EVENTS_H_*/

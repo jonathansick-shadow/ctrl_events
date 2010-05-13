@@ -21,8 +21,10 @@ namespace events {
 class EventTypes {
 public:
     static const std::string EVENT;
+    static const std::string LOG;
     static const std::string STATUS;
     static const std::string COMMAND;
+    static const std::string PIPELINELOG;
 };
 }
 }

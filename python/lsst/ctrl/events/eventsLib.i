@@ -20,6 +20,8 @@ Access to the lsst::ctrl::events classes
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
+#include "lsst/ctrl/events/LogEvent.h"
+#include "lsst/ctrl/events/PipelineLogEvent.h"
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/ctrl/events/EventReceiver.h"
@@ -80,6 +82,8 @@ typedef long long int64_t;
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"
 %include "lsst/ctrl/events/CommandEvent.h"
+%include "lsst/ctrl/events/LogEvent.h"
+%include "lsst/ctrl/events/PipelineLogEvent.h"
 %include "lsst/ctrl/events/EventTypes.h"
 %include "lsst/ctrl/events/EventTransmitter.h"
 %include "lsst/ctrl/events/EventReceiver.h"
@@ -99,6 +103,12 @@ typedef long long int64_t;
     }
     lsst::ctrl::events::CommandEvent *receiveCommandEvent(long timeout) {
         return dynamic_cast<lsst::ctrl::events::CommandEvent*>(self->receiveEvent(timeout));
+    }
+    lsst::ctrl::events::LogEvent *receiveLogEvent() {
+        return dynamic_cast<lsst::ctrl::events::LogEvent*>(self->receiveEvent());
+    }
+    lsst::ctrl::events::LogEvent *receiveLogEvent(long timeout) {
+        return dynamic_cast<lsst::ctrl::events::LogEvent*>(self->receiveEvent(timeout));
     }
 }
 

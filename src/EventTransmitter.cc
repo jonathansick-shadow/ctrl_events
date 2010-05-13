@@ -27,6 +27,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include "lsst/ctrl/events/EventLibrary.h"
+#include "lsst/ctrl/events/EventBroker.h"
 
 #include <activemq/core/ActiveMQConnectionFactory.h>
 
@@ -82,6 +83,7 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
     if (!policy.exists("topicName")) {
         throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName not found in policy");
     }
+    _topicName = policy.getString("topicName");
 
     std::string hostName;
     try {
@@ -93,45 +95,30 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
     try {
         hostPort = policy.getInt("hostPort");
     } catch (pexPolicy::NameNotFound& e) {
-        hostPort = EventSystem::DEFAULTHOSTPORT;
+        hostPort = EventBroker::DEFAULTHOSTPORT;
     }
-    init(hostName, hostPort, policy.getString("topicName"));
+    init(hostName, _topicName, hostPort);
 }
 
 /** \brief Transmits events to the specified host and topic
   *
   * \param hostName the machine hosting the message broker
   * \param topicName the topic to transmit events to
-  * \throw throws RuntimeErrorException if local socket can't be created
-  * \throw throws RuntimeErrorException if connect to local socket fails
-  * \throw throws RuntimeErrorException if connect to remote ActiveMQ host fails
-  */
-EventTransmitter::EventTransmitter( const std::string& hostName, const std::string& topicName) {
-    EventLibrary().initializeLibrary();
-
-    _turnEventsOff = false;
-    init(hostName, EventSystem::DEFAULTHOSTPORT, topicName);
-}
-
-/** \brief Transmits events to the specified host and topic
-  *
-  * \param hostName the machine hosting the message broker
   * \param hostPort the port number which the message broker is listening to
-  * \param topicName the topic to transmit events to
   * \throw throws RuntimeErrorException if local socket can't be created
   * \throw throws RuntimeErrorException if connect to local socket fails
   * \throw throws RuntimeErrorException if connect to remote ActiveMQ host fails
   */
-EventTransmitter::EventTransmitter( const std::string& hostName, const int hostPort, const std::string& topicName) {
+EventTransmitter::EventTransmitter( const std::string& hostName, const std::string& topicName, int hostPort) {
     EventLibrary().initializeLibrary();
 
     _turnEventsOff = false;
-    init(hostName, hostPort, topicName);
+    init(hostName, topicName, hostPort);
 }
 
 /** private initialization method for configuring EventTransmitter
   */
-void EventTransmitter::init( const std::string& hostName, const int hostPort, const std::string& topicName) {
+void EventTransmitter::init( const std::string& hostName, const std::string& topicName, int hostPort) {
     _connection = NULL;
     _session = NULL;
     // _destination = NULL;
@@ -188,135 +175,20 @@ void EventTransmitter::init( const std::string& hostName, const int hostPort, co
     }
 }
 
-void EventTransmitter::publish(const PropertySet::Ptr& psp) {
-    publish(*psp);
-}
-
-void EventTransmitter::publish(const PropertySet& ps) {
-    if (_turnEventsOff == true)
-        return;
-
-    publish("event", ps);
-}
-
-/** \brief publish an event of "type"        
-  *
-  * \param rec The LogRecord to send.  This is used internally by the logging
-  *            subsystem and is exposed here to send LogRecord through event
-  *            channels.
-  * \throw throws Runtime exception if publish fails
-  */
-void EventTransmitter::publish(const pexLogging::LogRecord& rec) {
-
-    if (_turnEventsOff == true)
-        return;
-
-    const PropertySet& ps = rec.getProperties();
-
-    publish("logging", ps);
-}
-
-void EventTransmitter::publishEvent(const Event& event) {
-    PropertySet::Ptr psp;
-    long pubtime;
+void EventTransmitter::publishEvent(Event& event) {
+    long long pubtime;
     cms::TextMessage* message = _session->createTextMessage();
 
-    // since we can only create TextMessage objects via a Session,
-    // create the object, and pass it to the Event to be populated.
-    // The event, knowing the type that it is, can populate the
-    // message properly itself.
+    event.marshall(message);
 
-    event.populateHeader(message);
+    message->setStringProperty("TOPIC", _topicName);
 
-    message->setStringProperty(Event::TOPIC, _topicName);
-    
+    // wait until the last moment to timestamp publication time
     pubtime = dafBase::DateTime::now().nsecs();
-    message->setLongProperty(Event::PUBTIME, pubtime);
-
-    psp = event.getCustomPropertySet();
-    std::string payload = marshall(*psp);
-    message->setText(payload);
+    message->setLongProperty("PUBTIME", pubtime);
 
     _producer->send(_topic, message);
     delete message;
-}
-
-/** private method used to send event out on the wire.
-  */
-void EventTransmitter::publish(const std::string& type, const PropertySet& ps) {
-
-    if (_session == 0)
-        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Not connected to event server");
-
-    // Sending the message to the ActiveMQ server
-    cms::TextMessage* message = _session->createTextMessage();
-    message->setCMSType(type);
-    std::string payload = marshall(ps);
-
-    message->setText(payload);
-    _producer->send(_topic, message );
-
-    delete message;
-}
-
-std::string EventTransmitter::marshall(const PropertySet& ps) {
-    std::vector<std::string> v = ps.paramNames(false);
-
-    // TODO: optimize this to get use getArray only when necessary
-    std::ostringstream payload;
-    unsigned int i;
-    payload << "nodelist||nodelist||" << (v.size()) << "~~";
-    for (i = 0; i < v.size(); i++) {
-        std::string name = v[i];
-        if (ps.typeOf(name) == typeid(bool)) {
-            std::vector<bool> vec  = ps.getArray<bool>(name);
-            std::vector<bool>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "bool||"<< name << "||" << *iter << "~~";
-            }
-        } else if (ps.typeOf(name) == typeid(long)) {
-            std::vector<long> vec  = ps.getArray<long>(name);
-            std::vector<long>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "long||" << name << "||"<< *iter << "~~";
-            }
-        } else if (ps.typeOf(name) == typeid(int)) {
-            std::vector<int> vec  = ps.getArray<int>(name);
-            std::vector<int>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "int||" << name << "||"<< *iter << "~~";
-            }
-        } else if (ps.typeOf(name) == typeid(float)) {
-            std::vector<float> vec  = ps.getArray<float>(name);
-            std::vector<float>::iterator iter;
-            payload.precision(numeric_limits<float>::digits10+1);
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "float||"<< name << "||"<< *iter << "~~";
-            }
-        } else if (ps.typeOf(name) == typeid(double)) {
-            std::vector<double> vec  = ps.getArray<double>(name);
-            std::vector<double>::iterator iter;
-            payload.precision(numeric_limits<double>::digits10+1);
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "double||"<< name << "||"<< *iter << "~~";
-            }
-        } else if (ps.typeOf(name) == typeid(std::string)) {
-            std::vector<std::string> vec  = ps.getArray<std::string>(name);
-            std::vector<std::string>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "string||" << name << "||"<< *iter << "~~";
-            }
-        } else if (ps.typeOf(name) == typeid(lsst::daf::base::DateTime)) {
-            std::vector<lsst::daf::base::DateTime> vec  = ps.getArray<lsst::daf::base::DateTime>(name);
-            std::vector<lsst::daf::base::DateTime>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "datetime||" << name << "||"<< (*iter).nsecs() << "~~";
-            }
-        } else {
-            std::cout << "Couldn't marshall "<< name << std::endl;
-        }
-    }
-    return payload.str();
 }
 
 /** \brief get the topic name of this EventTransmitter

@@ -18,6 +18,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <set>
 
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy.h"
@@ -51,15 +52,15 @@ public:
     static const std::string STATUS;
     static const std::string TOPIC;
     static const std::string PUBTIME;
+    static const std::string UNINITIALIZED;
 
     Event();
     Event(const std::string& runid, const PropertySet::Ptr ps);
-    Event(cms::TextMessage *msg, const PropertySet::Ptr ps);
-    // Event(const std::string& runid, const PropertySet::Ptr& ps);
+    Event(const std::string& runid, const PropertySet& ps);
+    Event(cms::TextMessage *msg);
 
     virtual ~Event();
 
-    // StringArray getCustomPropertyNames()
     PropertySet::Ptr getPropertySet() const;
 
     std::string getPubDate();
@@ -70,14 +71,13 @@ public:
     void setEventTime(long long nsecs);
     void updateEventTime();
 
-    void setStatus(std::string status);
-
     std::string getEventDate();
 
     std::string getHostId();
     std::string getRunId();
     std::string getType();
     std::string getStatus();
+    void setStatus(std::string status);
 
     void setTopic(std::string topic);
     std::string getTopic();
@@ -86,26 +86,21 @@ public:
     vector<std::string> getCustomPropertyNames();
     PropertySet::Ptr getCustomPropertySet() const;
     virtual void populateHeader(cms::TextMessage* msg) const;
+    void marshall(cms::TextMessage *msg);
 
 
 
 protected:
     PropertySet::Ptr _psp;
-    vector<std::string> _keywords;
+    set<std::string> _keywords;
     void _init();
-    virtual void setKeywords(PropertySet::Ptr psp) const;
+    void _constructor(const std::string& runid, const PropertySet& ps);
+    void splitString(std::string str, std::string delim, std::vector<std::string>&results);
 
-    long long _eventTime;
-    std::string _type;
-    std::string _topic;
-    std::string _hostId;
-    std::string _runId;
-    std::string _status;
-    long long _pubTime;
-/*
-protected:
-    void init(const std::string& runId);
-*/
+private:
+    std::string marshall(const PropertySet& ps);
+    PropertySet::Ptr processTextMessage(cms::TextMessage *textMessage);
+    PropertySet::Ptr unmarshall(const std::string& text);
 };
 
 }

@@ -42,7 +42,6 @@ if __name__ == "__main__":
     IPId = eventSystem.extractIPId(originatorId2)
 
 
-
     root = PropertySet()
     root.set("myname","myname")
     status = "my special status"
@@ -51,13 +50,14 @@ if __name__ == "__main__":
     statusEvent = events.StatusEvent("my runid", originatorId2, root)
 
     transmitter = events.EventTransmitter("lsst8.ncsa.uiuc.edu", "mytopic")
-
-    sel = "ORIGINATORID = %d" % originatorId2
+    sel = "%s = %d" % (events.StatusEvent.IPID, IPId)
+    #sel = "RUNID = '%s'" % "my runid"
+    #sel = "PROCESSID = %d" % processId
+    print sel
     receiver = events.EventReceiver("lsst8.ncsa.uiuc.edu", "mytopic", sel)
 
     transmitter.publishEvent(statusEvent)
-    returnedEvent = receiver.receiveEvent(2000)
-
-    assert returnedEvent != None
+    returnedEvent = receiver.receiveEvent()
 
     print "done"
+    

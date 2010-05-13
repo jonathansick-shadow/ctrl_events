@@ -20,7 +20,6 @@
 #include <iostream>
 
 #include "lsst/ctrl/events/Event.h"
-#include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
@@ -52,8 +51,9 @@ public:
     static const std::string DEST_IPID;
 
     CommandEvent();
-    CommandEvent(const std::string& runid, int64_t originatorId, int64_t destinationId, const PropertySet::Ptr psp);
-    CommandEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
+    CommandEvent(const std::string& runid, const int64_t originatorId, const int64_t destinationId, const PropertySet& ps);
+    CommandEvent(const std::string& runid, const int64_t originatorId, const int64_t destinationId, const PropertySet::Ptr psp);
+    CommandEvent(cms::TextMessage *msg);
     virtual void populateHeader(cms::TextMessage *msg) const;
 
     virtual ~CommandEvent();
@@ -68,20 +68,11 @@ public:
     short getDestinationProcessId();
     int getDestinationIPId();
 
+protected:
+    void _constructor(const std::string& runId, const int64_t originatorId, const int64_t destinationId, const PropertySet& ps);
+
 private:
-    virtual void setKeywords(PropertySet::Ptr psp) const;
     void _init();
-
-
-    int64_t _originatorId;      // int64_t value of pid localid and hostid combined.
-    short _orig_localId;    // created by EventSystem
-    short _orig_processId;        // process id 
-    int _orig_IPId;     // hex value of ip addr
-
-    int64_t _destinationId;     // int64_t value of pid localid and hostid combined.
-    short _dest_localId;    // created by EventSystem
-    short _dest_processId;        // process id 
-    int _dest_IPId;     // hex value of ip addr
 
 };
 }

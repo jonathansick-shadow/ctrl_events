@@ -34,6 +34,8 @@ namespace events {
  */
 class EventLog : public pexLogging::Log {
 public:
+    static const std::string LOGGING_TOPIC;
+
     EventLog( const std::string runId, int sliceId, const std::string hostId = "", int threshold= pexLogging::Log::INFO);
     EventLog( const std::string runId, int sliceId, const PropertySet::Ptr& preamble, const std::string hostId = "", int threshold= pexLogging::Log::INFO);
 
@@ -43,12 +45,6 @@ public:
 
     void setEventThreshold(int thres) {_log->setThreshold(thres); }
 
-
-    /** \brief return the static name used as a logging topic
-      */
-    static const std::string getLoggingTopic() {
-        return "LSSTLogging";
-    }
 
     static void createDefaultLog(const std::string runId, int slideId, const std::string hostId = "", int threshold=Log::INFO); 
     static void createDefaultLog(const std::string runId, int slideId, const PropertySet::Ptr& preamble, const std::string hostId = "", int threshold=Log::INFO); 

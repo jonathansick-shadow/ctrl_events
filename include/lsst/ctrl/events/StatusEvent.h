@@ -20,7 +20,6 @@
 #include <iostream>
 
 #include "lsst/ctrl/events/Event.h"
-#include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
@@ -49,7 +48,8 @@ public:
     StatusEvent();
     virtual ~StatusEvent();
 
-    StatusEvent(cms::TextMessage *msg, const PropertySet::Ptr psp);
+    StatusEvent(cms::TextMessage *msg);
+    StatusEvent(const std::string& runid, int64_t originator, const PropertySet& ps);
     StatusEvent(const std::string& runid, int64_t originator, const PropertySet::Ptr psp);
 
     virtual void populateHeader(cms::TextMessage *msg) const;
@@ -59,15 +59,11 @@ public:
     short getLocalId();
     int getIPId();
     int64_t getOriginatorId();
+    void setOriginatorId(int64_t id);
 
 private:
-    virtual void setKeywords(PropertySet::Ptr psp) const;
     void _init();
-
-    short _processId;        // process id 
-    short _localId;    // created by EventSystem
-    int _IPId;     // hex value of ip addr
-    int64_t _originatorId; // int64_t value of pid localid and hostid combined.
+    void _constructor(const std::string& runid, int64_t originator, const PropertySet& ps);
 
 };
 }

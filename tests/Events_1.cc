@@ -56,21 +56,41 @@ int main() {
     // test publish("string", PropertySet)
     PropertySet::Ptr psp1(new PropertySet);
     psp1->set("test2",12);
-    et4.publish(psp1);
+
+    ctrlEvents::Event event1("event1", psp1);
+    et4.publishEvent(event1);
 
     PropertySet::Ptr psp2(new PropertySet);
     psp2->set("test3",(long)13);
-    et4.publish(psp2);
+    ctrlEvents::Event event2("event2", psp2);
+    et4.publishEvent(event2);
 
     // test publish("string", LogRecord)
     pexLogging::LogRecord lr(-1, 10);
     const char *comment = "a comment";
     lr.addComment(comment);
-    et4.publish(lr);
+    ctrlEvents::LogEvent logEvent("logrec", lr);
+    et4.publishEvent(logEvent);
 
     // test getTopicName();
     std::string topicName = et4.getTopicName();
     Assert(topicName == "Events_1_test", "Topic name does not match initial name");
     std::cout << topicName << std::endl;
 
+    // test publish("string", LogRecord)
+    pexLogging::LogRecord lr2(-1, 10);
+    const char *comment2 = "a comment";
+    lr2.addComment(comment2);
+    lr2.addComment("a second comment");
+    lr2.addProperty("LOG", "Log value");
+    lr2.addProperty("NAME", "name value");
+
+    ctrlEvents::LogEvent logEvent2("myrunid", lr2);
+    et4.publishEvent(logEvent2);
+
+    std::vector<std::string>vec = logEvent.getComment();
+    std::vector<std::string>::iterator iter;
+    for (iter = vec.begin(); iter != vec.end(); iter++) {
+        std::cout << *iter << std::endl;
+    }
 }

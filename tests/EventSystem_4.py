@@ -22,7 +22,8 @@ def sendEvent(topicName):
     root.setFloat("float_value", 3.14)
     
     eventSystem = events.EventSystem.getDefaultEventSystem()
-    eventSystem.publish(topicName, root)
+    event = events.Event("runid_es4", root)
+    eventSystem.publishEvent(topicName, event)
 
 if __name__ == "__main__":
     host = "lsst8.ncsa.uiuc.edu"
@@ -37,7 +38,7 @@ if __name__ == "__main__":
     #
     sendEvent(topic)
 
-    val = eventSystem.receive(topic)
+    val = eventSystem.receiveEvent(topic)
     assert val != None
 
 
@@ -45,5 +46,5 @@ if __name__ == "__main__":
     # wait a short time to receive an event.  none was sent, so we should
     # time out and confirm that we didn't get anything
     #
-    val = eventSystem.receive(topic,100)
+    val = eventSystem.receiveEvent(topic,100)
     assert val == None

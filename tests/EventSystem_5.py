@@ -13,7 +13,8 @@ import time
 def sendEvent(topicName, ps):
     eventSystem = events.EventSystem.getDefaultEventSystem()
     
-    eventSystem.publish(topic, ps)
+    event = events.Event("runid_es5",ps)
+    eventSystem.publishEvent(topic, event)
 
 def createIntProperty(name, value):
     root = base.PropertySet()

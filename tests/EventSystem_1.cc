@@ -52,12 +52,14 @@ int main() {
     PropertySet::Ptr psp(new PropertySet);
     psp->add("test", 12);
 
-    eventSystem.publish("EventSystem_1_test", psp);
+    ctrlEvents::Event event("runid1",psp);
+    eventSystem.publishEvent("EventSystem_1_test", event);
 
     // test publish("string", LogRecord)
     pexLogging::LogRecord lr(-1, 10);
     const char *comment = "a comment";
     lr.addComment(comment);
-    eventSystem.publish("EventSystem_1_test", lr);
+    ctrlEvents::LogEvent logEvent("logrec", lr);
+    eventSystem.publishEvent("EventSystem_1_test", logEvent);
 
 }

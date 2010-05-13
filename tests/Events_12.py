@@ -17,6 +17,7 @@ def sendEvent(hostName, topic):
     root.set("myname","myname")
     root.set("STATUS", "my special status")
     root.set("RUNID","srptestrun")
+    root.set("bazinga", "sheldon")
     
     eventSystem = events.EventSystem.getDefaultEventSystem()
     originatorId = eventSystem.createOriginatorId()

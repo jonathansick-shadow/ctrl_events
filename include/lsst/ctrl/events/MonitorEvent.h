@@ -20,7 +20,6 @@
 #include <iostream>
 
 #include "lsst/ctrl/events/Event.h"
-#include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"

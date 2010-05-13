@@ -20,6 +20,8 @@
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
+#include "lsst/ctrl/events/LogEvent.h"
+#include "lsst/ctrl/events/PipelineLogEvent.h"
 #include "lsst/ctrl/events/EventTypes.h"
 
 #include "lsst/ctrl/events/EventLog.h"
@@ -48,21 +50,26 @@ EventFactory::~EventFactory() {
 /** \brief return an Event object, based on the type received in the TextMessage.
   * \return An Event object
   */
-Event* EventFactory::createEvent(cms::TextMessage* msg, const PropertySet::Ptr psp) {
+Event* EventFactory::createEvent(cms::TextMessage* msg) {
     vector<std::string> names = msg->getPropertyNames();
 
-    /*
+/*
     for (unsigned int i = 0; i < names.size(); i++) 
         std::cout << names[i] << std::endl;
-    */
+*/
 
     std::string _type = msg->getStringProperty("TYPE");
-    if (_type == EventTypes::STATUS) {
-        return new StatusEvent(msg, psp);
+
+    if (_type == EventTypes::LOG) {
+        return new LogEvent(msg);
+    } else if (_type == EventTypes::STATUS) {
+        return new StatusEvent(msg);
     } else if (_type == EventTypes::COMMAND) {
-        return new CommandEvent(msg, psp);
+        return new CommandEvent(msg);
+    } else if (_type == EventTypes::PIPELINELOG) {
+        return new PipelineLogEvent(msg);
     }
-    return new Event(msg, psp);
+    return new Event(msg);
 }
 }
 

@@ -21,11 +21,11 @@
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/logging/LogRecord.h"
 #include "lsst/ctrl/events.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
+#include "lsst/ctrl/events/EventBroker.h"
 
 using lsst::daf::base::PropertySet;
 namespace pexPolicy = lsst::pex::policy;
@@ -48,24 +48,15 @@ public:
     static EventSystem& getDefaultEventSystem();
 
     void createTransmitter(const pexPolicy::Policy& policy);
-    void createTransmitter(const std::string& hostName, const std::string& topicName);
-    void createTransmitter(const std::string& hostName, const int hostPort, const std::string& topicName);
+    void createTransmitter(const std::string& hostName, const std::string& topicName, int hostPort = EventBroker::DEFAULTHOSTPORT);
 
 
     void createReceiver(const pexPolicy::Policy& policy);
-    void createReceiver(const std::string& hostName, const std::string& topicName);
-    void createReceiver(const std::string& hostName, const int hostPort, const std::string& topicName);
-    void createReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector);
-    void createReceiver(const std::string& hostName, const int hostPort, const std::string& topicName, const std::string& selector);
+    void createReceiver(const std::string& hostName, const std::string& topicName, int hostPort = EventBroker::DEFAULTHOSTPORT);
 
+    void createReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort = EventBroker::DEFAULTHOSTPORT);
 
-    void publish(const std::string& topicName, const PropertySet::Ptr psp);
-    void publish(const std::string& topicName, const pexLogging::LogRecord& rec);
-
-    void publishEvent(const std::string& topicName, const Event& event);
-
-    PropertySet::Ptr receive(const std::string& topicName);
-    PropertySet::Ptr receive(const std::string& topicName, const long timeout);
+    void publishEvent(const std::string& topicName, Event& event);
 
     Event* receiveEvent(const std::string& topicName);
     Event* receiveEvent(const std::string& topicName, const long timeout);
@@ -78,7 +69,6 @@ public:
     StatusEvent* castToStatusEvent(Event* event);
     CommandEvent* castToCommandEvent(Event* event);
 
-    static const int DEFAULTHOSTPORT = 61616;
 private:
     boost::shared_ptr<EventTransmitter> getTransmitter(const std::string& name);
     boost::shared_ptr<EventReceiver> getReceiver(const std::string& name);

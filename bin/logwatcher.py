@@ -9,14 +9,13 @@ import time
 import sys
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        host = "lsst8.ncsa.uiuc.edu"
-    else:
-        host = sys.argv[1]
+    host = sys.argv[1]
+    runid = sys.argv[2]
     print "listening on host "+host
-    x = events.EventReceiver(host, "LSSTLogging")
+    x = events.EventReceiver(host, events.EventLog.LOGGING_TOPIC, "RUNID = '%s'" % runid )
     while (True): 
         print "waiting on logging event...\n"
-        val = x.receive()
+        event = x.receiveEvent()
+        val = event.getPropertySet()
         if val != None:
             print val.toString()

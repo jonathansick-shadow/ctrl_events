@@ -26,6 +26,7 @@
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
+#include "lsst/ctrl/events/EventBroker.h"
 
 using lsst::daf::base::PropertySet;
 
@@ -45,23 +46,15 @@ class EventTransmitter
 public:
     EventTransmitter(const pexPolicy::Policy& policy);
 
-    EventTransmitter(const std::string& hostName, const std::string& topicName);
-    EventTransmitter(const std::string& hostName, int hostPort, const std::string& topicName);
+    EventTransmitter(const std::string& hostName, const std::string& topicName, int hostPort = EventBroker::DEFAULTHOSTPORT);
     ~EventTransmitter();
-
-    void publish(const PropertySet::Ptr& psp);
-    void publish(const PropertySet& ps);
-    void publish(const pexLogging::LogRecord& rec);
-    void publish(const std::string& type, const PropertySet& ps);
 
     std::string getTopicName();
 
-    void publishEvent(const Event& event);
+    void publishEvent(Event& event);
 
 private:
-    void init( const std::string& hostName, const int port, const std::string& topicName);
-
-    std::string marshall(const PropertySet& ds);
+    void init( const std::string& hostName, const std::string& topicName, int port);
 
     // Connection to JMS broker
     cms::Connection* _connection;

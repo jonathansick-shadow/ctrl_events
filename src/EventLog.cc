@@ -36,6 +36,8 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
+const std::string EventLog::LOGGING_TOPIC = "logging";
+
 /** \brief constructor for EventLog.   
   * \param runId name of the run
   * \param sliceId the current slice id
@@ -83,9 +85,10 @@ void EventLog::init(const std::string runId, int sliceId, const PropertySet::Ptr
     if (preamble.get() != 0)
         _preamble = preamble->deepCopy();
 
-    _preamble->add("hostId", hostName);
-    _preamble->add("runId", runId);
-    _preamble->add("sliceId", sliceId);
+    // this will be added by the Event object
+    // _preamble->add("hostId", hostName);
+    _preamble->add("RUNID", runId);
+    _preamble->add("SLICEID", sliceId);
 }
 
 /** private method to initialize the logging mechanism

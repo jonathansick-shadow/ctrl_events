@@ -68,9 +68,9 @@ if __name__ == "__main__":
 
     val = receiver.receiveEvent()
     assert val != None
-
-    print "COMMAND EVENT:"
-    printEvent(val)
+    ps = val.getPropertySet()
+    print "received ps:"
+    print ps.toString()
 
     eventsystem = events.EventSystem.getDefaultEventSystem()
     commandEvent = eventsystem.castToCommandEvent(val)

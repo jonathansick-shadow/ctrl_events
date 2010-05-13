@@ -42,7 +42,7 @@ public:
 
     ~EventFactory();
 
-    static Event* createEvent(cms::TextMessage* msg, const PropertySet::Ptr psp);
+    static Event* createEvent(cms::TextMessage* msg);
 
 };
 }

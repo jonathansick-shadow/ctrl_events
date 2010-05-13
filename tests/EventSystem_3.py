@@ -39,11 +39,13 @@ if __name__ == "__main__":
     root = base.PropertySet()
     root.addInt("test", 12)
 
-    eventSystem.publish(topic, root)
+    event = events.Event("runid_es3", root)
+    eventSystem.publishEvent(topic, event)
 
     # 
     # TODO: fix this logging transmission and reception
     #
     rec = logging.LogRecord(-1,10)
     rec.addComment("a comment")
-    eventSystem.publish(topic, rec)
+    event = events.LogEvent("runid_es3_log", rec)
+    eventSystem.publishEvent(topic, event)
