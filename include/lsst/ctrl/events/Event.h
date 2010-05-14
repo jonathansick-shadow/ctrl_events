@@ -96,6 +96,7 @@ protected:
     void _init();
     void _constructor(const std::string& runid, const PropertySet& ps);
     void splitString(std::string str, std::string delim, std::vector<std::string>&results);
+    void splitTuple(std::string str, std::string delim, std::vector<std::string>&results);
 
 private:
     std::string marshall(const PropertySet& ps);

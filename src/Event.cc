@@ -366,7 +366,7 @@ PropertySet::Ptr Event::unmarshall(const std::string& text) {
     for (i = 0; i < tuples.size(); i++) {
         std::string line = tuples.at(i);
         std::vector<string> vec;
-        splitString(line, "||", vec);
+        splitTuple(line, "||", vec);
 
         std::string type = vec.at(0);
         std::string key = vec.at(1);
@@ -418,13 +418,14 @@ PropertySet::Ptr Event::unmarshall(const std::string& text) {
     return psp;
 }
 
-/** private method to split a string along it's delimitors and return the
+/** private method to split a string along it's delimiters and return the
   * results in a vector
   */
 void Event::splitString(std::string str, std::string delim, 
                                 std::vector<std::string>&results) {
     std::string::size_type cutAt;
     std::string::size_type delim_len = delim.length();
+
     while( (cutAt = str.find(delim)) != str.npos ) {
         if(cutAt > 0) {
             results.push_back(str.substr(0,cutAt));
@@ -434,6 +435,26 @@ void Event::splitString(std::string str, std::string delim,
     if(str.length() > 0) {
         results.push_back(str);
     }
+}
+
+/** private method to split a tuple string along it's delimiters and return the
+  * results in a vector; don't try and modify splitString to do this.
+  */
+void Event::splitTuple(std::string str, std::string delim, 
+                                std::vector<std::string>&results) {
+    std::string::size_type cutAt;
+    std::string::size_type delim_len = delim.length();
+
+    cutAt = str.find(delim);
+    results.push_back(str.substr(0,cutAt));
+    str = str.substr(cutAt+delim_len);
+
+    cutAt = str.find(delim);
+    results.push_back(str.substr(0,cutAt));
+    str = str.substr(cutAt+delim_len);
+
+    cutAt = str.find(delim);
+    results.push_back(str.substr(0,cutAt));
 }
 
 /** \brief destructor

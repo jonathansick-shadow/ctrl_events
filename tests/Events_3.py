@@ -3,47 +3,94 @@
 import threading
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
+from socket import gethostname
 
 #
 # Send an event
 #
-def sendEvent(hostName, topicName):
+if __name__ == "__main__":
+
+    hostName = "lsst8.ncsa.uiuc.edu"
+    topicName = "test_events_3"
+    runId = "test3_runid"
+    recv = events.EventReceiver(hostName, topicName)
+
     trans = events.EventTransmitter(hostName, topicName)
     
     root = PropertySet()
-    root.set("DATE","2007-07-01T14:28:32.546012")
-    root.setInt("PID",200)
-    root.set("HOST","lsst8.ncsa.uiuc.edu")
-    root.set("IP","141.142.220.44")
-    root.set("EVNT","test")
-    root.set("misc1","data 1")
-    root.set("misc2","data 2")
-    root.setFloat("float_value", 3.14)
+
+    DATE = "date"
+    DATE_VAL = "2007-07-01T14:28:32.546012"
+    root.set(DATE, DATE_VAL)
+
+    BLANK = "blank"
+    BLANK_VAL = ""
+    root.set(BLANK, BLANK_VAL)
+
+    PID = "pid"
+    PID_VAL = 200
+    root.setInt(PID, PID_VAL)
+
+    HOST = "host"
+    HOST_VAL = "lsst8.ncsa.uiuc.edu"
+    root.set(HOST, HOST_VAL)
+
+    IP = "ip"
+    IP_VAL = "141.142.220.44"
+    root.set(IP, IP_VAL)
+
+    EVNT = "evnt"
+    EVNT_VAL = "test"
+    root.set(EVNT, EVNT_VAL)
+
+    MISC1 = "misc1"
+    MISC1_VAL = "data 1"
+    root.set(MISC1, MISC1_VAL)
+
+    MISC2 = "misc2"
+    MISC2_VAL = "data 2"
+    root.set(MISC2, MISC2_VAL)
+
+    MISC3 = "misc3"
+    MISC3_VAL = ""
+    root.set(MISC3, MISC3_VAL)
+
+    DATA = "data"
+    DATA_VAL = 3.14
+    root.setDouble(DATA, DATA_VAL)
     
-    event = events.Event("test3_runid", root)
+    event = events.Event(runId, root)
     trans.publishEvent(event)
 
-if __name__ == "__main__":
-    host = "lsst8.ncsa.uiuc.edu"
-    topic = "test_events_3"
-    y = events.EventReceiver(host, topic)
 
-    #
-    # send a test event, and wait to receive it
-    #
-    sendEvent(host, topic)
-
-    val = y.receiveEvent()
+    val = recv.receiveEvent()
     assert val != None
 
     ps = val.getPropertySet()
     print ps.toString()
+    assert ps.get(DATE) == DATE_VAL
+    assert ps.get(BLANK) == BLANK_VAL
+    assert ps.get(PID) == PID_VAL
+    assert ps.get(HOST) == HOST_VAL
+    assert ps.get(IP) == IP_VAL
+    assert ps.get(EVNT) == EVNT_VAL
+    assert ps.get(MISC1) == MISC1_VAL
+    assert ps.get(MISC2) == MISC2_VAL
+    assert ps.get(MISC3) == MISC3_VAL
+    assert ps.get(DATA) == DATA_VAL
 
-
+    assert ps.get(events.Event.EVENTTIME) > 0
+    assert ps.get(events.Event.HOSTID) == gethostname()
+    assert ps.get(events.Event.PUBTIME) > 0
+    assert ps.get(events.Event.RUNID) == runId
+    assert ps.get(events.Event.STATUS) == "unknown"
+    assert ps.get(events.Event.TOPIC) == topicName
+    assert ps.get(events.Event.TYPE) == events.EventTypes.EVENT
+    
     #
     # wait a short time to receive an event.  none was sent, so we should
     # time out and confirm that we didn't get anything
     #
-    val = y.receiveEvent(100)
+    val = recv.receiveEvent(100)
     assert val == None
 
