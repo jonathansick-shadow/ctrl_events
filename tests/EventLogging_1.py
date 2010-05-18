@@ -8,24 +8,27 @@
 
 
 #import lsst.tests as tests
+import os
 import lsst.pex.logging as log
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
+from socket import gethostname
 
 if __name__ == "__main__":
 
     host = "lsst8.ncsa.uiuc.edu"
     topic = events.EventLog.LOGGING_TOPIC
+    runid = "%s_%d" % (gethostname(), os.getpid())
     eventSystem = events.EventSystem.getDefaultEventSystem()
     eventSystem.createTransmitter(host,topic)
-    eventSystem.createReceiver(host,topic)
+    eventSystem.createReceiver(host,topic, "RUNID = '%s'" % runid)
 
 # test a simple message to the default log
     dlog = log.Log_getDefaultLog()
     dlog.log(log.Log.WARN, "this is a warning")
 
 #    // now let's create our own root log
-    logger = events.EventLog("myRunId", 665)
+    logger = events.EventLog(runid, 665)
 
 #    // test creation of child log
     tlog = log.Log(logger, "test")
