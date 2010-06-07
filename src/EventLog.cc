@@ -26,12 +26,6 @@ namespace pexLogging = lsst::pex::logging;
 
 using namespace std;
 
-// this is required because Mac doesn't define this in the standard place
-// (or where they said it was in the man pages)
-#ifndef HOST_NAME_MAX
-#define HOST_NAME_MAX 255
-#endif
-
 namespace lsst {
 namespace ctrl {
 namespace events {
@@ -70,11 +64,13 @@ void EventLog::init(const std::string runId, int sliceId, const PropertySet::Ptr
 {
 
     initThres(threshold);
-    char host[HOST_NAME_MAX];
+    int host_len = sysconf(_SC_HOST_NAME_MAX);
+
+    char host[host_len];
 
     // if there is no host name specified, make "unknown host" the name
     if (hostId.size() == 0) {
-        if (gethostname(host, HOST_NAME_MAX) < 0)
+        if (gethostname(host, host_len) < 0)
             std::strcpy(host, "unknown host");
     } else
         std::strcpy(host, hostId.c_str());

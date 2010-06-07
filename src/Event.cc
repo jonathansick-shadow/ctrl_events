@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <limits>
 #include <cstring>
+#include <unistd.h>
 
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/EventTypes.h"
@@ -125,7 +126,9 @@ Event::Event( const std::string& runId, const PropertySet& ps) {
 }
 
 void Event::_constructor( const std::string& runId, const PropertySet& ps) {
-    char hostname[HOST_NAME_MAX];
+    int host_len = sysconf(_SC_HOST_NAME_MAX);
+        
+    char hostname[host_len];
     //time_t rawtime;
 
     _init();
@@ -152,7 +155,7 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
 
     if (!_psp->exists(HOSTID)) {
         std::string name;
-        gethostname(hostname, HOST_NAME_MAX);
+        gethostname(hostname, host_len);
         name = hostname;
         _psp->set(HOSTID, name);
     }
