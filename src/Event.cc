@@ -14,19 +14,21 @@
 #include <limits>
 #include <cstring>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <netdb.h>
+#include <time.h>
+
+#include "boost/scoped_array.hpp"
 
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/daf/base/DateTime.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <netdb.h>
-#include <time.h>
 #include "lsst/ctrl/events/EventLibrary.h"
 
-#include <activemq/core/ActiveMQConnectionFactory.h>
+#include "activemq/core/ActiveMQConnectionFactory.h"
 
 namespace pexExceptions = lsst::pex::exceptions;
 namespace pexLogging = lsst::pex::logging;
@@ -126,9 +128,9 @@ Event::Event( const std::string& runId, const PropertySet& ps) {
 }
 
 void Event::_constructor( const std::string& runId, const PropertySet& ps) {
-    int host_len = sysconf(_SC_HOST_NAME_MAX);
-        
-    char hostname[host_len];
+    long int host_len = sysconf(_SC_HOST_NAME_MAX);
+
+    boost::scoped_array<char> hostname(new char[host_len]);
     //time_t rawtime;
 
     _init();
@@ -155,8 +157,8 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
 
     if (!_psp->exists(HOSTID)) {
         std::string name;
-        gethostname(hostname, host_len);
-        name = hostname;
+        gethostname(hostname.get(), host_len);
+        name = hostname.get();
         _psp->set(HOSTID, name);
     }
 
