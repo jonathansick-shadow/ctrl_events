@@ -64,18 +64,18 @@ void EventLog::init(const std::string runId, int sliceId, const PropertySet::Ptr
 {
 
     initThres(threshold);
-    int host_len = sysconf(_SC_HOST_NAME_MAX);
+    long int host_len = sysconf(_SC_HOST_NAME_MAX);
 
-    char host[host_len];
+    boost::scoped_array<char> host(new char[host_len]);
 
     // if there is no host name specified, make "unknown host" the name
     if (hostId.size() == 0) {
-        if (gethostname(host, host_len) < 0)
-            std::strcpy(host, "unknown host");
+        if (gethostname(host.get(), host_len) < 0)
+            std::strcpy(host.get(), "unknown host");
     } else
-        std::strcpy(host, hostId.c_str());
+        std::strcpy(host.get(), hostId.c_str());
 
-    std::string hostName(host);
+    std::string hostName(host.get());
 
     // TODO:  add preamble to _preamble
     if (preamble.get() != 0)
