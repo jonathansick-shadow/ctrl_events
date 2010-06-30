@@ -31,11 +31,11 @@ password = dbAuth.password(host,port)
 
 dbLogger = DatabaseLogger(host, int(port))
 
-dbLogger.connect(user, password, "events")
+dbLogger.connect(user, password, "logs")
 
 receiver = events.EventReceiver(broker, events.EventLog.LOGGING_TOPIC)
 while True:
    event = receiver.receiveEvent()
-   dbLogger.insertRecord(event.getPropertySet())
+   dbLogger.insertRecord("loggerdc3b", event.getPropertySet())
 
 dbLogger.disconnect()
