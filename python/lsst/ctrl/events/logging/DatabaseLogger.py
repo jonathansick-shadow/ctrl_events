@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from lsst.cat.MySQLBase import MySQLBase
+import MySQLdb
 import os
 import sys
 import subprocess
@@ -23,15 +24,26 @@ class DatabaseLogger(MySQLBase):
     def _insertRecord(self, dbTable, ps):
 
         hostId = ps.get("HOSTID")
+        hostId = MySQLdb.escape_string(hostId)
+
         runId = ps.get("RUNID")
+        runId = MySQLdb.escape_string(runId)
+
         sliceId = ps.get("SLICEID")
         level = ps.get("LEVEL")
+
         log = ps.get("LOG")
+        log = MySQLdb.escape_string(log)
+
         date = ps.get("DATE")
+        date = MySQLdb.escape_string(date)
+        
         ts = ps.get("TIMESTAMP")
         eventtime = ps.get("EVENTTIME")
         pubtime = ps.get("PUBTIME")
         eventtype = ps.get("TYPE")
+        eventtype = MySQLdb.escape_string(eventtype)
+
         node = -1
         if ps.exists("NODE"):
             node = ps.get("NODE")
@@ -57,11 +69,14 @@ class DatabaseLogger(MySQLBase):
         status = "NULL"
         if ps.exists("STATUS"):
             status = ps.get("STATUS")
+            status = MySQLdb.escape_string(status)
 
         if ps.exists("pipeline"):
             pipeline = ps.get("pipeline")
+            pipeline = MySQLdb.escape_string(pipeline)
         elif ps.exists("PIPELINE"):
             pipeline = ps.get("PIPELINE")
+            pipeline = MySQLdb.escape_string(pipeline)
         else:
             pipeline = "NULL"
 
@@ -92,8 +107,8 @@ class DatabaseLogger(MySQLBase):
                 custom = custom+ "%s : %s;" % (name,ps.get(name))
         if custom == "":
             custom = "NULL"
-        custom = custom[0:4096]
-        comment = comment[0:2048]
+        custom = MySQLdb.escape_string(custom[0:4096])
+        comment = MySQLdb.escape_string(comment[0:2048])
 
         cmd = """INSERT INTO logs.%s(hostId, runId, sliceid, status, level, log, date, node, TIMESTAMP, custom, comment, pipeline, eventtime, pubtime, type, stageid, loopnum) values("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")""" % (dbTable, hostId, runId, sliceId, status, level, log, date, node, timestamp, custom, comment, pipeline, eventtime, pubtime, eventtype, stageid, loopnum)
 
