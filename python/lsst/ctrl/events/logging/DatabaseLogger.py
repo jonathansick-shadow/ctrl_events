@@ -93,6 +93,7 @@ class DatabaseLogger(MySQLBase):
         if custom == "":
             custom = "NULL"
         custom = custom[0:4096]
+        comment = comment[0:2048]
 
         cmd = """INSERT INTO logs.%s(hostId, runId, sliceid, status, level, log, date, node, TIMESTAMP, custom, comment, pipeline, eventtime, pubtime, type, stageid, loopnum) values("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")""" % (dbTable, hostId, runId, sliceId, status, level, log, date, node, timestamp, custom, comment, pipeline, eventtime, pubtime, eventtype, stageid, loopnum)
 
