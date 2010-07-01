@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from lsst.cat.MySQLBase import MySQLBase
+import MySQLdb
 import os
 import sys
 import subprocess
@@ -92,8 +93,8 @@ class DatabaseLogger(MySQLBase):
                 custom = custom+ "%s : %s;" % (name,ps.get(name))
         if custom == "":
             custom = "NULL"
-        custom = custom[0:4096]
-        comment = comment[0:2048]
+        custom = MySQLdb.escape_string(custom[0:4096])
+        comment = MySQLdb.escape_string(comment[0:2048])
 
         cmd = """INSERT INTO logs.%s(hostId, runId, sliceid, status, level, log, date, node, TIMESTAMP, custom, comment, pipeline, eventtime, pubtime, type, stageid, loopnum) values("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")""" % (dbTable, hostId, runId, sliceId, status, level, log, date, node, timestamp, custom, comment, pipeline, eventtime, pubtime, eventtype, stageid, loopnum)
 
