@@ -24,15 +24,26 @@ class DatabaseLogger(MySQLBase):
     def _insertRecord(self, dbTable, ps):
 
         hostId = ps.get("HOSTID")
+        hostId = MySQLdb.escape_string(hostId)
+
         runId = ps.get("RUNID")
+        runId = MySQLdb.escape_string(runId)
+
         sliceId = ps.get("SLICEID")
         level = ps.get("LEVEL")
+
         log = ps.get("LOG")
+        log = MySQLdb.escape_string(log)
+
         date = ps.get("DATE")
+        date = MySQLdb.escape_string(date)
+        
         ts = ps.get("TIMESTAMP")
         eventtime = ps.get("EVENTTIME")
         pubtime = ps.get("PUBTIME")
         eventtype = ps.get("TYPE")
+        eventtype = MySQLdb.escape_string(eventtype)
+
         node = -1
         if ps.exists("NODE"):
             node = ps.get("NODE")
@@ -58,11 +69,14 @@ class DatabaseLogger(MySQLBase):
         status = "NULL"
         if ps.exists("STATUS"):
             status = ps.get("STATUS")
+            status = MySQLdb.escape_string(status)
 
         if ps.exists("pipeline"):
             pipeline = ps.get("pipeline")
+            pipeline = MySQLdb.escape_string(pipeline)
         elif ps.exists("PIPELINE"):
             pipeline = ps.get("PIPELINE")
+            pipeline = MySQLdb.escape_string(pipeline)
         else:
             pipeline = "NULL"
 
