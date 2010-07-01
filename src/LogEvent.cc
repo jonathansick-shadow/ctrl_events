@@ -99,7 +99,7 @@ LogEvent::LogEvent( const std::string& runId, const pexLogging::LogRecord& rec) 
 
 
 
-    if (!ps.exists(LogEvent::COMMENT)) {
+    if (ps.exists(LogEvent::COMMENT)) {
         std::vector<std::string> commentArray = ps.getArray<std::string>(LogEvent::COMMENT);
     
         _psp->set(LogEvent::COMMENT, commentArray);
