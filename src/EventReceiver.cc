@@ -169,40 +169,19 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
     }
 }
 
+/** Wait until an Event is received
+  * Note: Caller is responsible for deleting received Event.
+  * \brief wait until an event is received.
+  */
 Event* EventReceiver::receiveEvent() {
     return receiveEvent(infiniteTimeout);
 }
 
-/*
-Event* EventReceiver::receiveEvent(long timeout) {
-    PropertySet::Ptr psp;
-
-    if (_turnEventsOff == true)
-        return NULL;
-
-    
-    cms::TextMessage* textMessage;
-    try {
-        cms::Message* msg = _consumer->receive(timeout);
-        if (msg == NULL) return NULL;
-        textMessage = dynamic_cast<cms::TextMessage* >(msg);
-        if (textMessage == NULL)
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Unexpected JMS Message type");
-                              
-        psp =  processTextMessage(textMessage);
-  
-    } catch (activemq::exceptions::ActiveMQException& e) {
-        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
-    }
-
- 
-    // std::cout << "about to create event" << std::endl;
-    Event* event = EventFactory().createEvent(textMessage, psp);
-
-    // std::cout << "done creating event" << std::endl;
-    return event;
-}
-*/
+/** Wait to receive an event for a length of time.
+  * Note: Caller is responsible for deleting received Event.
+  * \brief wait for a length of time for an event to be received.
+  * \param timeout the length of time to waitm in milliseconds
+  */
 Event* EventReceiver::receiveEvent(long timeout) {
     PropertySet::Ptr psp;
 
@@ -223,6 +202,7 @@ Event* EventReceiver::receiveEvent(long timeout) {
 
  
     Event* event = EventFactory().createEvent(textMessage);
+    delete textMessage;
 
     return event;
 }
