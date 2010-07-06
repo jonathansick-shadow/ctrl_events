@@ -211,6 +211,8 @@ EventTransmitter::~EventTransmitter() {
     }
     _destination = NULL;
 */
+    if (_topic != NULL)
+        delete _topic;
 
     try {
         if( _producer != NULL )

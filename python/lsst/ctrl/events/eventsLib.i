@@ -86,6 +86,9 @@ typedef long long int64_t;
 %include "lsst/ctrl/events/PipelineLogEvent.h"
 %include "lsst/ctrl/events/EventTypes.h"
 %include "lsst/ctrl/events/EventTransmitter.h"
+
+%newobject lsst::ctrl::events::EventReceiver::receiveEvent();
+%newobject lsst::ctrl::events::EventReceiver::receiveEvent(long timeout);
 %include "lsst/ctrl/events/EventReceiver.h"
 %include "lsst/ctrl/events/EventLog.h"
 %include "lsst/ctrl/events/EventFormatter.h"
