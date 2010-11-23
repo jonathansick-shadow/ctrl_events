@@ -1,2 +1,3 @@
 #!/bin/sh
-nohup Logger.py lsst8.ncsa.uiuc.edu lsst10.ncsa.uiuc.edu 3306 2>&1 >/dev/null &
+name=~/Logger_`date "+%m%d%y"`.txt
+nohup Logger3.py lsst8.ncsa.uiuc.edu lsst10.ncsa.uiuc.edu 3306 2>&1 >$name &

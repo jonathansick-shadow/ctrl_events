@@ -33,19 +33,34 @@ class DatabaseLogger(MySQLBase):
 
     def __init__(self, dbHostName, portNumber):
         MySQLBase.__init__(self, dbHostName, portNumber)
-        self.keywords = ['HOSTID', 'RUNID', 'SLICEID', 'LEVEL', 'LOG', 'DATE', 'NODE', 'TIMESTAMP', 'COMMENT', 'STATUS', 'PIPELINE', 'pipeline', 'EVENTTIME', 'PUBTIME', 'TYPE', 'STAGEID', 'stageId', 'LOOPNUM', 'loopnum']
+
+        self.keywords = ['HOSTID', 'RUNID', 'SLICEID', 'LEVEL', 'LOG', 'DATE', 'NODE', 'TIMESTAMP', 'COMMENT', 'STATUS', 'PIPELINE', 'EVENTTIME', 'PUBTIME', 'TYPE', 'STAGEID', 'LOOPNUM', 'WORKERID']
         self.keywordSet = set(self.keywords)
+        self.highwater = 10
+
+    def insertRecords(self, dbTable, msgs):
+        cnt = len(msgs)
+        while cnt > 0:
+            if cnt > self.highwater:
+                ins = ""
+                for i in range(0,self.highwater+1):
+                    event = msgs.pop(0)
+                    ins = ins + self.createInsertString(dbTable, event.getPropertySet())
+                self.execCommand0(ins)
+            elif cnt > 0:
+                ins = ""
+                for i in range(0,cnt):
+                    event = msgs.pop(0)
+                    ins = ins + self.createInsertString(dbTable, event.getPropertySet())
+                self.execCommand0(ins)
+            cnt = len(msgs)
 
     def insertRecord(self, dbTable, ps):
-        #runId = ps.get("RUNID")
-        #dbName = "logs.%s" % runId
-        #if self.dbExists(dbName) == False:
-        #    self.createDb(self,dbName)
-        #self.insertRecord(ps, dbName)
-        self._insertRecord(dbTable, ps)
+        ins = self.createInsertString(dbTable,ps)
+        self.execCommand0(ins)
 
-    def _insertRecord(self, dbTable, ps):
 
+    def createInsertString(self, dbTable, ps):
         hostId = ps.get("HOSTID")
         hostId = MySQLdb.escape_string(hostId)
 
@@ -67,9 +82,10 @@ class DatabaseLogger(MySQLBase):
         eventtype = ps.get("TYPE")
         eventtype = MySQLdb.escape_string(eventtype)
 
-        node = -1
         if ps.exists("NODE"):
             node = ps.get("NODE")
+        else:
+            node = -1
 
         timestamp = ts.nsecs()
 
@@ -89,31 +105,33 @@ class DatabaseLogger(MySQLBase):
         if (ps.exists("TOPIC")):
             ps.remove("TOPIC")
 
-        status = "NULL"
         if ps.exists("STATUS"):
             status = ps.get("STATUS")
             status = MySQLdb.escape_string(status)
+        else:
+            status = "NULL"
 
-        if ps.exists("pipeline"):
-            pipeline = ps.get("pipeline")
-            pipeline = MySQLdb.escape_string(pipeline)
-        elif ps.exists("PIPELINE"):
+        if ps.exists("PIPELINE"):
             pipeline = ps.get("PIPELINE")
             pipeline = MySQLdb.escape_string(pipeline)
         else:
             pipeline = "NULL"
 
-        stageid = "-1"
-        if ps.exists("stageId"):
-            stageid = ps.get("stageId")
-        elif ps.exists("STAGEID"):
+        if ps.exists("STAGEID"):
             stageid = ps.get("STAGEID")
+        else:
+            stageid = "-1"
 
-        loopnum = "-1"
-        if ps.exists("loopnum"):
-            loopnum = ps.get("loopnum")
-        elif ps.exists("LOOPNUM"):
+        if ps.exists("LOOPNUM"):
             loopnum = ps.get("LOOPNUM")
+        else:
+            loopnum = "-1"
+
+        if ps.exists("WORKERID"):
+            workerid = ps.get("WORKERID")
+            workerid = MySQLdb.escape_string(workerid)
+        else:
+            workerid = "NULL"
 
 
 
@@ -133,8 +151,6 @@ class DatabaseLogger(MySQLBase):
         custom = MySQLdb.escape_string(custom[0:4096])
         comment = MySQLdb.escape_string(comment[0:2048])
 
-        cmd = """INSERT INTO logs.%s(hostId, runId, sliceid, status, level, log, date, node, TIMESTAMP, custom, comment, pipeline, eventtime, pubtime, type, stageid, loopnum) values("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")""" % (dbTable, hostId, runId, sliceId, status, level, log, date, node, timestamp, custom, comment, pipeline, eventtime, pubtime, eventtype, stageid, loopnum)
+        cmd = """INSERT INTO logs.%s(hostId, runId, sliceid, status, level, log, date, node, timestamp, custom, comment, pipeline, eventtime, pubtime, type, stageid, loopnum, workerid) values("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"); """ % (dbTable, hostId, runId, sliceId, status, level, log, date, node, timestamp, custom, comment, pipeline, eventtime, pubtime, eventtype, stageid, loopnum, workerid)
 
-
-        self.execCommand0(cmd)
-
+        return cmd
