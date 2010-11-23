@@ -242,8 +242,11 @@ PropertySet::Ptr Event::getCustomPropertySet() const {
 }
 
 PropertySet::Ptr Event::getPropertySet() const {
-    PropertySet::Ptr psp = _psp->deepCopy();
-
+    if (_psp != 0) {
+            PropertySet::Ptr psp = _psp->deepCopy();
+            return psp;
+    }
+    PropertySet::Ptr psp(new PropertySet);
     return psp;
 }
 
