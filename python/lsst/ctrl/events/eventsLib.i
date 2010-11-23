@@ -37,7 +37,6 @@ Access to the lsst::ctrl::events classes
 
 %{
 /* swig pulls in references to ScreenLog.h and DualLog.h for some reason, so that's why these are here */
-#include "lsst/pex/logging/BlockTimingLog.h"
 #include "lsst/pex/logging/ScreenLog.h"
 #include "lsst/pex/logging/Debug.h"
 #include "lsst/pex/logging/DualLog.h"
