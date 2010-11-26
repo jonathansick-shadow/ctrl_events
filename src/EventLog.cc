@@ -114,17 +114,12 @@ void EventLog::init(const std::string runId, int sliceId, const PropertySet::Ptr
   */
 void EventLog::initThres(int threshold)
 {
-/*
- * writing to clog is redundant
- */
     _formatter = new EventFormatter();
     boost::shared_ptr<pexLogging::LogFormatter> fmtr(_formatter);
 
     _log = new pexLogging::LogDestination(&clog, fmtr, INHERIT_THRESHOLD);
     boost::shared_ptr<pexLogging::LogDestination> dest(_log);
     _destinations.push_back(dest);
-/*
- */
 }
 
 /** \brief creates a default log

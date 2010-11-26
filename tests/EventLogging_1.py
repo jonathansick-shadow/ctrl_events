@@ -47,8 +47,8 @@ if __name__ == "__main__":
     eventSystem.createReceiver(host,topic, "RUNID = '%s'" % runid)
 
 # test a simple message to the default log
-    dlog = log.Log_getDefaultLog()
-    dlog.log(log.Log.WARN, "this is a warning")
+#    dlog = log.Log_getDefaultLog()
+#    dlog.log(log.Log.WARN, "this is a warning")
 
 #    // now let's create our own root log
     logger = events.EventLog(runid, 665)
