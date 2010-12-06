@@ -87,6 +87,7 @@ typedef long long int64_t;
  * or we get segmentation faults.  Python expects to have the GIL  when
  * we get back into it.
  */
+/* removed because of threading issues
 %exception {
     try {
         $action
@@ -102,6 +103,7 @@ typedef long long int64_t;
         SWIG_fail;
     }
 }
+*/
 
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"

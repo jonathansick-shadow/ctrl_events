@@ -64,6 +64,7 @@ def CheckSwig(self, language="python", ilang="C", ignoreWarnings=None,
         else:
             print >> sys.stderr, "Product %s is not setup" % p
         
-CheckSwig(env, "python", ilang="c++", includedProducts="utils daf_base pex_exceptions pex_logging pex_policy", extraFlags="-threads")
+#CheckSwig(env, "python", ilang="c++", includedProducts="utils daf_base pex_exceptions pex_logging pex_policy", extraFlags="-threads")
+CheckSwig(env, "python", ilang="c++", includedProducts="utils daf_base pex_exceptions pex_logging pex_policy")
 basicLibs = "pex_exceptions pex_logging pex_policy utils daf_base".split()
 env.LoadableModuleIncomplete("_eventsLib", Split("eventsLib.i"), LIBS=env.libs["activemqcpp"] + basicLibs + ["ctrl_events"])
