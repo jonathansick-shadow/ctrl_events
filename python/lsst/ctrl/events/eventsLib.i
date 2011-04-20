@@ -113,6 +113,9 @@ typedef long long int64_t;
 
 %newobject lsst::ctrl::events::EventReceiver::receiveEvent;
 %newobject lsst::ctrl::events::EventSystem::receiveEvent;
+%newobject lsst::ctrl::events::EventReceiver::receiveStatusEvent;
+%newobject lsst::ctrl::events::EventReceiver::receiveCommandEvent;
+%newobject lsst::ctrl::events::EventReceiver::receiveLogEvent;
 %include "lsst/ctrl/events/EventReceiver.h"
 %include "lsst/ctrl/events/EventLog.h"
 %include "lsst/ctrl/events/EventFormatter.h"
