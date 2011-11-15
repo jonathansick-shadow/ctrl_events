@@ -1,0 +1,41 @@
+These simple examples show how to use the event system in Python:
+
+doit - shell script to run transmit.py after a 10 second delay
+transmit_1.py - transmits an event to receive_1
+receive_1.py - blocking receive with timeout
+
+transmit_2.py - transmits an event to receive_2
+receive_2.py - blocking receive
+
+transmit_3.py - transmits an event to receive_3
+receive_3.py - blocking receive
+
+transmit_4.py - transmits an event to receive_4
+receive_4.py - blocking receive for local sockets
+
+For the first three examples, run the activemq message broker.  You'll 
+need to change the example code's constructors to point at the machine 
+where you are running it, if you don't use the broker on lsst8.
+
+If I'm running in one window, I generally run:
+
+$ ./doit &
+$ python receive_1.py
+
+and wait for the results.   This runs the "doit" shell script in the background
+and waits for 10 seconds before transmitting an event.
+
+Doing the following:
+
+
+$ ./doit &
+$ python receive_2.py
+
+will produce similar results as the first example.  You can also run it
+like:
+
+$ python receive_1.py
+
+without the transmit.  The receive will timeout.
+
+The *[34].py examples use policy files
