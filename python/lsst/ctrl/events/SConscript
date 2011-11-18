@@ -1,69 +1,9 @@
 # -*- python -*-
-import os, re
-from SCons.Script import *
-from lsst.SConsUtils import ProductDir
+from lsst.sconsUtils import env, targets
 
-Import("env")
+targets["python"] = env.SwigLoadableModule(
+    "_eventsLib", "eventsLib.i",
+    LIBS=env.getLibs("main python"),
+    SWIGFLAGS=env["SWIGFLAGS"] + ["-threads"]
+    )
 
-def CheckSwig(self, language="python", ilang="C", ignoreWarnings=None,
-              includedProducts=[], swigdir=None, extraFlags=[]):
-    """Adjust the construction environment to allow the use of swig;
-    if swigdir is specified it's the path to the swig binary, otherwise
-    the calling process' PATH is searched.  Bindings are generated for
-    LANGUAGE (e.g. "python") using implementation language ilang (e.g. "c")
-
-    ignoreWarnings is a list of swig warnings to ignore (e.g. "317,362,389");
-    either a python list, or a space separated string
-    """
-    
-    if not swigdir:
-        for d in os.environ['PATH'].split(os.pathsep):
-            if os.path.isfile(os.path.join(d, "swig")):
-                swigdir = d
-                break
-
-    if not swigdir:
-        raise RuntimeError, "Failed to find swig executable"
-
-    if swigdir not in self['ENV']['PATH'].split(os.pathsep):
-        self['ENV']['PATH'] = swigdir + os.pathsep + self['ENV']['PATH']
-
-    swigTool = Tool('swig'); swigTool(self)
-    self['SWIGFLAGS'] = ""
-    if ilang == "c" or ilang == "C":
-        pass
-    elif ilang == "c++" or ilang == "C++":
-        self['SWIGFLAGS'] += " -c++"
-    else:
-        print >> sys.stderr, "Unknown input language %s" % ilang
-        
-    self['SWIGFLAGS'] += " -%s" % language
-
-    if extraFlags:
-        if not isinstance(extraFlags, list):
-            extraFlags = [extraFlags]
-        self['SWIGFLAGS'] += " %s" % " ".join(extraFlags)
-
-    if ignoreWarnings:
-        self['SWIGFLAGS'] += " -w" + ",".join(Split(ignoreWarnings))    
-    #
-    # Allow swig to search all directories that the compiler sees
-    #
-    for d in self['CPPPATH']:
-        if d:
-            d = Dir(d)
-            d = r"\ ".join(re.split(r" ", str(d))) # handle spaces in filenames
-            self['SWIGFLAGS'] += " -I%s" % d
-    #
-    # Also search the python directories of any products in includedProducts
-    #
-    for p in Split(includedProducts):
-        pd = ProductDir(p)
-        if pd:
-            self['SWIGFLAGS'] += " -I%s" % os.path.join(pd, "python")
-        else:
-            print >> sys.stderr, "Product %s is not setup" % p
-        
-CheckSwig(env, "python", ilang="c++", includedProducts="utils daf_base pex_exceptions pex_logging pex_policy", extraFlags="-threads")
-basicLibs = "pex_exceptions pex_logging pex_policy utils daf_base".split()
-env.LoadableModuleIncomplete("_eventsLib", Split("eventsLib.i"), LIBS=env.libs["activemqcpp"] + basicLibs + ["ctrl_events"])

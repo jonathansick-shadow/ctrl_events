@@ -21,3 +21,4 @@
 #
 
 from eventsLib import *
+from .version import *

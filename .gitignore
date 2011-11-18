@@ -1,18 +1,20 @@
-
-# /
-/.scon*
-/config.log
-
-# /doc/
-/doc/htmlDir
-
-# /python/lsst/ctrl/events/
-/python/lsst/ctrl/events/eventsLib.py
-/python/lsst/ctrl/events/*_wrap.cc
-
-# /tests/
-/tests/.tests
-/tests/Events_1
-/tests/Events_2
-/tests/EventSystem_1
-/tests/EventSystem_2
+.sconsign.dblite
+config.log
+.sconf_temp
+*.o
+*.os
+*.so
+*.cfgc
+*.pyc
+*_wrap.cc
+*Lib.py
+doc/html
+doc/*.tag
+doc/*.inc
+doc/doxygen.conf
+tests/.tests
+version.py
+tests/EventSystem_1
+tests/EventSystem_2
+tests/Events_1
+tests/Events_2
