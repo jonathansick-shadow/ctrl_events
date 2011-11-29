@@ -36,11 +36,13 @@ Access to the lsst::ctrl::events classes
 
 
 %{
+#include "lsst/daf/base.h"
 /* swig pulls in references to ScreenLog.h and DualLog.h for some reason, so that's why these are here */
+#include "lsst/pex/logging.h"
 #include "lsst/pex/logging/BlockTimingLog.h"
 #include "lsst/pex/logging/ScreenLog.h"
-#include "lsst/pex/logging/Debug.h"
 #include "lsst/pex/logging/DualLog.h"
+#include "lsst/pex/policy.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
@@ -57,51 +59,11 @@ Access to the lsst::ctrl::events classes
 
 %include "lsst/p_lsstSwig.i"
 
-SWIG_SHARED_PTR_DERIVED(EventFormatter, lsst::pex::logging::LogFormatter, lsst::ctrl::events::EventFormatter)
+%shared_ptr(lsst::ctrl::events::EventFormatter)
 
 %import "lsst/daf/base/baseLib.i"
 %import "lsst/pex/logging/loggingLib.i"
 %import "lsst/pex/policy/policyLib.i"
-
-%inline %{
-namespace lsst {
-    namespace pex {
-        namespace logging {}
-    }
-}
-namespace lsst {
-    namespace pex {
-        namespace policy {}
-    }
-}
-#if LONG_MAX > 2200000000
-/* 64-bit machine */
-typedef long int int64_t;
-#else
-/* 32-bit machine */
-typedef long long int64_t;
-#endif
-%}
-
-/* exception definitions for this package have to reaquire the GIL
- * or we get segmentation faults.  Python expects to have the GIL  when
- * we get back into it.
- */
-%exception {
-    try {
-        $action
-    } catch (lsst::pex::exceptions::Exception &e) {
-        SWIG_PYTHON_THREAD_END_ALLOW;
-        SWIG_PYTHON_THREAD_END_BLOCK;
-        raiseLsstException(e);
-        SWIG_fail;
-    } catch (std::exception & e) {
-        SWIG_PYTHON_THREAD_END_ALLOW;
-        SWIG_PYTHON_THREAD_END_BLOCK;
-        PyErr_SetString(PyExc_Exception, e.what());
-        SWIG_fail;
-    }
-}
 
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"
