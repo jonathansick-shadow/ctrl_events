@@ -80,7 +80,7 @@ class MultiThreadTestCase(unittest.TestCase):
             # print "starting thread"
             flag.markers.append("thread starting")
             t.start()
-            flag.lock.wait()
+            flag.lock.wait(2.0)
 
         # by the time we wake up, the other thread should be listening
         # for an event (that will never come :-o)
