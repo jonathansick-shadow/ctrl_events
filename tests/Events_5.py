@@ -49,8 +49,8 @@ def createStringProperty(name, value):
     return root
 
 if __name__ == "__main__":
-    host = "lsst8.ncsa.uiuc.edu"
-    topic = "test_events_6"
+    host = "lsst8.ncsa.illinois.edu"
+    topic = "test_events_5"
     recv = events.EventReceiver(host, topic)
 
 

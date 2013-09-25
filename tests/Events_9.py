@@ -50,10 +50,10 @@ def sendEvent(hostName, topic):
     trans.publishEvent(event)
 
 if __name__ == "__main__":
-    host = "lsst8.ncsa.uiuc.edu"
-    topicA = "PIPELINE.A"
-    topicB = "PIPELINE.B"
-    topicC = "PIPELINE.*"
+    host = "lsst8.ncsa.illinois.edu"
+    topicA = "test_events_9.A"
+    topicB = "test_events_9.B"
+    topicC = "test_events_9.*"
 
     yC = events.EventReceiver(host, topicC)
 

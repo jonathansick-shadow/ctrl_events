@@ -23,6 +23,7 @@
 #
 
 
+import os
 import threading
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
@@ -33,7 +34,7 @@ from socket import gethostname
 #
 if __name__ == "__main__":
 
-    hostName = "lsst8.ncsa.uiuc.edu"
+    hostName = "lsst8.ncsa.illinois.edu"
     topicName = "test_events_3"
     runId = "test3_runid"
     recv = events.EventReceiver(hostName, topicName)
@@ -51,11 +52,11 @@ if __name__ == "__main__":
     root.set(BLANK, BLANK_VAL)
 
     PID = "pid"
-    PID_VAL = 200
+    PID_VAL = os.getpid()
     root.setInt(PID, PID_VAL)
 
     HOST = "host"
-    HOST_VAL = "lsst8.ncsa.uiuc.edu"
+    HOST_VAL = "lsst8.ncsa.illinois.edu"
     root.set(HOST, HOST_VAL)
 
     IP = "ip"

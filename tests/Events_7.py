@@ -31,8 +31,8 @@ import time
 
 
 if __name__ == "__main__":
-    host = "unknown_host.ncsa.uiuc.edu"
-    topic = "test_7_topic"
+    host = "unknown_host.ncsa.illinois.edu"
+    topic = "test_events_7"
 
     # Test to be sure that a bad host name throws a runtime event
     try:

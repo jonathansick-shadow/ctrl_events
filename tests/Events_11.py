@@ -22,7 +22,7 @@
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
-
+import os
 import time
 import threading
 import lsst.ctrl.events as events
@@ -46,18 +46,18 @@ def sendEvent(hostName, topic):
     # ok...now publish it
     trans.publishEvent(event)
 
-    event = events.StatusEvent("srptestrun2", originatorId, root)
+    event = events.StatusEvent("test_runid_11_%d" % os.getpid(), originatorId, root)
 
     # ok...now publish it
     trans.publishEvent(event)
 
 if __name__ == "__main__":
-    host = "lsst8.ncsa.uiuc.edu"
-    topicA = "PIPELINE.A"
-    topicB = "PIPELINE.B"
-    topicC = "PIPELINE.*"
+    host = "lsst8.ncsa.illinois.edu"
+    topicA = "test_events_11.A"
+    topicB = "test_events_11.B"
+    topicC = "test_events_11.*"
 
-    yC = events.EventReceiver(host, topicC, "RUNID = 'srptestrun2'")
+    yC = events.EventReceiver(host, topicC, "RUNID = 'test_runid_11_%d'" % os.getpid())
 
     #
     # send a test event, and wait to receive it

@@ -50,8 +50,8 @@ def createStringProperty(name, value):
 
 if __name__ == "__main__":
     p = policy.Policy()
-    host = "lsst8.ncsa.uiuc.edu"
-    topic = "test_events_5"
+    host = "lsst8.ncsa.illinois.edu"
+    topic = "test_events_4"
     recv = events.EventReceiver(host, topic)
 
 

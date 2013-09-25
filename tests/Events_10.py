@@ -23,6 +23,7 @@
 #
 
 
+import os
 import time
 import threading
 import lsst.ctrl.events as events
@@ -42,17 +43,17 @@ def sendEvent(hostName, topic):
     
     eventSystem = events.EventSystem.getDefaultEventSystem();
     originatorId = eventSystem.createOriginatorId()
-    event = events.StatusEvent("srptestrun", originatorId, root)
+    event = events.StatusEvent("test_runid_10_%d" % os.getpid(), originatorId, root)
 
 
     # ok...now publish it
     trans.publishEvent(event)
 
 if __name__ == "__main__":
-    host = "lsst8.ncsa.uiuc.edu"
-    topicA = "PIPELINE.A"
-    topicB = "PIPELINE.B"
-    topicC = "PIPELINE.*"
+    host = "lsst8.ncsa.illinois.edu"
+    topicA = "test_events_10.A"
+    topicB = "test_events_10.B"
+    topicC = "test_events_10.*"
 
     yC = events.EventReceiver(host, topicC)
 
