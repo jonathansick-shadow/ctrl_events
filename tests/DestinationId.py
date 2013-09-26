@@ -23,7 +23,7 @@
 #
 
 
-import os, socket, struct
+import os, socket, struct, platform
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import lsst.pex.exceptions
@@ -46,6 +46,9 @@ def getHostAddr():
 
 
 if __name__ == "__main__":
+    broker = "lsst8.ncsa.illinois.edu"
+    topic = "destinationid_test_%s_%d" % (platform.node(), os.getpid())
+
     eventSystem = events.EventSystem().getDefaultEventSystem()
 
     originatorId = eventSystem.createOriginatorId()
@@ -64,10 +67,10 @@ if __name__ == "__main__":
 
     commandEvent = events.CommandEvent("my runid", originatorId, destinationId, root)
 
-    transmitter = events.EventTransmitter("lsst8.ncsa.uiuc.edu", "mytopic")
+    transmitter = events.EventTransmitter(broker, topic)
 
     sel = "%s = %d" % (events.CommandEvent.DESTINATIONID, destinationId)
-    receiver = events.EventReceiver("lsst8.ncsa.uiuc.edu", "mytopic", sel)
+    receiver = events.EventReceiver(broker, topic, sel)
 
     transmitter.publishEvent(commandEvent)
     returnedEvent = receiver.receiveEvent(2000)

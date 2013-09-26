@@ -50,7 +50,7 @@ def createStringProperty(name, value):
     return root
 
 if __name__ == "__main__":
-    host = "lsst8.ncsa.uiuc.edu"
+    host = "lsst8.ncsa.illinois.edu"
     topic = "test_events_6"
     eventSystem = events.EventSystem.getDefaultEventSystem()
     eventSystem.createReceiver(host, topic)

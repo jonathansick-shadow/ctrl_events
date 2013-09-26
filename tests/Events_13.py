@@ -22,7 +22,8 @@
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
-
+import os
+import platform
 import time
 import threading
 import lsst.ctrl.events as events
@@ -32,8 +33,8 @@ from lsst.daf.base import PropertySet
 #
 # Send an event
 #
-def sendEvent(hostName, topic):
-    trans = events.EventTransmitter(hostName, topic)
+def sendEvent(brokerName, topic):
+    trans = events.EventTransmitter(brokerName, topic)
 
     eventSystem = events.EventSystem.getDefaultEventSystem()
 
@@ -79,15 +80,15 @@ def printEvent(val):
     print ps.toString()
 
 if __name__ == "__main__":
-    host = "lsst8.ncsa.illinois.edu"
-    topicA = "test_events_13"
+    broker = "lsst8.ncsa.illinois.edu"
+    topicA = "test_events_13_%s_%d" % (platform.node(), os.getpid())
 
-    receiver = events.EventReceiver(host, topicA)
+    receiver = events.EventReceiver(broker, topicA)
 
     #
     # send a test event, and wait to receive it
     #
-    sendEvent(host, topicA)
+    sendEvent(broker, topicA)
 
     val = receiver.receiveEvent()
     assert val != None

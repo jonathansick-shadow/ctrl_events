@@ -23,18 +23,19 @@
 #
 
 
+import os
+import platform
 import threading
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import lsst.pex.policy as policy
-import time
 
 
 #
 # sendEvent() - shoot an event to a host on a certain topic
 #
-def sendEvent(hostName, topicName, ps):
-    trans = events.EventTransmitter(hostName, topicName)
+def sendEvent(broker, topicName, ps):
+    trans = events.EventTransmitter(broker, topicName)
     event = events.Event("myrunid",ps)
     trans.publishEvent(event)
 
@@ -49,9 +50,10 @@ def createStringProperty(name, value):
     return root
 
 if __name__ == "__main__":
-    host = "lsst8.ncsa.illinois.edu"
-    topic = "test_events_5"
-    recv = events.EventReceiver(host, topic)
+    broker = "lsst8.ncsa.illinois.edu"
+
+    topic = "test_events_5_%s_%d" % (platform.node(), os.getpid())
+    recv = events.EventReceiver(broker, topic)
 
 
     # Integer tests
@@ -59,5 +61,5 @@ if __name__ == "__main__":
     #
     # send two test events, first PID ==  300, then PID == 200
     #
-    sendEvent(host, topic, createIntProperty("PID", 300))
-    sendEvent(host, topic, createIntProperty("PID", 200))
+    sendEvent(broker, topic, createIntProperty("PID", 300))
+    sendEvent(broker, topic, createIntProperty("PID", 200))

@@ -31,12 +31,12 @@ import time
 
 
 if __name__ == "__main__":
-    host = "unknown_host.ncsa.illinois.edu"
+    broker = "unknown_broker.ncsa.illinois.edu"
     topic = "test_events_7"
 
-    # Test to be sure that a bad host name throws a runtime event
+    # Test to be sure that a bad broker name throws a runtime event
     try:
-        trans = events.EventTransmitter(host, topic)
+        trans = events.EventTransmitter(broker, topic)
         assert 0
     except ex.LsstCppException, e:
         pass

@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     statusEvent = events.StatusEvent("my runid", originatorId2, root)
 
-    transmitter = events.EventTransmitter("lsst8.ncsa.uiuc.edu", "mytopic")
+    transmitter = events.EventTransmitter("lsst8.ncsa.illinois.edu", "mytopic")
     sel = "%s = %d" % (events.StatusEvent.IPID, IPId)
     #sel = "RUNID = '%s'" % "my runid"
     #sel = "PROCESSID = %d" % processId

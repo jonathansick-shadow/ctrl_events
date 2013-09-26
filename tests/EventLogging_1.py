@@ -39,7 +39,7 @@ from socket import gethostname
 
 if __name__ == "__main__":
 
-    host = "lsst8.ncsa.uiuc.edu"
+    host = "lsst8.ncsa.illinois.edu"
     topic = events.EventLog.LOGGING_TOPIC
     runid = "%s_%d" % (gethostname(), os.getpid())
     eventSystem = events.EventSystem.getDefaultEventSystem()

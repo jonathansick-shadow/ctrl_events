@@ -23,6 +23,8 @@
 
 #!/usr/bin/env python
 
+import os
+import platform
 import time
 import threading
 import lsst.ctrl.events as events
@@ -31,8 +33,8 @@ from lsst.daf.base import PropertySet
 #
 # Send an event
 #
-def sendEvent(hostName, topic):
-    trans = events.EventTransmitter(hostName, topic)
+def sendEvent(brokerName, topic):
+    trans = events.EventTransmitter(brokerName, topic)
     
     root = PropertySet()
     root.set("TOPIC",topic)
@@ -49,15 +51,18 @@ def sendEvent(hostName, topic):
     trans.publishEvent(event)
 
 if __name__ == "__main__":
-    host = "lsst8.ncsa.illinois.edu"
-    topicA = "test_events_12"
+    broker = "lsst8.ncsa.illinois.edu"
 
-    yC = events.EventReceiver(host, topicA)
+    host = platform.node()
+    pid = os.getpid()
+    topicA = "test_events_12_%s_%d" % (host, pid)
+
+    yC = events.EventReceiver(broker, topicA)
 
     #
     # send a test event, and wait to receive it
     #
-    sendEvent(host, topicA)
+    sendEvent(broker, topicA)
 
     val = yC.receiveEvent()
     assert val != None
@@ -78,4 +83,3 @@ if __name__ == "__main__":
     statusevent = eventSystem.castToStatusEvent(val)
     print "OriginatorId"
     print statusevent.getOriginatorId()
-

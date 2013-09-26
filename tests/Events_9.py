@@ -23,6 +23,8 @@
 #
 
 
+import os
+import platform
 import time
 import threading
 import lsst.ctrl.events as events
@@ -31,8 +33,8 @@ from lsst.daf.base import PropertySet
 #
 # Send an event
 #
-def sendEvent(hostName, topic):
-    trans = events.EventTransmitter(hostName, topic)
+def sendEvent(broker, topic):
+    trans = events.EventTransmitter(broker, topic)
     
     root = PropertySet()
     root.set("TOPIC",topic)
@@ -50,18 +52,23 @@ def sendEvent(hostName, topic):
     trans.publishEvent(event)
 
 if __name__ == "__main__":
-    host = "lsst8.ncsa.illinois.edu"
-    topicA = "test_events_9.A"
-    topicB = "test_events_9.B"
-    topicC = "test_events_9.*"
+    broker = "lsst8.ncsa.illinois.edu"
 
-    yC = events.EventReceiver(host, topicC)
+    host = platform.node()
+    pid = os.getpid()
+    host_pid = "%s_%d" % (host,pid)
+
+    topicA = "test_events_9_%s.A" % host_pid
+    topicB = "test_events_9_%s.B" % host_pid
+    topicC = "test_events_9_%s.*" % host_pid
+
+    yC = events.EventReceiver(broker, topicC)
 
     #
     # send a test event, and wait to receive it
     #
-    sendEvent(host, topicA)
-    sendEvent(host, topicB)
+    sendEvent(broker, topicA)
+    sendEvent(broker, topicB)
 
     val = yC.receiveEvent()
     assert val != None

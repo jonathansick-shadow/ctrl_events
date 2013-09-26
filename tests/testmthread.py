@@ -35,7 +35,7 @@ import time
 from threading import Thread, Condition
 from lsst.ctrl.events import EventSystem
 
-eventBrokerHost = "lsst8.ncsa.uiuc.edu"
+eventBrokerHost = "lsst8.ncsa.illinois.edu"
 testtopic = "testmthread"
 
 class Flag(object):
