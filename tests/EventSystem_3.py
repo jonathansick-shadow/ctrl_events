@@ -31,7 +31,7 @@ import lsst.pex.policy as policy
 
 
 if __name__ == "__main__":
-    host = "lsst8.ncsa.uiuc.edu"
+    host = "lsst8.ncsa.illinois.edu"
     eventSystem = events.EventSystem().getDefaultEventSystem()
 
     # can't just pass in an empty policy file, because it

@@ -48,7 +48,16 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
     
 int main() {
     
+    std::ostringstream oss;
     pexPolicy::Policy p;
+    char host[128];
+
+    int ret = gethostname(host,sizeof(host));
+    if (ret != 0)
+        throw runtime_error("error getting hostname");
+    oss << "events_1_test_" << host << "_" << getpid();
+    std::string topic = oss.str();
+    
 
     //
     // test EventTransmitter(const Policy& policy)
@@ -58,14 +67,14 @@ int main() {
     } catch (pexExceptions::NotFoundException&) { 
     } 
 
-    p.set("topicName", "Events_1_test");
+    p.set("topicName", topic);
     p.set("useLocalSockets", false);
     try {
         ctrlEvents::EventTransmitter et2(p);
     } catch (pexExceptions::NotFoundException&) { 
     } 
 
-    p.set("topicName", "Events_1_test");
+    p.set("topicName", topic);
     p.set("useLocalSockets", false);
     p.set("hostName", "garbage");
     try {
@@ -73,7 +82,7 @@ int main() {
     } catch (pexExceptions::RuntimeErrorException&) { 
     } 
 
-    ctrlEvents::EventTransmitter et4("lsst8.ncsa.uiuc.edu", "Events_1_test");
+    ctrlEvents::EventTransmitter et4("lsst8.ncsa.illinois.edu", topic);
 
     // test publish("string", PropertySet)
     PropertySet::Ptr psp1(new PropertySet);
@@ -96,7 +105,7 @@ int main() {
 
     // test getTopicName();
     std::string topicName = et4.getTopicName();
-    Assert(topicName == "Events_1_test", "Topic name does not match initial name");
+    Assert(topicName == topic, "Topic name does not match initial name");
     std::cout << topicName << std::endl;
 
     // test publish("string", LogRecord)

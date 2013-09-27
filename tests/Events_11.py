@@ -22,7 +22,8 @@
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
-
+import os
+import platform
 import time
 import threading
 import lsst.ctrl.events as events
@@ -31,8 +32,8 @@ from lsst.daf.base import PropertySet
 #
 # Send an event
 #
-def sendEvent(hostName, topic):
-    trans = events.EventTransmitter(hostName, topic)
+def sendEvent(brokerName, topic):
+    trans = events.EventTransmitter(brokerName, topic)
     
     root = PropertySet()
     root.set("TOPIC",topic)
@@ -46,23 +47,28 @@ def sendEvent(hostName, topic):
     # ok...now publish it
     trans.publishEvent(event)
 
-    event = events.StatusEvent("srptestrun2", originatorId, root)
+    event = events.StatusEvent("test_runid_11_%d" % os.getpid(), originatorId, root)
 
     # ok...now publish it
     trans.publishEvent(event)
 
 if __name__ == "__main__":
-    host = "lsst8.ncsa.uiuc.edu"
-    topicA = "PIPELINE.A"
-    topicB = "PIPELINE.B"
-    topicC = "PIPELINE.*"
+    host = platform.node()
+    pid = os.getpid()
 
-    yC = events.EventReceiver(host, topicC, "RUNID = 'srptestrun2'")
+    host_pid = "%s_%d" % (host, pid)
+
+    broker = "lsst8.ncsa.illinois.edu"
+    topicA = "test_events_11_%s.A" % host_pid
+    topicB = "test_events_11_%s.B" % host_pid
+    topicC = "test_events_11_%s.*" % host_pid
+
+    yC = events.EventReceiver(broker, topicC, "RUNID = 'test_runid_11_%d'" % os.getpid())
 
     #
     # send a test event, and wait to receive it
     #
-    sendEvent(host, topicA)
+    sendEvent(broker, topicA)
 
     # we'll get the second event, not the first
     val = yC.receiveEvent()

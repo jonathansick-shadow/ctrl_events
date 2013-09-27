@@ -29,7 +29,7 @@ from lsst.daf.base import PropertySet
 from socket import gethostname
 
 if __name__ == "__main__":
-    runid = "srptestrun"
+    runid = "testrunid"
     status = "my special status"
     root = PropertySet()
     MYNAME = "myname"

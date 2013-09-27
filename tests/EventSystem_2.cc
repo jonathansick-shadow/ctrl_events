@@ -50,6 +50,14 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
 int main() {
     
     Policy p;
+    std::ostringstream oss;
+    char host[128];
+
+    int ret = gethostname(host,sizeof(host));
+    if (ret != 0)
+        throw runtime_error("error getting hostname");
+    oss << "eventsystem_2_test_" << host << "_" << getpid();
+    std::string topic = oss.str();
 
     EventSystem eventSystem = EventSystem().getDefaultEventSystem();
     //
@@ -60,14 +68,14 @@ int main() {
     } catch (NotFoundException&) { 
     } 
 
-    p.set("topicName", "EventSystem_2_test");
+    p.set("topicName", topic);
     p.set("useLocalSockets", false);
     try {
         eventSystem.createReceiver(p);
     } catch (NotFoundException&) { 
     } 
 
-    p.set("topicName", "EventSystem_2_test");
+    p.set("topicName", topic);
     p.set("useLocalSockets", false);
     p.set("hostName", "garbage");
     try {
@@ -76,9 +84,12 @@ int main() {
     } 
 
     try {
-        eventSystem.createReceiver("lsst8.ncsa.uiuc.edu", "EventSystem_2_test");
+        eventSystem.createReceiver("lsst8.ncsa.illinois.edu", topic);
     } catch (RuntimeErrorException&) { 
         // can't create a receiver if one already exists for that topic
     } 
-    eventSystem.createReceiver("lsst8.ncsa.uiuc.edu", "EventSystem_2_test2");
+    oss.str("");
+    oss << "eventsystem_2a_test_" << host << "_" << getpid();
+    std::string topic2 = oss.str();
+    eventSystem.createReceiver("lsst8.ncsa.illinois.edu", topic2);
 }

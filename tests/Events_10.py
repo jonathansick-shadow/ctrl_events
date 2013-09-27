@@ -23,6 +23,8 @@
 #
 
 
+import os
+import platform
 import time
 import threading
 import lsst.ctrl.events as events
@@ -31,8 +33,8 @@ from lsst.daf.base import PropertySet
 #
 # Send an event
 #
-def sendEvent(hostName, topic):
-    trans = events.EventTransmitter(hostName, topic)
+def sendEvent(brokerName, topic):
+    trans = events.EventTransmitter(brokerName, topic)
     
     root = PropertySet()
     root.set("TOPIC",topic)
@@ -42,30 +44,35 @@ def sendEvent(hostName, topic):
     
     eventSystem = events.EventSystem.getDefaultEventSystem();
     originatorId = eventSystem.createOriginatorId()
-    event = events.StatusEvent("srptestrun", originatorId, root)
+    event = events.StatusEvent("test_runid_10", originatorId, root)
 
 
     # ok...now publish it
     trans.publishEvent(event)
 
 if __name__ == "__main__":
-    host = "lsst8.ncsa.uiuc.edu"
-    topicA = "PIPELINE.A"
-    topicB = "PIPELINE.B"
-    topicC = "PIPELINE.*"
+    host = platform.node()
+    pid = os.getpid()
 
-    yC = events.EventReceiver(host, topicC)
+    host_pid = "%s_%d" % (host, pid)
+
+    broker = "lsst8.ncsa.illinois.edu"
+    topicA = "test_events_10_%s.A" % host_pid
+    topicB = "test_events_10_%s.B" % host_pid
+    topicC = "test_events_10_%s.*" % host_pid
+
+    yC = events.EventReceiver(broker, topicC)
 
     #
     # send a test event, and wait to receive it
     #
-    sendEvent(host, topicA)
+    sendEvent(broker, topicA)
 
     # wait a short time so we can see the difference between the time 
     # the event is created and the time it is published
     time.sleep(1)
 
-    sendEvent(host, topicB)
+    sendEvent(broker, topicB)
 
     val = yC.receiveEvent()
     assert val != None

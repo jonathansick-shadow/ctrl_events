@@ -23,6 +23,9 @@
 #
 
 
+import os
+import time
+import platform
 import threading
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
@@ -33,12 +36,13 @@ from socket import gethostname
 #
 if __name__ == "__main__":
 
-    hostName = "lsst8.ncsa.uiuc.edu"
-    topicName = "test_events_3"
-    runId = "test3_runid"
-    recv = events.EventReceiver(hostName, topicName)
+    broker = "lsst8.ncsa.illinois.edu"
+    topic = "test_events_3_%s_%d" % (platform.node(), os.getpid())
 
-    trans = events.EventTransmitter(hostName, topicName)
+    runId = "test3_runid"
+    recv = events.EventReceiver(broker, topic)
+
+    trans = events.EventTransmitter(broker, topic)
     
     root = PropertySet()
 
@@ -51,11 +55,11 @@ if __name__ == "__main__":
     root.set(BLANK, BLANK_VAL)
 
     PID = "pid"
-    PID_VAL = 200
+    PID_VAL = os.getpid()
     root.setInt(PID, PID_VAL)
 
     HOST = "host"
-    HOST_VAL = "lsst8.ncsa.uiuc.edu"
+    HOST_VAL = "lsst8.ncsa.illinois.edu"
     root.set(HOST, HOST_VAL)
 
     IP = "ip"
@@ -107,7 +111,7 @@ if __name__ == "__main__":
     assert ps.get(events.Event.PUBTIME) > 0
     assert ps.get(events.Event.RUNID) == runId
     assert ps.get(events.Event.STATUS) == "unknown"
-    assert ps.get(events.Event.TOPIC) == topicName
+    assert ps.get(events.Event.TOPIC) == topic
     assert ps.get(events.Event.TYPE) == events.EventTypes.EVENT
     
     #
@@ -116,4 +120,3 @@ if __name__ == "__main__":
     #
     val = recv.receiveEvent(100)
     assert val == None
-

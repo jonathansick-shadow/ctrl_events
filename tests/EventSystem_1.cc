@@ -50,6 +50,14 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
 int main() {
     
     pexPolicy::Policy p;
+    std::ostringstream oss;
+    char host[128];
+        
+    int ret = gethostname(host,sizeof(host));
+    if (ret != 0)
+        throw runtime_error("error getting hostname");
+    oss << "eventsystem_1_test_" << host << "_" << getpid();
+    std::string topic = oss.str();
 
     ctrlEvents::EventSystem eventSystem = ctrlEvents::EventSystem().getDefaultEventSystem();
     //
@@ -60,7 +68,7 @@ int main() {
     } catch (pexExceptions::NotFoundException&) { 
     } 
 
-    p.set("topicName", "EventSystem_1_test");
+    p.set("topicName", topic);
     p.set("useLocalSockets", false);
     try {
         eventSystem.createTransmitter(p);
@@ -68,20 +76,20 @@ int main() {
         std::cout << "not created" << std::endl;
     } 
 
-    eventSystem.createTransmitter("lsst8.ncsa.uiuc.edu", "EventSystem_1_test");
+    eventSystem.createTransmitter("lsst8.ncsa.illinois.edu", topic);
 
     // test publish("string", DataProperty)
     PropertySet::Ptr psp(new PropertySet);
     psp->add("test", 12);
 
     ctrlEvents::Event event("runid1",psp);
-    eventSystem.publishEvent("EventSystem_1_test", event);
+    eventSystem.publishEvent(topic, event);
 
     // test publish("string", LogRecord)
     pexLogging::LogRecord lr(-1, 10);
     const char *comment = "a comment";
     lr.addComment(comment);
     ctrlEvents::LogEvent logEvent("logrec", lr);
-    eventSystem.publishEvent("EventSystem_1_test", logEvent);
+    eventSystem.publishEvent(topic, logEvent);
 
 }
