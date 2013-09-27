@@ -28,7 +28,7 @@ Tests of the BlackboardItem classes
 from __future__ import with_statement
 
 import pdb                              # we may want to say pdb.set_trace()
-import os
+import os, platform
 import sys
 import unittest
 import time
@@ -36,7 +36,7 @@ from threading import Thread, Condition
 from lsst.ctrl.events import EventSystem
 
 eventBrokerHost = "lsst8.ncsa.illinois.edu"
-testtopic = "testmthread"
+testtopic = "testmthread_%s_%d" % (platform.node(), os.getpid())
 
 class Flag(object):
     def __init__(self):

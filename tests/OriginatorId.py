@@ -77,7 +77,7 @@ if __name__ == "__main__":
     #sel = "RUNID = '%s'" % "my runid"
     #sel = "PROCESSID = %d" % processId
     print sel
-    receiver = events.EventReceiver("lsst8.ncsa.uiuc.edu", "mytopic", sel)
+    receiver = events.EventReceiver("lsst8.ncsa.illinois.edu", "mytopic", sel)
 
     transmitter.publishEvent(statusEvent)
     returnedEvent = receiver.receiveEvent()

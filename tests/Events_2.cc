@@ -50,6 +50,14 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
 int main() {
     
     Policy p;
+    std::ostringstream oss;
+    char host[128];
+
+    int ret = gethostname(host,sizeof(host));
+    if (ret != 0)
+        throw runtime_error("error getting hostname");
+    oss << "events_2_test_" << host << "_" << getpid();
+    std::string topic = oss.str();
 
     //
     // test EventReceiver(const Policy& policy)
@@ -59,14 +67,16 @@ int main() {
     } catch (NotFoundException&) { 
     } 
 
-    p.set("topicName", "Events_1_test");
+    
+
+    p.set("topicName", topic);
     p.set("useLocalSockets", false);
     try {
         EventReceiver er2(p);
     } catch (NotFoundException&) { 
     } 
 
-    p.set("topicName", "Events_1_test");
+    p.set("topicName", topic);
     p.set("useLocalSockets", false);
     p.set("hostName", "garbage");
     try {
@@ -74,18 +84,18 @@ int main() {
     } catch (RuntimeErrorException&) { 
     } 
 
-    p.set("topicName", "Events_1_test");
+    p.set("topicName", topic);
     p.set("useLocalSockets", false);
-    p.set("hostName", "lsst8.ncsa.uiuc.edu");
+    p.set("hostName", "lsst8.ncsa.illinois.edu");
     try {
         EventReceiver er2(p);
     } catch (RuntimeErrorException&) { 
     } 
 
-    EventReceiver er3("lsst8.ncsa.uiuc.edu", "Events_2_test");
+    EventReceiver er3("lsst8.ncsa.illinois.edu", topic);
 
     // test getTopicName();
     std::string topicName = er3.getTopicName();
-    Assert(topicName == "Events_2_test", "Topic name does not match initial name");
+    Assert(topicName == topic, "Topic name does not match initial name");
 
 }
