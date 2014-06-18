@@ -67,7 +67,7 @@ namespace events {
 
 /** \brief Creates Event which contains a PropertySet
   *
-  * \throw throws NotFoundException if expected keywords are missing a property set
+  * \throw throws NotFoundError if expected keywords are missing a property set
   */
 
 // NOTE:  While it would be nice to implement this as a wrapper for a TextMessage,

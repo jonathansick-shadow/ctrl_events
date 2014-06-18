@@ -83,7 +83,7 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
         return;
 
     if (!policy.exists("topicName")) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName not found in policy");
+        throw LSST_EXCEPT(pexExceptions::NotFoundError, "topicName not found in policy");
     }
 
     std::string topicName = policy.getString("topicName");
@@ -94,7 +94,7 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
     }
 
     if (!policy.exists("hostName")) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostName not found in policy");
+        throw LSST_EXCEPT(pexExceptions::NotFoundError, "hostName not found in policy");
     }
 
     std::string hostName = policy.getString("hostName");
@@ -175,7 +175,7 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
             std::string msg("Failed to connect to broker: ");
             msg += e.getMessage();
             msg += " (is broker running?)";
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, msg);
+            throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
         }
 
         _session = _connection->createSession( cms::Session::AUTO_ACKNOWLEDGE );
@@ -188,7 +188,7 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
             _consumer = _session->createConsumer( _destination, selector );
 
     } catch ( cms::CMSException& e ) {
-        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, std::string("Trouble creating EventReceiver: ") + e.getMessage());
+        throw LSST_EXCEPT(pexExceptions::RuntimeError, std::string("Trouble creating EventReceiver: ") + e.getMessage());
     }
 }
 
@@ -218,9 +218,9 @@ Event* EventReceiver::receiveEvent(long timeout) {
         if (msg == NULL) return NULL;
         textMessage = dynamic_cast<cms::TextMessage* >(msg);
         if (textMessage == NULL)
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Unexpected JMS Message type");
+            throw LSST_EXCEPT(pexExceptions::RuntimeError, "Unexpected JMS Message type");
     } catch (activemq::exceptions::ActiveMQException& e) {
-        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
+        throw LSST_EXCEPT(pexExceptions::RuntimeError, e.getMessage());
     }
 
  

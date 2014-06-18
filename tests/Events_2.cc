@@ -32,8 +32,8 @@
 using namespace std;
 using lsst::pex::policy::Policy;
 
-using lsst::pex::exceptions::NotFoundException;
-using lsst::pex::exceptions::RuntimeErrorException;
+using lsst::pex::exceptions::NotFoundError;
+using lsst::pex::exceptions::RuntimeError;
 
 using lsst::ctrl::events::EventReceiver;
 
@@ -43,7 +43,7 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
     if (! mustBeTrue) {
         ostringstream msg;
         msg << __FILE__ << ':' << line << ":\n" << failureMsg << ends;
-        throw LSST_EXCEPT(RuntimeErrorException, msg.str());
+        throw LSST_EXCEPT(RuntimeError, msg.str());
     }
 }   
     
@@ -64,7 +64,7 @@ int main() {
     //
     try {
         EventReceiver er1(p);
-    } catch (NotFoundException&) { 
+    } catch (NotFoundError&) { 
     } 
 
     
@@ -73,7 +73,7 @@ int main() {
     p.set("useLocalSockets", false);
     try {
         EventReceiver er2(p);
-    } catch (NotFoundException&) { 
+    } catch (NotFoundError&) { 
     } 
 
     p.set("topicName", topic);
@@ -81,7 +81,7 @@ int main() {
     p.set("hostName", "garbage");
     try {
         EventReceiver er2(p);
-    } catch (RuntimeErrorException&) { 
+    } catch (RuntimeError&) { 
     } 
 
     p.set("topicName", topic);
@@ -89,7 +89,7 @@ int main() {
     p.set("hostName", "lsst8.ncsa.illinois.edu");
     try {
         EventReceiver er2(p);
-    } catch (RuntimeErrorException&) { 
+    } catch (RuntimeError&) { 
     } 
 
     EventReceiver er3("lsst8.ncsa.illinois.edu", topic);

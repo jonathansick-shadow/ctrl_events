@@ -32,8 +32,8 @@
 
 using namespace std;
 using lsst::pex::policy::Policy;
-using lsst::pex::exceptions::NotFoundException;
-using lsst::pex::exceptions::RuntimeErrorException;
+using lsst::pex::exceptions::NotFoundError;
+using lsst::pex::exceptions::RuntimeError;
 
 using lsst::ctrl::events::EventSystem;
 
@@ -65,14 +65,14 @@ int main() {
     //
     try {
         eventSystem.createReceiver(p);
-    } catch (NotFoundException&) { 
+    } catch (NotFoundError&) { 
     } 
 
     p.set("topicName", topic);
     p.set("useLocalSockets", false);
     try {
         eventSystem.createReceiver(p);
-    } catch (NotFoundException&) { 
+    } catch (NotFoundError&) { 
     } 
 
     p.set("topicName", topic);
@@ -80,12 +80,12 @@ int main() {
     p.set("hostName", "garbage");
     try {
         eventSystem.createReceiver(p);
-    } catch (RuntimeErrorException&) { 
+    } catch (RuntimeError&) { 
     } 
 
     try {
         eventSystem.createReceiver("lsst8.ncsa.illinois.edu", topic);
-    } catch (RuntimeErrorException&) { 
+    } catch (RuntimeError&) { 
         // can't create a receiver if one already exists for that topic
     } 
     oss.str("");

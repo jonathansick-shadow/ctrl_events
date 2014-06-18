@@ -88,8 +88,8 @@ namespace events {
   * 2) If no topicName is specified, a NotFound exception is thrown
   *
   * \param policy the policy object to use when building the receiver
-  * \throw throws NotFoundException if expected keywords are missing in Policy object
-  * \throw throws RuntimeErrorException if connection to transport mechanism fails
+  * \throw throws NotFoundError if expected keywords are missing in Policy object
+  * \throw throws RuntimeError if connection to transport mechanism fails
   */
 EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
     int hostPort;
@@ -105,7 +105,7 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
         return;
 
     if (!policy.exists("topicName")) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName not found in policy");
+        throw LSST_EXCEPT(pexExceptions::NotFoundError, "topicName not found in policy");
     }
     _topicName = policy.getString("topicName");
 
@@ -113,7 +113,7 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
     try {
         hostName = policy.getString("hostName");
     } catch (pexPolicy::NameNotFound& e) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostName not found in policy");
+        throw LSST_EXCEPT(pexExceptions::NotFoundError, "hostName not found in policy");
     }
 
     try {
@@ -129,9 +129,9 @@ EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
   * \param hostName the machine hosting the message broker
   * \param topicName the topic to transmit events to
   * \param hostPort the port number which the message broker is listening to
-  * \throw throws RuntimeErrorException if local socket can't be created
-  * \throw throws RuntimeErrorException if connect to local socket fails
-  * \throw throws RuntimeErrorException if connect to remote ActiveMQ host fails
+  * \throw throws RuntimeError if local socket can't be created
+  * \throw throws RuntimeError if connect to local socket fails
+  * \throw throws RuntimeError if connect to remote ActiveMQ host fails
   */
 EventTransmitter::EventTransmitter( const std::string& hostName, const std::string& topicName, int hostPort) {
     EventLibrary().initializeLibrary();
@@ -179,7 +179,7 @@ void EventTransmitter::init( const std::string& hostName, const std::string& top
             std::string msg("Failed to connect to broker: ");
             msg += e.getMessage();
             msg += " (is broker running?)";
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, msg);
+            throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
         }
 
         _session = _connection->createSession( cms::Session::AUTO_ACKNOWLEDGE );
@@ -195,7 +195,7 @@ void EventTransmitter::init( const std::string& hostName, const std::string& top
         _producer = _session->createProducer(NULL);
         _producer->setDeliveryMode( cms::DeliveryMode::NON_PERSISTENT );
     } catch ( cms::CMSException& e ) {
-        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, std::string("Trouble creating EventTransmitter: ") + e.getMessage());
+        throw LSST_EXCEPT(pexExceptions::RuntimeError, std::string("Trouble creating EventTransmitter: ") + e.getMessage());
     }
 }
 

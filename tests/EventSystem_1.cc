@@ -43,7 +43,7 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
     if (! mustBeTrue) {
         ostringstream msg;
         msg << __FILE__ << ':' << line << ":\n" << failureMsg << ends;
-        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, msg.str());
+        throw LSST_EXCEPT(pexExceptions::RuntimeError, msg.str());
     }
 }   
     
@@ -65,14 +65,14 @@ int main() {
     //
     try {
         eventSystem.createTransmitter(p);
-    } catch (pexExceptions::NotFoundException&) { 
+    } catch (pexExceptions::NotFoundError&) { 
     } 
 
     p.set("topicName", topic);
     p.set("useLocalSockets", false);
     try {
         eventSystem.createTransmitter(p);
-    } catch (pexExceptions::NotFoundException&) { 
+    } catch (pexExceptions::NotFoundError&) { 
         std::cout << "not created" << std::endl;
     } 
 

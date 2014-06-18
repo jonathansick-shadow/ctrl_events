@@ -64,14 +64,14 @@ int main() {
     //
     try {
         ctrlEvents::EventTransmitter et1(p);
-    } catch (pexExceptions::NotFoundException&) { 
+    } catch (pexExceptions::NotFoundError&) { 
     } 
 
     p.set("topicName", topic);
     p.set("useLocalSockets", false);
     try {
         ctrlEvents::EventTransmitter et2(p);
-    } catch (pexExceptions::NotFoundException&) { 
+    } catch (pexExceptions::NotFoundError&) { 
     } 
 
     p.set("topicName", topic);
@@ -79,7 +79,7 @@ int main() {
     p.set("hostName", "garbage");
     try {
         ctrlEvents::EventTransmitter et2(p);
-    } catch (pexExceptions::RuntimeErrorException&) { 
+    } catch (pexExceptions::RuntimeError&) { 
     } 
 
     ctrlEvents::EventTransmitter et4("lsst8.ncsa.illinois.edu", topic);
