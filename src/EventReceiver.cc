@@ -65,9 +65,9 @@ namespace events {
 /** \brief Receives events based on Policy file contents
   *
   * \param policy the policy object to use when building the receiver
-  * \throw throws NotFound exception if topicName isn't specified
-  * \throw throws NotFound exception if hostName isn't specified
-  * \throw throws Runtime exception if connection fails to initialize
+  * \throw throws lsst::pex::exceptions::NotFoundError if topicName isn't specified
+  * \throw throws lsst::pex::exceptions::NotFoundError if hostName isn't specified
+  * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
   */
 
 EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
@@ -118,7 +118,7 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
   * \param hostName the machine hosting the message broker
   * \param topicName the topic to receive events from
   * \param hostPort the port the message broker is listening on 
-  * \throw throws Runtime exception if connection fails to initialize
+  * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
   */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, int hostPort) {
     _turnEventsOff = false;
@@ -131,7 +131,7 @@ EventReceiver::EventReceiver(const std::string& hostName, const std::string& top
   * \param topicName the topic to receive events from
   * \param selector the message selector expression to use.  A selector value of "" is equivalent to no selector.
   * \param hostPort the port the message broker is listening on 
-  * \throw throws Runtime exception if connection fails to initialize
+  * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
   */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort) {
     _turnEventsOff = false;

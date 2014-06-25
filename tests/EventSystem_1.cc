@@ -1,7 +1,7 @@
-/* 
+/*
  * LSST Data Management System
  * Copyright 2008, 2009, 2010 LSST Corporation.
- * 
+ *
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
  *
@@ -9,17 +9,17 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
- * You should have received a copy of the LSST License Statement and 
- * the GNU General Public License along with this program.  If not, 
+ *
+ * You should have received a copy of the LSST License Statement and
+ * the GNU General Public License along with this program.  If not,
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
- 
+
 /**
  * @file EventSystem_1.cc
  *
@@ -38,21 +38,21 @@ namespace pexPolicy = lsst::pex::policy;
 namespace ctrlEvents = lsst::ctrl::events;
 
 #define Assert(b, m) tattle(b, m, __LINE__)
-    
+
 void tattle(bool mustBeTrue, const string& failureMsg, int line) {
     if (! mustBeTrue) {
         ostringstream msg;
         msg << __FILE__ << ':' << line << ":\n" << failureMsg << ends;
         throw LSST_EXCEPT(pexExceptions::RuntimeError, msg.str());
     }
-}   
-    
+}
+
 int main() {
-    
+
     pexPolicy::Policy p;
     std::ostringstream oss;
     char host[128];
-        
+
     int ret = gethostname(host,sizeof(host));
     if (ret != 0)
         throw runtime_error("error getting hostname");
@@ -65,16 +65,16 @@ int main() {
     //
     try {
         eventSystem.createTransmitter(p);
-    } catch (pexExceptions::NotFoundError&) { 
-    } 
+    } catch (pexExceptions::NotFoundError&) {
+    }
 
     p.set("topicName", topic);
     p.set("useLocalSockets", false);
     try {
         eventSystem.createTransmitter(p);
-    } catch (pexExceptions::NotFoundError&) { 
+    } catch (pexExceptions::NotFoundError&) {
         std::cout << "not created" << std::endl;
-    } 
+    }
 
     eventSystem.createTransmitter("lsst8.ncsa.illinois.edu", topic);
 
