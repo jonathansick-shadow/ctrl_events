@@ -65,9 +65,9 @@ namespace events {
 /** \brief Receives events based on Policy file contents
   *
   * \param policy the policy object to use when building the receiver
-  * \throw throws NotFound exception if topicName isn't specified
-  * \throw throws NotFound exception if hostName isn't specified
-  * \throw throws Runtime exception if connection fails to initialize
+  * \throw throws lsst::pex::exceptions::NotFoundError if topicName isn't specified
+  * \throw throws lsst::pex::exceptions::NotFoundError if hostName isn't specified
+  * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
   */
 
 EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
@@ -83,7 +83,7 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
         return;
 
     if (!policy.exists("topicName")) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundException, "topicName not found in policy");
+        throw LSST_EXCEPT(pexExceptions::NotFoundError, "topicName not found in policy");
     }
 
     std::string topicName = policy.getString("topicName");
@@ -94,7 +94,7 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
     }
 
     if (!policy.exists("hostName")) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundException, "hostName not found in policy");
+        throw LSST_EXCEPT(pexExceptions::NotFoundError, "hostName not found in policy");
     }
 
     std::string hostName = policy.getString("hostName");
@@ -118,7 +118,7 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
   * \param hostName the machine hosting the message broker
   * \param topicName the topic to receive events from
   * \param hostPort the port the message broker is listening on 
-  * \throw throws Runtime exception if connection fails to initialize
+  * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
   */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, int hostPort) {
     _turnEventsOff = false;
@@ -131,7 +131,7 @@ EventReceiver::EventReceiver(const std::string& hostName, const std::string& top
   * \param topicName the topic to receive events from
   * \param selector the message selector expression to use.  A selector value of "" is equivalent to no selector.
   * \param hostPort the port the message broker is listening on 
-  * \throw throws Runtime exception if connection fails to initialize
+  * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
   */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort) {
     _turnEventsOff = false;
@@ -175,7 +175,7 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
             std::string msg("Failed to connect to broker: ");
             msg += e.getMessage();
             msg += " (is broker running?)";
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, msg);
+            throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
         }
 
         _session = _connection->createSession( cms::Session::AUTO_ACKNOWLEDGE );
@@ -188,7 +188,7 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
             _consumer = _session->createConsumer( _destination, selector );
 
     } catch ( cms::CMSException& e ) {
-        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, std::string("Trouble creating EventReceiver: ") + e.getMessage());
+        throw LSST_EXCEPT(pexExceptions::RuntimeError, std::string("Trouble creating EventReceiver: ") + e.getMessage());
     }
 }
 
@@ -218,9 +218,9 @@ Event* EventReceiver::receiveEvent(long timeout) {
         if (msg == NULL) return NULL;
         textMessage = dynamic_cast<cms::TextMessage* >(msg);
         if (textMessage == NULL)
-            throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, "Unexpected JMS Message type");
+            throw LSST_EXCEPT(pexExceptions::RuntimeError, "Unexpected JMS Message type");
     } catch (activemq::exceptions::ActiveMQException& e) {
-        throw LSST_EXCEPT(pexExceptions::RuntimeErrorException, e.getMessage());
+        throw LSST_EXCEPT(pexExceptions::RuntimeError, e.getMessage());
     }
 
  
