@@ -38,6 +38,6 @@ if __name__ == "__main__":
     try:
         trans = events.EventTransmitter(broker, topic)
         assert 0
-    except ex.LsstCppException, e:
+    except ex.Exception as e:
         pass
     

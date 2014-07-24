@@ -39,14 +39,14 @@ if __name__ == "__main__":
     p = policy.Policy()
     try:
         eventSystem.createTransmitter(p)
-    except lsst.pex.exceptions.LsstCppException, e:
+    except lsst.pex.exceptions.Exception as e:
         pass
 
     # host wasn't specified...that's a no-no, since useLocalSockets is false
     p.set("topicName", "EventSystem_test")
     try:
         eventSystem.createTransmitter(p)
-    except lsst.pex.exceptions.LsstCppException, e:
+    except lsst.pex.exceptions.Exception as e:
         pass
 
     # TODO:
