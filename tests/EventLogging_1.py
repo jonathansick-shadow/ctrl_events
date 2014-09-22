@@ -40,6 +40,16 @@ from socket import gethostname
 if __name__ == "__main__":
 
     host = "lsst8.ncsa.illinois.edu"
+
+    # note that in this test, while the topic is globally named, the 
+    # selector for the receiver is not.  The value for RUNID is included
+    # in all logging messages sent, and the broker uses this to
+    # deliver only messages sent with the RUNID to the receiver, since it
+    # was specified here.  If the receiver did not include the selector
+    # for this RUNID, this test would have a small chance of failing if
+    # run at the same time as another test on another machine. Since the
+    # selector is specified, it will only get the messages with that RUNID.
+
     topic = events.EventLog.LOGGING_TOPIC
     runid = "%s_%d" % (gethostname(), os.getpid())
     eventSystem = events.EventSystem.getDefaultEventSystem()
