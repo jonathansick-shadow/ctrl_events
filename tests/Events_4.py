@@ -23,11 +23,10 @@
 #
 
 
-import threading
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import lsst.pex.policy as policy
-import time
+import os, platform
 
 
 #
@@ -51,7 +50,7 @@ def createStringProperty(name, value):
 if __name__ == "__main__":
     p = policy.Policy()
     host = "lsst8.ncsa.illinois.edu"
-    topic = "test_events_4"
+    topic = "test_events_4_%s_%d" % (platform.node(), os.getpid())
     recv = events.EventReceiver(host, topic)
 
 

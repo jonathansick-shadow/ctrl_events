@@ -23,11 +23,12 @@
 #
 
 
-import threading
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import lsst.pex.policy as policy
 import time
+import os, platform
+
 
 
 #
@@ -37,7 +38,7 @@ def sendEvent(topicName, ps):
     eventSystem = events.EventSystem.getDefaultEventSystem()
     
     event = events.Event("runid_es5",ps)
-    eventSystem.publishEvent(topic, event)
+    eventSystem.publishEvent(topicName, event)
 
 def createIntProperty(name, value):
     root = base.PropertySet()
@@ -51,7 +52,7 @@ def createStringProperty(name, value):
 
 if __name__ == "__main__":
     host = "lsst8.ncsa.illinois.edu"
-    topic = "test_events_6"
+    topic = "test_events_6_%s_%d" % (platform.node(), os.getpid())
     eventSystem = events.EventSystem.getDefaultEventSystem()
     eventSystem.createReceiver(host, topic)
     eventSystem.createTransmitter(host, topic)

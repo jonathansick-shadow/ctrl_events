@@ -23,16 +23,15 @@
 #
 
 
-import threading
 import lsst.ctrl.events as events
 import lsst.daf.base as datap
 import lsst.pex.exceptions as ex
-import time
+import os, platform
 
 
 if __name__ == "__main__":
     broker = "unknown_broker.ncsa.illinois.edu"
-    topic = "test_events_7"
+    topic = "test_events_7_%s_%d" % (platform.node(), os.getpid())
 
     # Test to be sure that a bad broker name throws a runtime event
     try:

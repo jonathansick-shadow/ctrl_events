@@ -24,10 +24,8 @@
 
 import os
 import platform
-import threading
 import lsst.ctrl.events as events
 import lsst.daf.base as base
-import time
 
 
 #

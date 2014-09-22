@@ -23,7 +23,7 @@
 #
 
 
-import threading
+import os, platform
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import time
@@ -50,7 +50,7 @@ def sendEvent(topicName):
 
 if __name__ == "__main__":
     host = "lsst8.ncsa.illinois.edu"
-    topic = "test_events_3"
+    topic = "test_events_%s_%d" % (platform.node(), os.getpid())
 
     eventSystem = events.EventSystem.getDefaultEventSystem()
     eventSystem.createTransmitter(host, topic)

@@ -24,8 +24,6 @@
 
 import os
 import platform
-import time
-import threading
 import lsst.ctrl.events as events
 import lsst.pex.policy as policy
 from lsst.daf.base import PropertySet
@@ -60,9 +58,6 @@ def sendEvent(brokerName, topic):
     root2.set("STATUS", "my special status2")
     event = events.CommandEvent("srptestrun", commandOriginatorId, statusOriginatorId, root2)
 
-    # wait a short time so we can see the difference between the time 
-    # the event is created and the time it is published
-    # ok...now publish it
     trans.publishEvent(event)
 
 def printEvent(val):

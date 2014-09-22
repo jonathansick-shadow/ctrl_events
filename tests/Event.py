@@ -23,7 +23,6 @@
 #
 
 
-import threading
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 from socket import gethostname
