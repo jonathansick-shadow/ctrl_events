@@ -24,9 +24,7 @@
 
 
 import os
-import time
 import platform
-import threading
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 from socket import gethostname

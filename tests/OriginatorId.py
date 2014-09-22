@@ -23,7 +23,7 @@
 #
 
 
-import os, socket, struct
+import os, socket, struct, platform
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import lsst.pex.exceptions
@@ -72,12 +72,13 @@ if __name__ == "__main__":
 
     statusEvent = events.StatusEvent("my runid", originatorId2, root)
 
-    transmitter = events.EventTransmitter("lsst8.ncsa.illinois.edu", "mytopic")
+    topic = "mytopic_%s_%d" % (platform.node(), os.getpid())
+    transmitter = events.EventTransmitter("lsst8.ncsa.illinois.edu", topic)
     sel = "%s = %d" % (events.StatusEvent.IPID, IPId)
     #sel = "RUNID = '%s'" % "my runid"
     #sel = "PROCESSID = %d" % processId
     print sel
-    receiver = events.EventReceiver("lsst8.ncsa.illinois.edu", "mytopic", sel)
+    receiver = events.EventReceiver("lsst8.ncsa.illinois.edu", topic, sel)
 
     transmitter.publishEvent(statusEvent)
     returnedEvent = receiver.receiveEvent()

@@ -24,17 +24,18 @@
 
 
 
-import threading
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import lsst.pex.exceptions as ex
 import time
+import os, platform
 
 
 #
-# Send an event; if this fails, remove /tmp/test_events_3 and retry.
+# Send an event (modified test that used to test only local topics)
 #
 def sendEvent(topicName):
+    host = "lsst8.ncsa.illinois.edu"
     
     root = base.PropertySet()
     root.add("DATE","2007-07-01T14:28:32.546012")
@@ -47,9 +48,12 @@ def sendEvent(topicName):
     root.addFloat("float_value", 3.14)
     
     eventSystem = events.EventSystem.getDefaultEventSystem()
-    eventSystem.publish(topicName, root)
+    eventSystem.createTransmitter(host, topicName)
+    event = events.Event("runid_es7", root)
+    eventSystem.publishEvent(topicName, event)
 
 if __name__ == "__main__":
-    topic1 = "test_events_3"
+    topic = "test_events_%s_%d" % (platform.node(), os.getpid())
     eventSystem = events.EventSystem.getDefaultEventSystem()
+    sendEvent(topic)
 

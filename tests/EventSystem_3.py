@@ -28,6 +28,7 @@ import lsst.daf.base as base
 import lsst.pex.exceptions
 import lsst.pex.logging as logging
 import lsst.pex.policy as policy
+import os, platform
 
 
 if __name__ == "__main__":
@@ -43,7 +44,8 @@ if __name__ == "__main__":
         pass
 
     # host wasn't specified...that's a no-no, since useLocalSockets is false
-    p.set("topicName", "EventSystem_test")
+    topic = "EventSystem_test_%s_%d" % (platform.node(), os.getpid())
+    p.set("topicName", topic)
     try:
         eventSystem.createTransmitter(p)
     except lsst.pex.exceptions.Exception as e:
@@ -55,15 +57,15 @@ if __name__ == "__main__":
     # useLocalSockets is true, but currently you can't do that
     # because adding booleans to Policy doesn't work (Trac #258)
 
-    topic = "EventSystem_1_test"
+    topic2 = "EventSystem_1_test_%s_%d" % (platform.node(), os.getpid())
 
-    eventSystem.createTransmitter(host, topic)
+    eventSystem.createTransmitter(host, topic2)
 
     root = base.PropertySet()
     root.addInt("test", 12)
 
     event = events.Event("runid_es3", root)
-    eventSystem.publishEvent(topic, event)
+    eventSystem.publishEvent(topic2, event)
 
     # 
     # TODO: fix this logging transmission and reception
@@ -71,4 +73,4 @@ if __name__ == "__main__":
     rec = logging.LogRecord(-1,10)
     rec.addComment("a comment")
     event = events.LogEvent("runid_es3_log", rec)
-    eventSystem.publishEvent(topic, event)
+    eventSystem.publishEvent(topic2, event)

@@ -25,8 +25,6 @@
 
 import os
 import platform
-import time
-import threading
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 

@@ -23,10 +23,10 @@
 #
 
 
-import threading
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import time
+import os, platform
 
 
 #
@@ -50,8 +50,8 @@ def sendEvent(topicName):
 
 if __name__ == "__main__":
     host = "lsst8.ncsa.illinois.edu"
-    topic1 = "test_events_3"
-    topic2 = "test_events_3a"
+    topic1 = "test_events_3_%s_%d" % (platform.node(), os.getpid())
+    topic2 = "test_events_3a_%s_%d" % (platform.node(), os.getpid())
     combinedTopic = topic1+","+topic2
     eventSystem = events.EventSystem.getDefaultEventSystem()
     eventSystem.createReceiver(host, topic1)

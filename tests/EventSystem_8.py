@@ -28,6 +28,7 @@ from lsst.daf.base import PropertySet
 import lsst.pex.exceptions
 import lsst.pex.logging as logging
 import lsst.pex.policy as policy
+import os, platform
 
 
 if __name__ == "__main__":
@@ -39,10 +40,10 @@ if __name__ == "__main__":
     # useLocalSockets is true, but currently you can't do that
     # because adding booleans to Policy doesn't work (Trac #258)
 
-    topic = "EventSystem_8_test"
+    topic = "EventSystem_8_test_%s_%d" % (platform.node(), os.getpid())
 
     
-    eventSystem.createReceiver(host,topic)
+    eventSystem.createReceiver(host, topic)
    
     eventSystem.createTransmitter(host, topic)
 
