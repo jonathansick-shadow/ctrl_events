@@ -86,7 +86,7 @@ public:
 
     int64_t createOriginatorId();
     int extractIPId(int64_t identificationId);
-    short extractProcessId(int64_t identificationId);
+    int extractProcessId(int64_t identificationId);
     short extractLocalId(int64_t identificationId);
 
     StatusEvent* castToStatusEvent(Event* event);

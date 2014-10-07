@@ -83,12 +83,12 @@ public:
 
     int64_t getOriginatorId();
     short getOriginatorLocalId();
-    short getOriginatorProcessId();
+    int  getOriginatorProcessId();
     int getOriginatorIPId();
 
     int64_t getDestinationId();
     short getDestinationLocalId();
-    short getDestinationProcessId();
+    int  getDestinationProcessId();
     int getDestinationIPId();
 
 protected:

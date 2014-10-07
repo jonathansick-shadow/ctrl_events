@@ -245,9 +245,9 @@ int64_t EventSystem::createOriginatorId() {
     int64_t pid = getpid();
     
     int64_t originatorId = _IPId & 0x0FFFFFFFF;
-    int64_t locid = _localId;
+    int64_t locid = _localId & 0x7FFF;
 
-    originatorId = (locid << 49) | (pid << 31) | originatorId;
+    originatorId = (locid << 49) | (pid << 32) | originatorId;
 
     _localId++;
     return originatorId;
@@ -266,7 +266,7 @@ int EventSystem::extractIPId(int64_t identificationId) {
   * \return the 17-bit processId
   */
 int EventSystem::extractProcessId(int64_t identificationId) {
-    return (identificationId & 0xFFFF10000000LL) >> 31;
+    return (identificationId & 0x1FFFF00000000LL) >> 32;
 }
 
 /** \brief extract the 15-bit localId embedded in this identificationId

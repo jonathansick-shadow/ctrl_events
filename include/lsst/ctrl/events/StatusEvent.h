@@ -78,7 +78,7 @@ public:
     virtual void populateHeader(cms::TextMessage *msg) const;
 
 
-    short getProcessId();
+    int getProcessId();
     short getLocalId();
     int getIPId();
     int64_t getOriginatorId();
