@@ -95,12 +95,12 @@ CommandEvent::CommandEvent(cms::TextMessage *msg) : Event(msg) {
 
     _psp->set(ORIGINATORID, (int64_t)msg->getLongProperty(ORIGINATORID));
     _psp->set(ORIG_LOCALID, (short)msg->getShortProperty(ORIG_LOCALID));
-    _psp->set(ORIG_PROCESSID, (short)msg->getShortProperty(ORIG_PROCESSID));
+    _psp->set(ORIG_PROCESSID, (int)msg->getIntProperty(ORIG_PROCESSID));
     _psp->set(ORIG_IPID, (int)msg->getIntProperty(ORIG_IPID));
 
     _psp->set(DESTINATIONID, (int64_t)msg->getLongProperty(DESTINATIONID));
     _psp->set(DEST_LOCALID, (short)msg->getShortProperty(DEST_LOCALID));
-    _psp->set(DEST_PROCESSID, (short)msg->getShortProperty(DEST_PROCESSID));
+    _psp->set(DEST_PROCESSID, (int)msg->getIntProperty(DEST_PROCESSID));
     _psp->set(DEST_IPID, (int)msg->getIntProperty(DEST_IPID));
 
 }
@@ -138,12 +138,12 @@ void CommandEvent::populateHeader(cms::TextMessage* msg) const {
 
     msg->setLongProperty(ORIGINATORID, _psp->get<int64_t>(ORIGINATORID));
     msg->setShortProperty(ORIG_LOCALID, _psp->get<short>(ORIG_LOCALID));
-    msg->setShortProperty(ORIG_PROCESSID, _psp->get<short>(ORIG_PROCESSID));
+    msg->setIntProperty(ORIG_PROCESSID, _psp->get<int>(ORIG_PROCESSID));
     msg->setIntProperty(ORIG_IPID, _psp->get<int>(ORIG_IPID));
 
     msg->setLongProperty(DESTINATIONID, _psp->get<int64_t>(DESTINATIONID));
     msg->setShortProperty(DEST_LOCALID, _psp->get<short>(DEST_LOCALID));
-    msg->setShortProperty(DEST_PROCESSID, _psp->get<short>(DEST_PROCESSID));
+    msg->setIntProperty(DEST_PROCESSID, _psp->get<int>(DEST_PROCESSID));
     msg->setIntProperty(DEST_IPID, _psp->get<int>(DEST_IPID));
 }
 
@@ -155,8 +155,8 @@ short CommandEvent::getOriginatorLocalId() {
     return _psp->get<short>(ORIG_LOCALID);
 }
 
-short CommandEvent::getOriginatorProcessId() { 
-    return _psp->get<short>(ORIG_PROCESSID);
+int CommandEvent::getOriginatorProcessId() { 
+    return _psp->get<int>(ORIG_PROCESSID);
 }
 
 int CommandEvent::getOriginatorIPId() {
@@ -171,8 +171,8 @@ short CommandEvent::getDestinationLocalId() {
      return _psp->get<short>(DEST_LOCALID);
 }
 
-short CommandEvent::getDestinationProcessId() { 
-    return _psp->get<short>(DEST_PROCESSID);
+int CommandEvent::getDestinationProcessId() { 
+    return _psp->get<int>(DEST_PROCESSID);
 }
 
 int CommandEvent::getDestinationIPId() {

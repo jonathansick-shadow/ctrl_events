@@ -88,7 +88,7 @@ StatusEvent::StatusEvent(cms::TextMessage *msg) : Event(msg) {
 
     _psp->set(ORIGINATORID, (int64_t)msg->getLongProperty(ORIGINATORID));
     _psp->set(LOCALID, (short)msg->getShortProperty(LOCALID));
-    _psp->set(PROCESSID, (short)msg->getShortProperty(PROCESSID));
+    _psp->set(PROCESSID, (int)msg->getIntProperty(PROCESSID));
     _psp->set(IPID, (signed int)msg->getIntProperty(IPID));
 
 }
@@ -121,7 +121,7 @@ void StatusEvent::populateHeader(cms::TextMessage* msg) const {
 
     msg->setLongProperty(ORIGINATORID, _psp->get<int64_t>(ORIGINATORID));
     msg->setShortProperty(LOCALID, _psp->get<short>(LOCALID));
-    msg->setShortProperty(PROCESSID, _psp->get<short>(PROCESSID));
+    msg->setIntProperty(PROCESSID, _psp->get<int>(PROCESSID));
     msg->setIntProperty(IPID, _psp->get<int>(IPID));
 }
 
@@ -138,8 +138,8 @@ short StatusEvent::getLocalId() {
     return _psp->get<short>(LOCALID);
 }
 
-short StatusEvent::getProcessId() {
-    return _psp->get<short>(PROCESSID);
+int StatusEvent::getProcessId() {
+    return _psp->get<int>(PROCESSID);
 }
 
 int StatusEvent::getIPId() {
