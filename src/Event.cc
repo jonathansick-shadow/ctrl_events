@@ -31,6 +31,9 @@
   * \author Stephen R. Pietrowicz, NCSA
   *
   */
+
+ ........ This bad C++ line will cause an scons failure return .........
+
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
