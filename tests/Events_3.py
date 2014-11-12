@@ -116,5 +116,5 @@ if __name__ == "__main__":
     # wait a short time to receive an event.  none was sent, so we should
     # time out and confirm that we didn't get anything
     #
-    val = recv.receiveEvent(100)
+    val = recv.receiveEvent(1000)
     assert val == None

@@ -67,49 +67,49 @@ if __name__ == "__main__":
     tlog = log.Log(logger, "test")
     tlog.log(log.Log.INFO, "I like your hat")
 
-    val = eventSystem.receiveEvent(topic, 100)
+    val = eventSystem.receiveEvent(topic, 1000)
     assert val != None
 
 #    // test threshold filtering
     tlog.setThreshold(log.Log.WARN)
     tlog.log(log.Log.INFO, "I like your gloves") #  // shouldn't see this 
     print "threshold is " , tlog.getThreshold()
-    val = eventSystem.receiveEvent(topic, 100)
+    val = eventSystem.receiveEvent(topic, 1000)
     assert val == None
 
 #    // test the persistance of threshold levels
     tlog = log.Log(logger, "test")
     tlog.log(log.Log.INFO, "I like your shoes") #   // shouldn't see this 
-    val = eventSystem.receiveEvent(topic, 100);
+    val = eventSystem.receiveEvent(topic, 1000)
     assert val == None
 
     tlog.setThreshold(log.Log.DEBUG)
     tlog.log(log.Log.INFO, "I said, I like your shoes")
-    val = eventSystem.receiveEvent(topic, 100);
+    val = eventSystem.receiveEvent(topic, 1000)
     assert val != None
 
 #    // test descendent log and ancestor's control of threshold
     tgclog = log.Log(tlog, "grand.child")   #   // name is now "test.grand.child"
     tgclog.log(log.Log.INFO, "Let's play")
-    val = eventSystem.receiveEvent(topic, 100)
+    val = eventSystem.receiveEvent(topic, 1000)
     assert val != None
 
     tlog.setThreshold(log.Log.FATAL)
     tgclog.log(log.Log.INFO, "You go first")
 
-    val = eventSystem.receiveEvent(topic, 100);
+    val = eventSystem.receiveEvent(topic, 1000)
     assert val == None
 
 #    // test streaming
-    log.LogRec(tgclog, log.Log.FATAL) << "help: I've fallen" << log.Prop("NODE", 5) << "& I can't get up" << log.endr;
+    log.LogRec(tgclog, log.Log.FATAL) << "help: I've fallen" << log.Prop("NODE", 5) << "& I can't get up" << log.endr
 
-    val = eventSystem.receiveEvent(topic, 100);
+    val = eventSystem.receiveEvent(topic, 1000)
     assert val != None
 
     tmp = log.Prop("NODE",5)
-    log.LogRec(tgclog, log.Log.FATAL) << "help: I've fallen" << tmp << "& I can't get up" << log.endr;
+    log.LogRec(tgclog, log.Log.FATAL) << "help: I've fallen" << tmp << "& I can't get up" << log.endr
 
-    val = eventSystem.receiveEvent(topic, 100);
+    val = eventSystem.receiveEvent(topic, 1000)
     assert val != None
     print val.getPropertySet().toString()
 
