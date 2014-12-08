@@ -43,6 +43,9 @@
 #include <time.h>
 
 #include "boost/scoped_array.hpp"
+#include "boost/property_tree/ptree.hpp"
+#include "boost/property_tree/json_parser.hpp"
+#include "boost/foreach.hpp"
 
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/EventTypes.h"
@@ -310,64 +313,85 @@ void Event::marshall(cms::TextMessage *msg) {
     msg->setText(payload);
 }
 
-
 std::string Event::marshall(const PropertySet& ps) {
     std::vector<std::string> v = ps.paramNames(false);
 
+    boost::property_tree::ptree child;
     // TODO: optimize this to get use getArray only when necessary
-    std::ostringstream payload;
     unsigned int i;
-    payload << "nodelist||nodelist||" << (v.size()) << "~~";
     for (i = 0; i < v.size(); i++) {
         std::string name = v[i];
         if (ps.typeOf(name) == typeid(bool)) {
             std::vector<bool> vec  = ps.getArray<bool>(name);
             std::vector<bool>::iterator iter;
             for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "bool||"<< name << "||" << *iter << "~~";
+                boost::property_tree::ptree pt;
+                pt.put("bool", *iter);
+                child.put_child(name, pt);
             }
         } else if (ps.typeOf(name) == typeid(long)) {
             std::vector<long> vec  = ps.getArray<long>(name);
             std::vector<long>::iterator iter;
             for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "long||" << name << "||"<< *iter << "~~";
+                boost::property_tree::ptree pt;
+                pt.put("long", *iter);
+                child.put_child(name, pt);
+            }
+        } else if (ps.typeOf(name) == typeid(long long)) {
+            std::vector<long long> vec  = ps.getArray<long long>(name);
+            std::vector<long long>::iterator iter;
+            for (iter = vec.begin(); iter != vec.end(); iter++) {
+                boost::property_tree::ptree pt;
+                pt.put("long long", *iter);
+                child.put_child(name, pt);
             }
         } else if (ps.typeOf(name) == typeid(int)) {
             std::vector<int> vec  = ps.getArray<int>(name);
             std::vector<int>::iterator iter;
             for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "int||" << name << "||"<< *iter << "~~";
+                boost::property_tree::ptree pt;
+                pt.put("int", *iter);
+                child.put_child(name, pt);
             }
         } else if (ps.typeOf(name) == typeid(float)) {
             std::vector<float> vec  = ps.getArray<float>(name);
             std::vector<float>::iterator iter;
-            payload.precision(numeric_limits<float>::digits10+1);
             for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "float||"<< name << "||"<< *iter << "~~";
+                boost::property_tree::ptree pt;
+                pt.put("float", *iter);
+                child.put_child(name, pt);
             }
         } else if (ps.typeOf(name) == typeid(double)) {
             std::vector<double> vec  = ps.getArray<double>(name);
             std::vector<double>::iterator iter;
-            payload.precision(numeric_limits<double>::digits10+1);
             for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "double||"<< name << "||"<< *iter << "~~";
+                boost::property_tree::ptree pt;
+                pt.put("double", *iter);
+                child.put_child(name, pt);
             }
         } else if (ps.typeOf(name) == typeid(std::string)) {
             std::vector<std::string> vec  = ps.getArray<std::string>(name);
             std::vector<std::string>::iterator iter;
             for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "string||" << name << "||"<< *iter << "~~";
+                boost::property_tree::ptree pt;
+                pt.put("string", *iter);
+                child.put_child(name, pt);
             }
         } else if (ps.typeOf(name) == typeid(lsst::daf::base::DateTime)) {
             std::vector<lsst::daf::base::DateTime> vec  = ps.getArray<lsst::daf::base::DateTime>(name);
             std::vector<lsst::daf::base::DateTime>::iterator iter;
             for (iter = vec.begin(); iter != vec.end(); iter++) {
-                payload << "datetime||" << name << "||"<< (*iter).nsecs() << "~~";
+                boost::property_tree::ptree pt;
+                pt.put("datetime", (*iter).nsecs());
+                child.put_child(name, pt);
             }
         } else {
             std::cout << "Couldn't marshall "<< name << std::endl;
         }
     }
+    std::ostringstream payload;
+    write_json(payload, child, false);
+    std::cout << "payload is "<< payload.str() << std::endl;
     return payload.str();
 }
 
@@ -381,71 +405,59 @@ PropertySet::Ptr Event::processTextMessage(cms::TextMessage* textMessage) {
 
     return unmarshall(text);
 }
-
 /** private method unmarshall the DataProperty from a text string
   */
 PropertySet::Ptr Event::unmarshall(const std::string& text) {
-    std::vector<string> tuples;
 
-    // split the text into tuples
-    splitString(text, "~~", tuples);
-
+    boost::property_tree::ptree pt;
+    std::istringstream is (text);
+    read_json(is, pt);
 
     PropertySet::Ptr psp(new PropertySet);
-
-    unsigned int i;
-    for (i = 0; i < tuples.size(); i++) {
-        std::string line = tuples.at(i);
-        std::vector<string> vec;
-        splitTuple(line, "||", vec);
-
-        std::string type = vec.at(0);
-        std::string key = vec.at(1);
-        std::string val = vec.at(2);
-
-        std::istringstream iss(val);
-        boost::any value;
-
-        if (type == "int") {
-            int int_value;
-            iss >> int_value;
-            value = boost::any(int_value);
-            psp->add(key, int_value);
-        } else if (type == "bool") {
-            bool bool_value;
-            iss >> bool_value;
-            value = boost::any(bool_value);
-            psp->add(key, bool_value);
-        } else if (type == "long long") {
-            long long longlong_value;
-            iss >> longlong_value;
-            value = boost::any(longlong_value);
-            psp->add(key, longlong_value);
-        } else if (type == "long") {
-            long long_value;
-            iss >> long_value;
-            value = boost::any(long_value);
-            psp->add(key, long_value);
-        } else if (type == "float") {
-            float float_value;
-            iss >> float_value;
-            value = boost::any(float_value);
-            psp->add(key, float_value);
-        } else if (type == "double") {
-            double double_value;
-            iss >> double_value;
-            value = boost::any(double_value);
-            psp->add(key, double_value);
-        } else if (type == "string") {
-            psp->add(key, val);
-        } else if (type == "datetime") {
-            long long longlong_value;
-            iss >> longlong_value;
-            psp->add(key, lsst::daf::base::DateTime(longlong_value, lsst::daf::base::DateTime::UTC));
+/*
+    for (boost::property_tree::ptree::iterator it = pt.begin(); it != pt.end(); it++) {
+        std::string key = it->first;
+        std::cout << "key: " << key << std::endl;
+        boost::property_tree::ptree child = it->second;
+        std::cout << "key2: " << key << std::endl;
+    }
+*/
+    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt) {
+        std::string key = v.first;
+        std::cout << "key: " << key << std::endl;
+        boost::property_tree::ptree child = v.second;
+        BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, child) {
+            std::string key2 = v2.first;
+            std::cout << "key2: " << key2 << std::endl;
+            if (key2 == "string") {
+                std::string value = child.get<std::string>(key2);
+                psp->add(key, value);
+            } else if (key2 == "bool") {
+                bool value = child.get<bool>(key2);
+                psp->add(key, value);
+            } else if (key2 == "long") {
+                long value = child.get<long>(key2);
+                psp->add(key, value);
+            } else if (key2 == "long long") {
+                long long value = child.get<long long>(key2);
+                psp->add(key, value);
+            } else if (key2 == "int") {
+                int value = child.get<int>(key2);
+                psp->add(key, value);
+            } else if (key2 == "float") {
+                float value = child.get<float>(key2);
+                psp->add(key, value);
+            } else if (key2 == "double") {
+                double value = child.get<double>(key2);
+                psp->add(key, value);
+            } else if (key2 == "datetime") {
+                long long value = child.get<long long>(key2);
+                psp->add(key, lsst::daf::base::DateTime(value, lsst::daf::base::DateTime::UTC));
+            }
         }
-        // type == nodelist can be ignored
     }
         
+    
     return psp;
 }
 
