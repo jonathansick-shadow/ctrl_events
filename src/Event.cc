@@ -325,20 +325,6 @@ template<typename T>void Event::add(const std::string& name, const std::string& 
     }
 }
 
-template void Event::add<bool>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
-
-template void Event::add<int>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
-
-template void Event::add<float>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
-
-template void Event::add<double>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
-
-template void Event::add<long>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
-
-template void Event::add<long long>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
-
-template void Event::add<std::string>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
-
 std::string Event::marshall(const PropertySet& ps) {
     std::vector<std::string> v = ps.paramNames(false);
 
@@ -349,81 +335,18 @@ std::string Event::marshall(const PropertySet& ps) {
         std::string name = v[i];
         if (ps.typeOf(name) == typeid(bool)) {
             add<bool>(name, "bool", ps, child);
-/*
-            std::vector<bool> vec  = ps.getArray<bool>(name);
-            std::vector<bool>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                boost::property_tree::ptree pt;
-                pt.put("bool", *iter);
-                child.put_child(name, pt);
-            }
-*/
         } else if (ps.typeOf(name) == typeid(long)) {
             add<long>(name, "long", ps, child);
-/*
-            std::vector<long> vec  = ps.getArray<long>(name);
-            std::vector<long>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                boost::property_tree::ptree pt;
-                pt.put("long", *iter);
-                child.put_child(name, pt);
-            }
-*/
         } else if (ps.typeOf(name) == typeid(long long)) {
             add<long long>(name, "long long", ps, child);
-/*
-            std::vector<long long> vec  = ps.getArray<long long>(name);
-            std::vector<long long>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                boost::property_tree::ptree pt;
-                pt.put("long long", *iter);
-                child.put_child(name, pt);
-            }
-*/
         } else if (ps.typeOf(name) == typeid(int)) {
             add<int>(name, "int", ps, child);
-/*
-            std::vector<int> vec  = ps.getArray<int>(name);
-            std::vector<int>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                boost::property_tree::ptree pt;
-                pt.put("int", *iter);
-                child.put_child(name, pt);
-            }
-*/
         } else if (ps.typeOf(name) == typeid(float)) {
             add<float>(name, "float", ps, child);
-/*
-            std::vector<float> vec  = ps.getArray<float>(name);
-            std::vector<float>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                boost::property_tree::ptree pt;
-                pt.put("float", *iter);
-                child.put_child(name, pt);
-            }
-*/
         } else if (ps.typeOf(name) == typeid(double)) {
             add<double>(name, "double", ps, child);
-/*
-            std::vector<double> vec  = ps.getArray<double>(name);
-            std::vector<double>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                boost::property_tree::ptree pt;
-                pt.put("double", *iter);
-                child.put_child(name, pt);
-            }
-*/
         } else if (ps.typeOf(name) == typeid(std::string)) {
             add<std::string>(name, "string", ps, child);
-/*
-            std::vector<std::string> vec  = ps.getArray<std::string>(name);
-            std::vector<std::string>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
-                boost::property_tree::ptree pt;
-                pt.put("string", *iter);
-                child.put_child(name, pt);
-            }
-*/
         } else if (ps.typeOf(name) == typeid(lsst::daf::base::DateTime)) {
             std::vector<lsst::daf::base::DateTime> vec  = ps.getArray<lsst::daf::base::DateTime>(name);
             std::vector<lsst::daf::base::DateTime>::iterator iter;
@@ -461,14 +384,7 @@ PropertySet::Ptr Event::unmarshall(const std::string& text) {
     read_json(is, pt);
 
     PropertySet::Ptr psp(new PropertySet);
-/*
-    for (boost::property_tree::ptree::iterator it = pt.begin(); it != pt.end(); it++) {
-        std::string key = it->first;
-        std::cout << "key: " << key << std::endl;
-        boost::property_tree::ptree child = it->second;
-        std::cout << "key2: " << key << std::endl;
-    }
-*/
+
     BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt) {
         std::string key = v.first;
         std::cout << "key: " << key << std::endl;
@@ -552,6 +468,19 @@ void Event::splitTuple(std::string str, std::string delim,
 Event::~Event() {
 }
 
+template void Event::add<bool>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+
+template void Event::add<int>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+
+template void Event::add<float>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+
+template void Event::add<double>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+
+template void Event::add<long>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+
+template void Event::add<long long>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+
+template void Event::add<std::string>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
 }
 }
 }

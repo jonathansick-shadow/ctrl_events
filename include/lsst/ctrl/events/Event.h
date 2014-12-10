@@ -123,6 +123,7 @@ protected:
     void splitTuple(std::string str, std::string delim, std::vector<std::string>&results);
 
     template<typename T>void add(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+
 private:
     std::string marshall(const PropertySet& ps);
     PropertySet::Ptr processTextMessage(cms::TextMessage *textMessage);
