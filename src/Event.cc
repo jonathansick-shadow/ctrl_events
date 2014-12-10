@@ -313,6 +313,20 @@ void Event::marshall(cms::TextMessage *msg) {
     msg->setText(payload);
 }
 
+template<typename T>void Event::add(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child) {
+
+    std::vector<T> vec = ps.getArray<T>(name);
+
+    typename std::vector<T>::iterator iter;
+    for (iter = vec.begin(); iter != vec.end(); iter++) {
+        boost::property_tree::ptree pt;
+        pt.put(tag, *iter);
+        child.put_child(name, pt);
+    }
+}
+
+template void Event::add<int>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+
 std::string Event::marshall(const PropertySet& ps) {
     std::vector<std::string> v = ps.paramNames(false);
 
@@ -346,6 +360,8 @@ std::string Event::marshall(const PropertySet& ps) {
                 child.put_child(name, pt);
             }
         } else if (ps.typeOf(name) == typeid(int)) {
+            add<int>(name, "int", ps, child);
+/*
             std::vector<int> vec  = ps.getArray<int>(name);
             std::vector<int>::iterator iter;
             for (iter = vec.begin(); iter != vec.end(); iter++) {
@@ -353,6 +369,7 @@ std::string Event::marshall(const PropertySet& ps) {
                 pt.put("int", *iter);
                 child.put_child(name, pt);
             }
+*/
         } else if (ps.typeOf(name) == typeid(float)) {
             std::vector<float> vec  = ps.getArray<float>(name);
             std::vector<float>::iterator iter;
