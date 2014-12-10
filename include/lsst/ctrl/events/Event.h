@@ -119,8 +119,6 @@ protected:
     set<std::string> _keywords;
     void _init();
     void _constructor(const std::string& runid, const PropertySet& ps);
-    void splitString(std::string str, std::string delim, std::vector<std::string>&results);
-    void splitTuple(std::string str, std::string delim, std::vector<std::string>&results);
 
     template<typename T>void add(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
 
