@@ -47,6 +47,7 @@ Access to the lsst::ctrl::events classes
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
 #include "lsst/ctrl/events/LogEvent.h"
+#include "lsst/ctrl/events/PipelineLogEvent.h"
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/ctrl/events/EventReceiver.h"
@@ -68,6 +69,7 @@ Access to the lsst::ctrl::events classes
 %include "lsst/ctrl/events/StatusEvent.h"
 %include "lsst/ctrl/events/CommandEvent.h"
 %include "lsst/ctrl/events/LogEvent.h"
+%include "lsst/ctrl/events/PipelineLogEvent.h"
 %include "lsst/ctrl/events/EventTypes.h"
 %include "lsst/ctrl/events/EventTransmitter.h"
 

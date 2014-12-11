@@ -82,8 +82,7 @@ namespace events {
 
 const std::string Event::TYPE = "TYPE";
 const std::string Event::EVENTTIME = "EVENTTIME";
-const std::string Event::HOSTNAME = "HOSTNAME";
-const std::string Event::HOSTIP = "HOSTIP";
+const std::string Event::HOSTID = "HOSTID";
 const std::string Event::RUNID = "RUNID";
 const std::string Event::STATUS = "STATUS";
 const std::string Event::TOPIC = "TOPIC";
@@ -98,8 +97,7 @@ Event::Event() {
 void Event::_init() {
     _keywords.insert(TYPE);
     _keywords.insert(EVENTTIME);
-    _keywords.insert(HOSTNAME);
-    _keywords.insert(HOSTIP);
+    _keywords.insert(HOSTID);
     _keywords.insert(RUNID);
     _keywords.insert(STATUS);
     _keywords.insert(TOPIC);
@@ -112,12 +110,14 @@ Event::Event(cms::TextMessage *msg) {
     _psp = processTextMessage(msg);
 
     _psp->set(TYPE, msg->getStringProperty(TYPE));
-    _psp->set(HOSTNAME, msg->getStringProperty(HOSTNAME));
+    _psp->set(HOSTID, msg->getStringProperty(HOSTID));
     _psp->set(RUNID, msg->getStringProperty(RUNID));
     _psp->set(STATUS, msg->getStringProperty(STATUS));
     _psp->set(TOPIC, msg->getStringProperty(TOPIC));
     _psp->set(EVENTTIME, msg->getLongProperty(EVENTTIME));
     _psp->set(PUBTIME, msg->getLongProperty(PUBTIME));
+/*
+*/
 }
 
 vector<std::string> Event::getFilterablePropertyNames() {
@@ -181,16 +181,11 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
     }
    
 
-    if (!_psp->exists(HOSTNAME)) {
+    if (!_psp->exists(HOSTID)) {
         std::string name;
         gethostname(hostname.get(), host_len);
         name = hostname.get();
-        _psp->set(HOSTNAME, name);
-    }
-
-    if (!_psp->exists(HOSTIP)) {
-        unsigned int ip = getHostIP();
-        _psp->set(HOSTIP, ip);
+        _psp->set(HOSTID, name);
     }
 
     // _runId is filled in here and is ignored in the passed PropertySet
@@ -206,28 +201,10 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
     _psp->set(PUBTIME, (long long)0);
 }
 
-unsigned int Event::getHostIP() {
-        char buf [255];
-        struct hostent *ent;
-        unsigned char a,b,c,d;
-
-        gethostname(buf, 255) ;
-        ent = (struct hostent *)gethostbyname(buf) ;
-
-        a = ent->h_addr_list[0][0] & 0xFF;
-        b = ent->h_addr_list[0][1] & 0xFF;
-        c = ent->h_addr_list[0][2] & 0xFF;
-        d = ent->h_addr_list[0][3] & 0xFF;
-
-        unsigned int ip = (a << 24) | (b << 16) | (c << 8) | d;
-        return ip;
-}
-
 void Event::populateHeader(cms::TextMessage* msg)  const {
     msg->setStringProperty(TYPE, _psp->get<std::string>(TYPE));
     msg->setLongProperty(EVENTTIME, _psp->get<long long>(EVENTTIME));
-    msg->setStringProperty(HOSTNAME, _psp->get<std::string>(HOSTNAME));
-    msg->setIntProperty(HOSTIP, _psp->get<unsigned int>(HOSTIP));
+    msg->setStringProperty(HOSTID, _psp->get<std::string>(HOSTID));
     msg->setStringProperty(RUNID, _psp->get<std::string>(RUNID));
     msg->setStringProperty(STATUS, _psp->get<std::string>(STATUS));
     msg->setStringProperty(TOPIC, _psp->get<std::string>(TOPIC));
@@ -299,13 +276,8 @@ std::string Event::getPubDate() {
 }
 
 
-/* for backwards compatibility */
 std::string Event::getHostId() {
-    return _psp->get<std::string>(HOSTNAME);
-}
-
-std::string Event::getHostName() {
-    return _psp->get<std::string>(HOSTNAME);
+    return _psp->get<std::string>(HOSTID);
 }
 
 std::string Event::getRunId() {

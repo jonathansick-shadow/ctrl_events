@@ -44,6 +44,7 @@
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
 #include "lsst/ctrl/events/LogEvent.h"
+#include "lsst/ctrl/events/PipelineLogEvent.h"
 #include "lsst/ctrl/events/EventTypes.h"
 
 #include "lsst/ctrl/events/EventLog.h"
@@ -88,6 +89,8 @@ Event* EventFactory::createEvent(cms::TextMessage* msg) {
         return new StatusEvent(msg);
     } else if (_type == EventTypes::COMMAND) {
         return new CommandEvent(msg);
+    } else if (_type == EventTypes::PIPELINELOG) {
+        return new PipelineLogEvent(msg);
     }
     return new Event(msg);
 }
