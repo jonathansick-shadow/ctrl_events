@@ -38,7 +38,6 @@
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/LogEvent.h"
-#include "lsst/ctrl/events/PipelineLogEvent.h"
 #include "lsst/ctrl/events/EventFormatter.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/logging/Component.h"
@@ -73,13 +72,8 @@ void EventFormatter::write(ostream *os, const pexLogging::LogRecord& rec) {
         return;
     } 
     std::string runid = ps.get<std::string>(Event::RUNID);
-    if (ps.exists(PipelineLogEvent::SLICEID)) {
-        PipelineLogEvent event(runid,rec);
-        system.publishEvent(EventLog::LOGGING_TOPIC, event);
-    } else {
-        LogEvent event(runid,rec);
-        system.publishEvent(EventLog::LOGGING_TOPIC, event);
-    }
+    LogEvent event(runid,rec);
+    system.publishEvent(EventLog::LOGGING_TOPIC, event);
 }
 
 }

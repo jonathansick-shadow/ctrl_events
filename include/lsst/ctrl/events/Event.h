@@ -71,7 +71,8 @@ public:
 
     static const std::string TYPE;
     static const std::string EVENTTIME;
-    static const std::string HOSTID;
+    static const std::string HOSTNAME;
+    static const std::string HOSTIP;
     static const std::string RUNID;
     static const std::string STATUS;
     static const std::string TOPIC;
@@ -98,6 +99,7 @@ public:
     std::string getEventDate();
 
     std::string getHostId();
+    std::string getHostName();
     std::string getRunId();
     std::string getType();
     std::string getStatus();
@@ -126,6 +128,8 @@ private:
     std::string marshall(const PropertySet& ps);
     PropertySet::Ptr processTextMessage(cms::TextMessage *textMessage);
     PropertySet::Ptr unmarshall(const std::string& text);
+
+    unsigned int getHostIP();
 };
 
 }
