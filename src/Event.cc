@@ -82,7 +82,7 @@ namespace events {
 
 const std::string Event::TYPE = "TYPE";
 const std::string Event::EVENTTIME = "EVENTTIME";
-const std::string Event::HOSTID = "HOSTID";
+const std::string Event::HOSTNAME = "HOSTNAME";
 const std::string Event::RUNID = "RUNID";
 const std::string Event::STATUS = "STATUS";
 const std::string Event::TOPIC = "TOPIC";
@@ -97,7 +97,7 @@ Event::Event() {
 void Event::_init() {
     _keywords.insert(TYPE);
     _keywords.insert(EVENTTIME);
-    _keywords.insert(HOSTID);
+    _keywords.insert(HOSTNAME);
     _keywords.insert(RUNID);
     _keywords.insert(STATUS);
     _keywords.insert(TOPIC);
@@ -110,7 +110,7 @@ Event::Event(cms::TextMessage *msg) {
     _psp = processTextMessage(msg);
 
     _psp->set(TYPE, msg->getStringProperty(TYPE));
-    _psp->set(HOSTID, msg->getStringProperty(HOSTID));
+    _psp->set(HOSTNAME, msg->getStringProperty(HOSTNAME));
     _psp->set(RUNID, msg->getStringProperty(RUNID));
     _psp->set(STATUS, msg->getStringProperty(STATUS));
     _psp->set(TOPIC, msg->getStringProperty(TOPIC));
@@ -181,11 +181,11 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
     }
    
 
-    if (!_psp->exists(HOSTID)) {
+    if (!_psp->exists(HOSTNAME)) {
         std::string name;
         gethostname(hostname.get(), host_len);
         name = hostname.get();
-        _psp->set(HOSTID, name);
+        _psp->set(HOSTNAME, name);
     }
 
     // _runId is filled in here and is ignored in the passed PropertySet
@@ -204,7 +204,7 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
 void Event::populateHeader(cms::TextMessage* msg)  const {
     msg->setStringProperty(TYPE, _psp->get<std::string>(TYPE));
     msg->setLongProperty(EVENTTIME, _psp->get<long long>(EVENTTIME));
-    msg->setStringProperty(HOSTID, _psp->get<std::string>(HOSTID));
+    msg->setStringProperty(HOSTNAME, _psp->get<std::string>(HOSTNAME));
     msg->setStringProperty(RUNID, _psp->get<std::string>(RUNID));
     msg->setStringProperty(STATUS, _psp->get<std::string>(STATUS));
     msg->setStringProperty(TOPIC, _psp->get<std::string>(TOPIC));
@@ -276,8 +276,13 @@ std::string Event::getPubDate() {
 }
 
 
+/* deprecated */
 std::string Event::getHostId() {
-    return _psp->get<std::string>(HOSTID);
+    return _psp->get<std::string>(HOSTNAME);
+}
+
+std::string Event::getHostName() {
+    return _psp->get<std::string>(HOSTNAME);
 }
 
 std::string Event::getRunId() {
