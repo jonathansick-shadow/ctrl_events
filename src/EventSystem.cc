@@ -49,6 +49,7 @@
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/ctrl/events/EventLibrary.h"
 #include "lsst/ctrl/events/Event.h"
+#include "lsst/ctrl/events/Host.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
 
@@ -80,24 +81,8 @@ EventSystem::~EventSystem() {
 EventSystem& EventSystem::getDefaultEventSystem() {
     if (defaultEventSystem == 0) {
 
-        // create the _IPId here, rather than
-        // reconstructing it every time we create an
-        // identificationId
-
-        char buf [255];
-        struct hostent *ent;
-        unsigned char a,b,c,d;
-
-        gethostname(buf, 255) ;
-        ent = (struct hostent *)gethostbyname(buf) ;
-
-        a = ent->h_addr_list[0][0] & 0xFF;
-        b = ent->h_addr_list[0][1] & 0xFF;
-        c = ent->h_addr_list[0][2] & 0xFF;
-        d = ent->h_addr_list[0][3] & 0xFF;
-
-        _IPId = (a << 24) | (b << 16) | (c << 8) | d;
-  
+        Host host = Host().getHost();
+        _IPId = host.getIPAddress();
         // create the default EventSystem object
         defaultEventSystem = new EventSystem();
     }

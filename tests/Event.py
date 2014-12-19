@@ -54,6 +54,7 @@ if __name__ == "__main__":
     filterableNames = event.getFilterablePropertyNames()
     print "Filterable names = ",filterableNames
     filterableNames.remove(events.Event.EVENTTIME)
+    filterableNames.remove(events.Event.HOSTIP)
     filterableNames.remove(events.Event.HOSTNAME)
     filterableNames.remove(events.Event.PUBTIME)
     filterableNames.remove(events.Event.RUNID)
