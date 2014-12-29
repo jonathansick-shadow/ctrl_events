@@ -42,7 +42,6 @@ namespace events {
     const std::string EventTypes::LOG = "_L";
     const std::string EventTypes::STATUS = "_S";
     const std::string EventTypes::COMMAND = "_C";
-    const std::string EventTypes::PIPELINELOG = "_P";
 }
 }
 }

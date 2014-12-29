@@ -47,7 +47,6 @@ public:
     static const std::string LOG;
     static const std::string STATUS;
     static const std::string COMMAND;
-    static const std::string PIPELINELOG;
 };
 }
 }
