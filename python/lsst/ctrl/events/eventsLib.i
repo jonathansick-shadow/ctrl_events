@@ -53,6 +53,7 @@ Access to the lsst::ctrl::events classes
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventFormatter.h"
+#include "lsst/ctrl/events/OriginatorID.h"
 
 %}
 
@@ -70,6 +71,7 @@ Access to the lsst::ctrl::events classes
 %include "lsst/ctrl/events/LogEvent.h"
 %include "lsst/ctrl/events/EventTypes.h"
 %include "lsst/ctrl/events/EventTransmitter.h"
+%include "lsst/ctrl/events/OriginatorID.h"
 
 %newobject lsst::ctrl::events::EventReceiver::receiveEvent;
 %newobject lsst::ctrl::events::EventSystem::receiveEvent;
