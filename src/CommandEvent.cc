@@ -59,12 +59,10 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-const std::string CommandEvent::ORIGINATORID = "ORIGINATORID";
 const std::string CommandEvent::ORIG_LOCALID = "ORIG_LOCALID";
 const std::string CommandEvent::ORIG_PROCESSID = "ORIG_PROCESSID";
 const std::string CommandEvent::ORIG_IPID = "ORIG_IPID";
 
-const std::string CommandEvent::DESTINATIONID = "DESTINATIONID";
 const std::string CommandEvent::DEST_LOCALID = "DEST_LOCALID";
 const std::string CommandEvent::DEST_PROCESSID = "DEST_PROCESSID";
 const std::string CommandEvent::DEST_IPID = "DEST_IPID";

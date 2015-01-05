@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     topic = "mytopic_%s_%d" % (platform.node(), os.getpid())
     transmitter = events.EventTransmitter("lsst8.ncsa.illinois.edu", topic)
-    sel = "%s = %d" % (events.StatusEvent.IPID, IPId)
+    sel = "%s = %d" % (events.StatusEvent.ORIG_IPID, IPId)
     #sel = "RUNID = '%s'" % "my runid"
     #sel = "PROCESSID = %d" % processId
     print sel

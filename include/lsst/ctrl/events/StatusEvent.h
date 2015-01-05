@@ -64,9 +64,9 @@ namespace events {
 class StatusEvent : public Event
 {
 public:
-    static const std::string LOCALID;
-    static const std::string PROCESSID;
-    static const std::string IPID;
+    static const std::string ORIG_LOCALID;
+    static const std::string ORIG_PROCESSID;
+    static const std::string ORIG_IPID;
 
     StatusEvent();
     virtual ~StatusEvent();
