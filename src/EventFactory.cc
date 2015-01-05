@@ -87,6 +87,7 @@ Event* EventFactory::createEvent(cms::TextMessage* msg) {
     } else if (_type == EventTypes::STATUS) {
         return new StatusEvent(msg);
     } else if (_type == EventTypes::COMMAND) {
+        std::cout << "creating Command Event" << std::endl;
         return new CommandEvent(msg);
     }
     return new Event(msg);

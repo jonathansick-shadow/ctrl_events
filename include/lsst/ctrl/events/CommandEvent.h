@@ -43,6 +43,7 @@
 #include <iostream>
 
 #include "lsst/ctrl/events/Event.h"
+#include "lsst/ctrl/events/OriginatorID.h"
 #include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
@@ -74,25 +75,25 @@ public:
     static const std::string DEST_IPID;
 
     CommandEvent();
-    CommandEvent(const std::string& runid, const int64_t originatorId, const int64_t destinationId, const PropertySet& ps);
-    CommandEvent(const std::string& runid, const int64_t originatorId, const int64_t destinationId, const PropertySet::Ptr psp);
+    CommandEvent(const std::string& runid, const OriginatorID& originatorId, const OriginatorID& destinationId, const PropertySet& ps);
+    CommandEvent(const std::string& runid, const OriginatorID& originatorId, const OriginatorID& destinationId, const PropertySet::Ptr psp);
     CommandEvent(cms::TextMessage *msg);
     virtual void populateHeader(cms::TextMessage *msg) const;
 
     virtual ~CommandEvent();
 
-    int64_t getOriginatorId();
-    short getOriginatorLocalId();
+    OriginatorID *getOriginatorId();
+    int getOriginatorLocalId();
     int  getOriginatorProcessId();
     int getOriginatorIPId();
 
-    int64_t getDestinationId();
-    short getDestinationLocalId();
+    OriginatorID * getDestinationId();
+    int getDestinationLocalId();
     int  getDestinationProcessId();
     int getDestinationIPId();
 
 protected:
-    void _constructor(const std::string& runId, const int64_t originatorId, const int64_t destinationId, const PropertySet& ps);
+    void _constructor(const std::string& runId, const OriginatorID& originatorId, const OriginatorID& destinationId, const PropertySet& ps);
 
 private:
     void _init();

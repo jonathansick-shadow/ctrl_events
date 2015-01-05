@@ -43,6 +43,7 @@ Access to the lsst::ctrl::events classes
 #include "lsst/pex/logging/ScreenLog.h"
 #include "lsst/pex/logging/DualLog.h"
 #include "lsst/pex/policy.h"
+#include "lsst/ctrl/events/OriginatorID.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
@@ -53,7 +54,6 @@ Access to the lsst::ctrl::events classes
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventFormatter.h"
-#include "lsst/ctrl/events/OriginatorID.h"
 
 %}
 
@@ -65,13 +65,13 @@ Access to the lsst::ctrl::events classes
 %import "lsst/pex/logging/loggingLib.i"
 %import "lsst/pex/policy/policyLib.i"
 
+%include "lsst/ctrl/events/OriginatorID.h"
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"
 %include "lsst/ctrl/events/CommandEvent.h"
 %include "lsst/ctrl/events/LogEvent.h"
 %include "lsst/ctrl/events/EventTypes.h"
 %include "lsst/ctrl/events/EventTransmitter.h"
-%include "lsst/ctrl/events/OriginatorID.h"
 
 %newobject lsst::ctrl::events::EventReceiver::receiveEvent;
 %newobject lsst::ctrl::events::EventSystem::receiveEvent;

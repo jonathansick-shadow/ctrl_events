@@ -226,40 +226,6 @@ boost::shared_ptr<EventReceiver> EventSystem::getReceiver(const std::string& nam
     return boost::shared_ptr<EventReceiver>();
 }
 
-int64_t EventSystem::createOriginatorId() {
-    int64_t pid = getpid();
-    
-    int64_t originatorId = _IPId & 0x0FFFFFFFF;
-    int64_t locid = _localId & 0x7FFF;
-
-    originatorId = (locid << 49) | (pid << 32) | originatorId;
-
-    _localId++;
-    return originatorId;
-}
-
-/** \brief extract the 32-bit IPId embedded in this identificationId.
-  *        This is the integer representation of the IPV4 network address
-  *        of the host associated with this identificationId
-  * \return the 32-bit IPId
-  */
-int EventSystem::extractIPId(int64_t identificationId) {
-    return identificationId & 0xFFFFFFFF;
-}
-
-/** \brief extract the 17-bit processId embedded in this identificationId
-  * \return the 17-bit processId
-  */
-int EventSystem::extractProcessId(int64_t identificationId) {
-    return (identificationId & 0x1FFFF00000000LL) >> 32;
-}
-
-/** \brief extract the 15-bit localId embedded in this identificationId
-  * \return the 15-bit localId
-  */
-short EventSystem::extractLocalId(int64_t identificationId) {
-    return (identificationId & 0xFFFE000000000000LL) >> 49;
-}
 
 StatusEvent* EventSystem::castToStatusEvent(Event* event) {
     return (StatusEvent *)event;

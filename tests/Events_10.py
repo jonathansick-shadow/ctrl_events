@@ -42,7 +42,7 @@ def sendEvent(brokerName, topic):
     root.set("RUNID","srptestrun")
     
     eventSystem = events.EventSystem.getDefaultEventSystem();
-    originatorId = eventSystem.createOriginatorId()
+    originatorId = events.OriginatorID()
     event = events.StatusEvent("test_runid_10", originatorId, root)
 
 

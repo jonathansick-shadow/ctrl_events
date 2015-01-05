@@ -41,8 +41,7 @@ def sendEvent(brokerName, topic):
     root.set("RUNID","srptestrun")
     root.set("bazinga", "sheldon")
     
-    eventSystem = events.EventSystem.getDefaultEventSystem()
-    originatorId = eventSystem.createOriginatorId()
+    originatorId = events.OriginatorID()
     event = events.StatusEvent("srptestrun", originatorId, root)
 
     # ok...now publish it
@@ -80,4 +79,7 @@ if __name__ == "__main__":
     eventSystem = events.EventSystem().getDefaultEventSystem()
     statusevent = eventSystem.castToStatusEvent(val)
     print "OriginatorId"
-    print statusevent.getOriginatorId()
+    originatorID = statusevent.getOriginatorId()
+    print "localID", originatorID.getLocalID()
+    print "processID", originatorID.getProcessID()
+    print "IPAddress", originatorID.getIPAddress()

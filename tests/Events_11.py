@@ -38,8 +38,7 @@ def sendEvent(brokerName, topic):
     root.set("myname","myname")
     root.set("STATUS", "my special status")
     
-    eventSystem = events.EventSystem.getDefaultEventSystem()
-    originatorId = eventSystem.createOriginatorId();
+    originatorId = events.OriginatorID()
     event = events.StatusEvent("srptestrun1", originatorId, root)
 
     # ok...now publish it

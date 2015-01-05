@@ -37,6 +37,7 @@
 #include <limits>
 #include <cstring>
 
+#include "lsst/ctrl/events/OriginatorID.h"
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/CommandEvent.h"
@@ -78,12 +79,10 @@ CommandEvent::CommandEvent() : Event() {
 
 
 void CommandEvent::_init() {
-    _keywords.insert(ORIGINATORID);
     _keywords.insert(ORIG_LOCALID);
     _keywords.insert(ORIG_PROCESSID);
     _keywords.insert(ORIG_IPID);
 
-    _keywords.insert(DESTINATIONID);
     _keywords.insert(DEST_LOCALID);
     _keywords.insert(DEST_PROCESSID);
     _keywords.insert(DEST_IPID);
@@ -93,41 +92,34 @@ CommandEvent::CommandEvent(cms::TextMessage *msg) : Event(msg) {
     _init();
 
 
-    _psp->set(ORIGINATORID, (int64_t)msg->getLongProperty(ORIGINATORID));
-    _psp->set(ORIG_LOCALID, (short)msg->getShortProperty(ORIG_LOCALID));
+    _psp->set(ORIG_LOCALID, (int)msg->getIntProperty(ORIG_LOCALID));
     _psp->set(ORIG_PROCESSID, (int)msg->getIntProperty(ORIG_PROCESSID));
     _psp->set(ORIG_IPID, (int)msg->getIntProperty(ORIG_IPID));
 
-    _psp->set(DESTINATIONID, (int64_t)msg->getLongProperty(DESTINATIONID));
-    _psp->set(DEST_LOCALID, (short)msg->getShortProperty(DEST_LOCALID));
+    _psp->set(DEST_LOCALID, (int)msg->getIntProperty(DEST_LOCALID));
     _psp->set(DEST_PROCESSID, (int)msg->getIntProperty(DEST_PROCESSID));
     _psp->set(DEST_IPID, (int)msg->getIntProperty(DEST_IPID));
 
 }
 
-CommandEvent::CommandEvent( const std::string& runId, const int64_t originatorId, const int64_t destinationId, const PropertySet::Ptr psp) : Event(runId, *psp) {
+CommandEvent::CommandEvent( const std::string& runId, const OriginatorID&  originatorId, const OriginatorID& destinationId, const PropertySet::Ptr psp) : Event(runId, *psp) {
     _constructor(runId, originatorId, destinationId, *psp);
 }
 
-CommandEvent::CommandEvent( const std::string& runId, const int64_t originatorId, const int64_t destinationId, const PropertySet& ps) : Event(runId, ps) {
+CommandEvent::CommandEvent( const std::string& runId, const OriginatorID&  originatorId, const OriginatorID&  destinationId, const PropertySet& ps) : Event(runId, ps) {
     _constructor(runId, originatorId, destinationId, ps);
 }
 
-void CommandEvent::_constructor( const std::string& runId, const int64_t originatorId, const int64_t destinationId, const PropertySet& ps) {
+void CommandEvent::_constructor( const std::string& runId, const OriginatorID&  originatorId, const OriginatorID&  destinationId, const PropertySet& ps) {
     _init();
 
-    EventSystem eventSystem = EventSystem().getDefaultEventSystem();
+    _psp->set(ORIG_IPID, originatorId.getIPAddress());
+    _psp->set(ORIG_PROCESSID, originatorId.getProcessID());
+    _psp->set(ORIG_LOCALID, originatorId.getLocalID());
 
-    //_originatorId = eventSystem.createOriginatorId();
-    _psp->set(ORIGINATORID, originatorId);
-    _psp->set(ORIG_LOCALID, eventSystem.extractLocalId(originatorId));
-    _psp->set(ORIG_PROCESSID, eventSystem.extractProcessId(originatorId));
-    _psp->set(ORIG_IPID, eventSystem.extractIPId(originatorId));
-
-    _psp->set(DESTINATIONID, destinationId);
-    _psp->set(DEST_LOCALID, eventSystem.extractLocalId(destinationId));
-    _psp->set(DEST_PROCESSID, eventSystem.extractProcessId(destinationId));
-    _psp->set(DEST_IPID, eventSystem.extractIPId(destinationId));
+    _psp->set(DEST_IPID, destinationId.getIPAddress());
+    _psp->set(DEST_PROCESSID, destinationId.getProcessID());
+    _psp->set(DEST_LOCALID, destinationId.getLocalID());
 
     _psp->set(TYPE, EventTypes::COMMAND);
 
@@ -136,23 +128,24 @@ void CommandEvent::_constructor( const std::string& runId, const int64_t origina
 void CommandEvent::populateHeader(cms::TextMessage* msg) const {
     Event::populateHeader(msg);
 
-    msg->setLongProperty(ORIGINATORID, _psp->get<int64_t>(ORIGINATORID));
-    msg->setShortProperty(ORIG_LOCALID, _psp->get<short>(ORIG_LOCALID));
+    msg->setIntProperty(ORIG_LOCALID, _psp->get<int>(ORIG_LOCALID));
     msg->setIntProperty(ORIG_PROCESSID, _psp->get<int>(ORIG_PROCESSID));
     msg->setIntProperty(ORIG_IPID, _psp->get<int>(ORIG_IPID));
 
-    msg->setLongProperty(DESTINATIONID, _psp->get<int64_t>(DESTINATIONID));
-    msg->setShortProperty(DEST_LOCALID, _psp->get<short>(DEST_LOCALID));
+    msg->setIntProperty(DEST_LOCALID, _psp->get<int>(DEST_LOCALID));
     msg->setIntProperty(DEST_PROCESSID, _psp->get<int>(DEST_PROCESSID));
     msg->setIntProperty(DEST_IPID, _psp->get<int>(DEST_IPID));
 }
 
-int64_t CommandEvent::getOriginatorId() { 
-    return _psp->get<int64_t>(ORIGINATORID);
+OriginatorID *CommandEvent::getOriginatorId() { 
+    int ip = _psp->get<int>(ORIG_IPID);
+    int pid = _psp->get<int>(ORIG_PROCESSID);
+    int local =  _psp->get<int>(ORIG_LOCALID);
+    return new OriginatorID(ip, pid, local);
 }
 
-short CommandEvent::getOriginatorLocalId() { 
-    return _psp->get<short>(ORIG_LOCALID);
+int CommandEvent::getOriginatorLocalId() { 
+    return _psp->get<int>(ORIG_LOCALID);
 }
 
 int CommandEvent::getOriginatorProcessId() { 
@@ -163,12 +156,15 @@ int CommandEvent::getOriginatorIPId() {
      return _psp->get<int>(ORIG_IPID);
 }
 
-int64_t CommandEvent::getDestinationId() { 
-    return _psp->get<int64_t>(DESTINATIONID); 
+OriginatorID *CommandEvent::getDestinationId() { 
+    int pid =  _psp->get<int>(DEST_PROCESSID);
+    int ip = _psp->get<int>(DEST_IPID); 
+    int local = _psp->get<int>(DEST_LOCALID);
+    return new OriginatorID(ip, pid, local);
 }
 
-short CommandEvent::getDestinationLocalId() {
-     return _psp->get<short>(DEST_LOCALID);
+int CommandEvent::getDestinationLocalId() {
+    return _psp->get<int>(DEST_LOCALID);
 }
 
 int CommandEvent::getDestinationProcessId() { 
@@ -176,7 +172,7 @@ int CommandEvent::getDestinationProcessId() {
 }
 
 int CommandEvent::getDestinationIPId() {
-     return _psp->get<int>(DEST_IPID); 
+    return _psp->get<int>(DEST_IPID); 
 }
 
 /** \brief destructor

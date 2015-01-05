@@ -48,21 +48,21 @@ def getHostAddr():
 if __name__ == "__main__":
     eventSystem = events.EventSystem().getDefaultEventSystem()
 
-    originatorId = eventSystem.createOriginatorId()
+    originatorId = events.OriginatorID()
 
-    localId = eventSystem.extractLocalId(originatorId)
+    localId = originatorId.getLocalID()
     assert localId == 0
-    processId = eventSystem.extractProcessId(originatorId)
+    processId = originatorId.getProcessID()
     assert processId == os.getpid()
 
-    originatorId2 = eventSystem.createOriginatorId()
+    originatorId2 = events.OriginatorID()
 
-    localId = eventSystem.extractLocalId(originatorId2)
+    localId = originatorId2.getLocalID()
     assert localId == 1
-    processId = eventSystem.extractProcessId(originatorId2)
+    processId = originatorId2.getProcessID()
     assert processId == os.getpid()
 
-    IPId = eventSystem.extractIPId(originatorId2)
+    IPId = originatorId2.getIPAddress()
 
 
     root = PropertySet()

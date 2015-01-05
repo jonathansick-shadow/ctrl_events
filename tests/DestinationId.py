@@ -51,14 +51,14 @@ if __name__ == "__main__":
 
     eventSystem = events.EventSystem().getDefaultEventSystem()
 
-    originatorId = eventSystem.createOriginatorId()
+    originatorId = events.OriginatorID()
 
-    localId = eventSystem.extractLocalId(originatorId)
+    localId = originatorId.getLocalID()
     assert localId == 0
-    processId = eventSystem.extractProcessId(originatorId)
+    processId = originatorId.getProcessID()
     assert processId == os.getpid()
 
-    destinationId = eventSystem.createOriginatorId()
+    destinationId = events.OriginatorID()
 
     root = PropertySet()
     root.set("myname","myname")
@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
     transmitter = events.EventTransmitter(broker, topic)
 
-    sel = "%s = %d" % (events.CommandEvent.DESTINATIONID, destinationId)
+    sel = "%s = %d" % (events.CommandEvent.DEST_IPID, destinationId.getIPAddress())
     receiver = events.EventReceiver(broker, topic, sel)
 
     transmitter.publishEvent(commandEvent)

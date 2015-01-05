@@ -84,11 +84,6 @@ public:
     Event* receiveEvent(const std::string& topicName);
     Event* receiveEvent(const std::string& topicName, const long timeout);
 
-    int64_t createOriginatorId();
-    int extractIPId(int64_t identificationId);
-    int extractProcessId(int64_t identificationId);
-    short extractLocalId(int64_t identificationId);
-
     StatusEvent* castToStatusEvent(Event* event);
     CommandEvent* castToCommandEvent(Event* event);
 

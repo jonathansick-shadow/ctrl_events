@@ -34,9 +34,7 @@ from lsst.daf.base import PropertySet
 def sendEvent(brokerName, topic):
     trans = events.EventTransmitter(brokerName, topic)
 
-    eventSystem = events.EventSystem.getDefaultEventSystem()
-
-    originatorId = eventSystem.createOriginatorId()
+    originatorId = events.OriginatorID()
 
     root = PropertySet()
     root.set("TOPIC",topic)
@@ -50,13 +48,16 @@ def sendEvent(brokerName, topic):
 
     statusOriginatorId = event.getOriginatorId()
 
-    commandOriginatorId = eventSystem.createOriginatorId()
+    commandOriginatorId = events.OriginatorID()
 
     root2 = PropertySet()
     root2.set("TOPIC",topic)
     root2.set("myname","myname2")
     root2.set("STATUS", "my special status2")
     event = events.CommandEvent("srptestrun", commandOriginatorId, statusOriginatorId, root2)
+
+    print "command event:"
+    printEvent(event)
 
     trans.publishEvent(event)
 
@@ -94,12 +95,10 @@ if __name__ == "__main__":
     eventsystem = events.EventSystem.getDefaultEventSystem()
     commandEvent = eventsystem.castToCommandEvent(val)
     
-    print "originatorId = ", commandEvent.getOriginatorId()
     print "orig_localId = ", commandEvent.getOriginatorLocalId()
     print "orig_processId = ", commandEvent.getOriginatorProcessId()
     print "orig_IPId = ", commandEvent.getOriginatorIPId()
 
-    print "DestinationId = ", commandEvent.getDestinationId()
     print "dest_localId = ", commandEvent.getDestinationLocalId()
     print "dest_processId = ", commandEvent.getDestinationProcessId()
     print "dest_IPId = ", commandEvent.getDestinationIPId()
