@@ -44,6 +44,7 @@ Access to the lsst::ctrl::events classes
 #include "lsst/pex/logging/DualLog.h"
 #include "lsst/pex/policy.h"
 #include "lsst/ctrl/events/OriginatorID.h"
+#include "lsst/ctrl/events/DestinationID.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
@@ -66,6 +67,7 @@ Access to the lsst::ctrl::events classes
 %import "lsst/pex/policy/policyLib.i"
 
 %include "lsst/ctrl/events/OriginatorID.h"
+%include "lsst/ctrl/events/DestinationID.h"
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"
 %include "lsst/ctrl/events/CommandEvent.h"

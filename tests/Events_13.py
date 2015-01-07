@@ -48,13 +48,15 @@ def sendEvent(brokerName, topic):
 
     statusOriginatorId = event.getOriginatorId()
 
+    destinationID = events.DestinationID(statusOriginatorId)
+
     commandOriginatorId = events.OriginatorID()
 
     root2 = PropertySet()
     root2.set("TOPIC",topic)
     root2.set("myname","myname2")
     root2.set("STATUS", "my special status2")
-    event = events.CommandEvent("srptestrun", commandOriginatorId, statusOriginatorId, root2)
+    event = events.CommandEvent("srptestrun", commandOriginatorId, destinationID, root2)
 
     print "command event:"
     printEvent(event)
@@ -95,10 +97,14 @@ if __name__ == "__main__":
     eventsystem = events.EventSystem.getDefaultEventSystem()
     commandEvent = eventsystem.castToCommandEvent(val)
     
-    print "orig_localId = ", commandEvent.getOriginatorLocalId()
-    print "orig_processId = ", commandEvent.getOriginatorProcessId()
-    print "orig_IPId = ", commandEvent.getOriginatorIPId()
+    orig = commandEvent.getOriginatorId()
+    
+    print "orig_localId = ", orig.getLocalID()
+    print "orig_processId = ", orig.getProcessID()
+    print "orig_IPId = ", orig.getIPAddress()
 
-    print "dest_localId = ", commandEvent.getDestinationLocalId()
-    print "dest_processId = ", commandEvent.getDestinationProcessId()
-    print "dest_IPId = ", commandEvent.getDestinationIPId()
+    dest = commandEvent.getDestinationId()
+
+    print "dest_localId = ", dest.getLocalID()
+    print "dest_processId = ", dest.getProcessID()
+    print "dest_IPId = ", dest.getIPAddress()

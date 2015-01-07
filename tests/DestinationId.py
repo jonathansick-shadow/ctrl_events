@@ -58,7 +58,7 @@ if __name__ == "__main__":
     processId = originatorId.getProcessID()
     assert processId == os.getpid()
 
-    destinationId = events.OriginatorID()
+    destinationId = events.DestinationID(originatorId.getIPAddress(), processId, localId)
 
     root = PropertySet()
     root.set("myname","myname")

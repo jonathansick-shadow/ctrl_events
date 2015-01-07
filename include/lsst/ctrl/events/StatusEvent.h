@@ -65,8 +65,6 @@ class StatusEvent : public Event
 {
 public:
     static const std::string ORIG_LOCALID;
-    static const std::string ORIG_PROCESSID;
-    static const std::string ORIG_IPID;
 
     StatusEvent();
     virtual ~StatusEvent();
@@ -78,9 +76,6 @@ public:
     virtual void populateHeader(cms::TextMessage *msg) const;
 
 
-    int getProcessId();
-    int getLocalId();
-    int getIPAddress();
     OriginatorID *getOriginatorId();
 
 private:

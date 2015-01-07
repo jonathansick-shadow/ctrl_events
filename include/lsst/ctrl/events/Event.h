@@ -73,6 +73,7 @@ public:
     static const std::string EVENTTIME;
     static const std::string HOSTNAME;
     static const std::string HOSTIP;
+    static const std::string HOSTPROCESS;
     static const std::string RUNID;
     static const std::string STATUS;
     static const std::string TOPIC;
@@ -98,8 +99,9 @@ public:
 
     std::string getEventDate();
 
-    std::string getHostId(); /* deprecated */
     std::string getHostName();
+    int getHostProcess();
+    int getHostIP();
     std::string getRunId();
     std::string getType();
     std::string getStatus();
