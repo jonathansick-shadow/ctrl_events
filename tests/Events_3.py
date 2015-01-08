@@ -105,7 +105,6 @@ if __name__ == "__main__":
     assert ps.get(DATA) == DATA_VAL
 
     assert ps.get(events.Event.EVENTTIME) > 0
-    assert ps.get(events.Event.HOSTNAME) == gethostname()
     assert ps.get(events.Event.PUBTIME) > 0
     assert ps.get(events.Event.RUNID) == runId
     assert ps.get(events.Event.STATUS) == "unknown"

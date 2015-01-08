@@ -43,8 +43,6 @@ if __name__ == "__main__":
     print props.toString()
     print
     assert props.get(events.Event.EVENTTIME) > 0
-    assert props.get(events.Event.HOSTNAME) == gethostname()
-    assert props.get(events.Event.HOSTPROCESS) != 0
     assert props.get(events.Event.PUBTIME) == 0
     assert props.get(events.Event.RUNID) == runid
     assert props.get(events.Event.STATUS) == status
@@ -55,9 +53,6 @@ if __name__ == "__main__":
     filterableNames = event.getFilterablePropertyNames()
     print "Filterable names = ",filterableNames
     filterableNames.remove(events.Event.EVENTTIME)
-    filterableNames.remove(events.Event.HOSTIP)
-    filterableNames.remove(events.Event.HOSTNAME)
-    filterableNames.remove(events.Event.HOSTPROCESS)
     filterableNames.remove(events.Event.PUBTIME)
     filterableNames.remove(events.Event.RUNID)
     filterableNames.remove(events.Event.STATUS)
