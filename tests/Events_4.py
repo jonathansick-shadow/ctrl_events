@@ -22,35 +22,20 @@
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
+import unittest
 
 import lsst.ctrl.events as events
-import lsst.daf.base as base
-import lsst.pex.policy as policy
 import os, platform
 
 
-#
-# sendEvent() - shoot an event to a host on a certain topic
-#
-def sendEvent(hostName, topicName, ps):
-    trans = events.EventTransmitter(hostName, topicName)
-    
-    trans.publish(ps)
+class CreateEventReceiverTestCase(unittest.TestCase):
 
-def createIntProperty(name, value):
-    root = base.PropertySet()
-    root.addInt(name, value)
-    return root
+    def testCreateEventReceiver(self):
+        host = "lsst8.ncsa.illinois.edu"
+        topic = "test_events_4_%s_%d" % (platform.node(), os.getpid())
+        recv = events.EventReceiver(host, topic)
 
-def createStringProperty(name, value):
-    root = base.PropertySet()
-    root.add(name, value)
-    return root
 
 if __name__ == "__main__":
-    p = policy.Policy()
-    host = "lsst8.ncsa.illinois.edu"
-    topic = "test_events_4_%s_%d" % (platform.node(), os.getpid())
-    recv = events.EventReceiver(host, topic)
-
+    unittest.main()
 

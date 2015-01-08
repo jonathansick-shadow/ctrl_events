@@ -22,6 +22,7 @@
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
+import unittest
 
 import os
 import platform
@@ -31,34 +32,33 @@ import lsst.pex.policy as policy
 
 
 #
-# sendEvent() - shoot an event to a host on a certain topic
 #
-def sendEvent(broker, topicName, ps):
-    trans = events.EventTransmitter(broker, topicName)
-    event = events.Event("myrunid",ps)
-    trans.publishEvent(event)
-
-def createIntProperty(name, value):
-    root = base.PropertySet()
-    root.addInt(name, value)
-    return root
-
-def createStringProperty(name, value):
-    root = base.PropertySet()
-    root.add(name, value)
-    return root
+#
+class EventTransmitterTestCase(unittest.TestCase):
+    def sendEvent(self, broker, topicName, ps):
+        trans = events.EventTransmitter(broker, topicName)
+        event = events.Event("myrunid",ps)
+        trans.publishEvent(event)
+    
+    def createIntProperty(self, name, value):
+        root = base.PropertySet()
+        root.addInt(name, value)
+        return root
+    
+    def testEventTransmitter(self):
+        broker = "lsst8.ncsa.illinois.edu"
+    
+        topic = "test_events_5_%s_%d" % (platform.node(), os.getpid())
+        recv = events.EventReceiver(broker, topic)
+    
+    
+        # Integer tests
+    
+        #
+        # send two test events, first PID ==  300, then PID == 200
+        #
+        self.sendEvent(broker, topic, self.createIntProperty("PID", 300))
+        self.sendEvent(broker, topic, self.createIntProperty("PID", 200))
 
 if __name__ == "__main__":
-    broker = "lsst8.ncsa.illinois.edu"
-
-    topic = "test_events_5_%s_%d" % (platform.node(), os.getpid())
-    recv = events.EventReceiver(broker, topic)
-
-
-    # Integer tests
-
-    #
-    # send two test events, first PID ==  300, then PID == 200
-    #
-    sendEvent(broker, topic, createIntProperty("PID", 300))
-    sendEvent(broker, topic, createIntProperty("PID", 200))
+    unittest.main()

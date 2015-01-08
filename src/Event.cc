@@ -369,11 +369,11 @@ PropertySet::Ptr Event::unmarshall(const std::string& text) {
 
     BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt) {
         std::string key = v.first;
-        std::cout << "key: " << key << std::endl;
+
         boost::property_tree::ptree child = v.second;
         BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, child) {
             std::string key2 = v2.first;
-            std::cout << "key2: " << key2 << std::endl;
+
             if (key2 == "string") {
                 std::string value = child.get<std::string>(key2);
                 psp->add(key, value);
