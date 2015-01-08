@@ -37,8 +37,7 @@
 #include <limits>
 #include <cstring>
 
-#include "lsst/ctrl/events/DestinationID.h"
-#include "lsst/ctrl/events/OriginatorID.h"
+#include "lsst/ctrl/events/LocationID.h"
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/CommandEvent.h"
@@ -101,15 +100,15 @@ CommandEvent::CommandEvent(cms::TextMessage *msg) : Event(msg) {
 
 }
 
-CommandEvent::CommandEvent( const std::string& runId, const OriginatorID&  originatorId, const DestinationID& destinationId, const PropertySet::Ptr psp) : Event(runId, *psp) {
+CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originatorId, const LocationID& destinationId, const PropertySet::Ptr psp) : Event(runId, *psp) {
     _constructor(runId, originatorId, destinationId, *psp);
 }
 
-CommandEvent::CommandEvent( const std::string& runId, const OriginatorID&  originatorId, const DestinationID&  destinationId, const PropertySet& ps) : Event(runId, ps) {
+CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originatorId, const LocationID&  destinationId, const PropertySet& ps) : Event(runId, ps) {
     _constructor(runId, originatorId, destinationId, ps);
 }
 
-void CommandEvent::_constructor( const std::string& runId, const OriginatorID&  originatorId, const DestinationID&  destinationId, const PropertySet& ps) {
+void CommandEvent::_constructor( const std::string& runId, const LocationID&  originatorId, const LocationID&  destinationId, const PropertySet& ps) {
     _init();
 
     _psp->set(ORIG_IPID, originatorId.getIPAddress());
@@ -136,18 +135,18 @@ void CommandEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setIntProperty(DEST_LOCALID, _psp->get<int>(DEST_LOCALID));
 }
 
-OriginatorID *CommandEvent::getOriginatorId() { 
+LocationID *CommandEvent::getOriginatorId() { 
     int ip =  _psp->get<int>(ORIG_IPID);
     int pid =  _psp->get<int>(ORIG_PROCESSID);
     int local =  _psp->get<int>(ORIG_LOCALID);
-    return new OriginatorID(ip, pid, local);
+    return new LocationID(ip, pid, local);
 }
 
-DestinationID *CommandEvent::getDestinationId() { 
+LocationID *CommandEvent::getDestinationId() { 
     int ip = _psp->get<int>(DEST_IPID); 
     int pid = _psp->get<int>(DEST_PROCESSID); 
     int local = _psp->get<int>(DEST_LOCALID);
-    return new DestinationID(ip, pid, local);
+    return new LocationID(ip, pid, local);
 }
 
 /** \brief destructor

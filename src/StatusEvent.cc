@@ -37,7 +37,7 @@
 #include <limits>
 #include <cstring>
 
-#include "lsst/ctrl/events/OriginatorID.h"
+#include "lsst/ctrl/events/LocationID.h"
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
@@ -90,15 +90,15 @@ StatusEvent::StatusEvent(cms::TextMessage *msg) : Event(msg) {
     _psp->set(ORIG_LOCALID, (int)msg->getIntProperty(ORIG_LOCALID));
 }
 
-StatusEvent::StatusEvent( const std::string& runID, const OriginatorID& originatorID, const PropertySet::Ptr psp) : Event(runID, *psp) {
+StatusEvent::StatusEvent( const std::string& runID, const LocationID& originatorID, const PropertySet::Ptr psp) : Event(runID, *psp) {
     _constructor(runID, originatorID, *psp);
 }
 
-StatusEvent::StatusEvent( const std::string& runID, const OriginatorID& originatorID, const PropertySet& ps) : Event(runID, ps) {
+StatusEvent::StatusEvent( const std::string& runID, const LocationID& originatorID, const PropertySet& ps) : Event(runID, ps) {
     _constructor(runID, originatorID, ps);
 }
 
-void StatusEvent::_constructor(const std::string& runID, const OriginatorID& originatorID, const PropertySet& ps) {
+void StatusEvent::_constructor(const std::string& runID, const LocationID& originatorID, const PropertySet& ps) {
     _init();
 
 
@@ -117,11 +117,11 @@ void StatusEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setIntProperty(ORIG_LOCALID, _psp->get<int>(ORIG_LOCALID));
 }
 
-OriginatorID *StatusEvent::getOriginatorId() {
+LocationID *StatusEvent::getOriginatorId() {
     int ip = _psp->get<int>(ORIG_IPID);
     int pid = _psp->get<int>(ORIG_PROCESSID);
     int local = _psp->get<int>(ORIG_LOCALID);
-    return new OriginatorID(ip, pid, local);
+    return new LocationID(ip, pid, local);
 }
 
 /** \brief destructor

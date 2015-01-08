@@ -43,8 +43,7 @@
 #include <iostream>
 
 #include "lsst/ctrl/events/Event.h"
-#include "lsst/ctrl/events/OriginatorID.h"
-#include "lsst/ctrl/events/DestinationID.h"
+#include "lsst/ctrl/events/LocationID.h"
 #include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
@@ -74,19 +73,19 @@ public:
     static const std::string DEST_LOCALID;
 
     CommandEvent();
-    CommandEvent(const std::string& runid, const OriginatorID& originatorId, const DestinationID& destinationId, const PropertySet& ps);
-    CommandEvent(const std::string& runid, const OriginatorID& originatorId, const DestinationID& destinationId, const PropertySet::Ptr psp);
+    CommandEvent(const std::string& runid, const LocationID& originatorId, const LocationID& destinationId, const PropertySet& ps);
+    CommandEvent(const std::string& runid, const LocationID& originatorId, const LocationID& destinationId, const PropertySet::Ptr psp);
     CommandEvent(cms::TextMessage *msg);
     virtual void populateHeader(cms::TextMessage *msg) const;
 
     virtual ~CommandEvent();
 
-    OriginatorID *getOriginatorId();
+    LocationID *getOriginatorId();
 
-    DestinationID * getDestinationId();
+    LocationID * getDestinationId();
 
 protected:
-    void _constructor(const std::string& runId, const OriginatorID& originatorId, const DestinationID& destinationId, const PropertySet& ps);
+    void _constructor(const std::string& runId, const LocationID& originatorId, const LocationID& destinationId, const PropertySet& ps);
 
 private:
     void _init();

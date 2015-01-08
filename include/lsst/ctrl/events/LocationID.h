@@ -22,16 +22,16 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
  
-/** \file OriginatorID.h
+/** \file LocationID.h
   *
   * \ingroup events
   *
-  * \brief defines the OriginatorID class
+  * \brief defines the LocationID class
   *
   */
 
-#ifndef LSST_CTRL_EVENTS_ORIGINATORID_H
-#define LSST_CTRL_EVENTS_ORIGINATORID_H
+#ifndef LSST_CTRL_EVENTS_LOCATIONID_H
+#define LSST_CTRL_EVENTS_LOCATIONID_H
 
 using namespace std;
 
@@ -42,12 +42,12 @@ namespace events {
 /**
  * @brief Represent process that created an event
  */
-class OriginatorID {
+class LocationID {
 public:
-    OriginatorID();
-    OriginatorID(int ipAddress, int pid, int localID);
+    LocationID();
+    LocationID(int ipAddress, int pid, int localID);
 
-    ~OriginatorID();
+    ~LocationID();
 
     int getIPAddress() const;
     int getProcessID() const;
@@ -64,4 +64,4 @@ protected:
 }
 }
 
-#endif /*end LSST_CTRL_EVENTS_ORIGINATORID_H*/
+#endif /*end LSST_CTRL_EVENTS_LOCATIONID_H*/

@@ -46,35 +46,42 @@ def getHostAddr():
 
 
 if __name__ == "__main__":
-    broker = "lsst8.ncsa.illinois.edu"
-    topic = "destinationid_test_%s_%d" % (platform.node(), os.getpid())
-
     eventSystem = events.EventSystem().getDefaultEventSystem()
 
-    originatorId = events.OriginatorID()
+    locationID = events.LocationID()
 
-    localId = originatorId.getLocalID()
+    localId = locationID.getLocalID()
     assert localId == 0
-    processId = originatorId.getProcessID()
+    processId = locationID.getProcessID()
     assert processId == os.getpid()
 
-    destinationId = events.DestinationID(originatorId.getIPAddress(), processId, localId)
+    locationID2 = events.LocationID()
+
+    localId = locationID2.getLocalID()
+    assert localId == 1
+    processId = locationID2.getProcessID()
+    assert processId == os.getpid()
+
+    IPId = locationID2.getIPAddress()
+
 
     root = PropertySet()
     root.set("myname","myname")
     status = "my special status"
     root.set(events.Event.STATUS, status)
 
-    commandEvent = events.CommandEvent("my runid", originatorId, destinationId, root)
+    statusEvent = events.StatusEvent("my runid", locationID2, root)
 
-    transmitter = events.EventTransmitter(broker, topic)
+    topic = "mytopic_%s_%d" % (platform.node(), os.getpid())
+    transmitter = events.EventTransmitter("lsst8.ncsa.illinois.edu", topic)
+    sel = "%s = %d" % (events.StatusEvent.ORIG_IPID, IPId)
+    #sel = "RUNID = '%s'" % "my runid"
+    #sel = "PROCESSID = %d" % processId
+    print sel
+    receiver = events.EventReceiver("lsst8.ncsa.illinois.edu", topic, sel)
 
-    sel = "%s = %d" % (events.CommandEvent.DEST_IPID, destinationId.getIPAddress())
-    receiver = events.EventReceiver(broker, topic, sel)
-
-    transmitter.publishEvent(commandEvent)
-    returnedEvent = receiver.receiveEvent(2000)
-
-    assert returnedEvent != None
+    transmitter.publishEvent(statusEvent)
+    returnedEvent = receiver.receiveEvent()
 
     print "done"
+    

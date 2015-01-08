@@ -42,7 +42,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "lsst/ctrl/events/OriginatorID.h"
+#include "lsst/ctrl/events/LocationID.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
@@ -72,17 +72,17 @@ public:
     virtual ~StatusEvent();
 
     StatusEvent(cms::TextMessage *msg);
-    StatusEvent(const std::string& runid, const OriginatorID& originatorID, const PropertySet& ps);
-    StatusEvent(const std::string& runid, const OriginatorID& originatorID, const PropertySet::Ptr psp);
+    StatusEvent(const std::string& runid, const LocationID& originatorID, const PropertySet& ps);
+    StatusEvent(const std::string& runid, const LocationID& originatorID, const PropertySet::Ptr psp);
 
     virtual void populateHeader(cms::TextMessage *msg) const;
 
 
-    OriginatorID *getOriginatorId();
+    LocationID *getOriginatorId();
 
 private:
     void _init();
-    void _constructor(const std::string& runid, const OriginatorID& originatorID, const PropertySet& ps);
+    void _constructor(const std::string& runid, const LocationID& originatorID, const PropertySet& ps);
 
 };
 }
