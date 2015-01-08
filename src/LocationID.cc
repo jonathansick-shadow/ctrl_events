@@ -21,6 +21,14 @@ LocationID::LocationID() {
   *        of an event.  When created, this represents a reconstituted ID.
   */
 LocationID::LocationID(int ipAddress, int pid, int localID) {
+    _constructor(ipAddress, pid, localID);
+}
+
+LocationID::LocationID(const LocationID& id) {
+    _constructor(id.getIPAddress(), id.getProcessID(), id.getLocalID());
+}
+
+void LocationID::_constructor(int ipAddress, int pid, int localID) {
     _IPAddress = ipAddress;
     _pid = pid;
     _localID = localID;

@@ -34,7 +34,7 @@ from lsst.daf.base import PropertySet
 def sendEvent(brokerName, topic):
     trans = events.EventTransmitter(brokerName, topic)
 
-    originatorId = events.OriginatorID()
+    originatorId = events.LocationID()
 
     root = PropertySet()
     root.set("TOPIC",topic)
@@ -48,9 +48,9 @@ def sendEvent(brokerName, topic):
 
     statusOriginatorId = event.getOriginatorId()
 
-    destinationID = events.DestinationID(statusOriginatorId)
+    destinationID = events.LocationID(statusOriginatorId)
 
-    commandOriginatorId = events.OriginatorID()
+    commandOriginatorId = events.LocationID()
 
     root2 = PropertySet()
     root2.set("TOPIC",topic)

@@ -41,7 +41,7 @@ def sendEvent(brokerName, topic):
     root.set("RUNID","srptestrun")
     root.set("bazinga", "sheldon")
     
-    originatorId = events.OriginatorID()
+    originatorId = events.LocationID()
     event = events.StatusEvent("srptestrun", originatorId, root)
 
     # ok...now publish it

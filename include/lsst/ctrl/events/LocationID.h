@@ -45,6 +45,7 @@ namespace events {
 class LocationID {
 public:
     LocationID();
+    LocationID(const LocationID& id);
     LocationID(int ipAddress, int pid, int localID);
 
     ~LocationID();
@@ -54,6 +55,7 @@ public:
     int getLocalID() const;
 
 protected:
+    void _constructor(int ipAddress, int pid, int localID);
     static int _localCounter;
     static int _localID;
     static int _IPAddress;

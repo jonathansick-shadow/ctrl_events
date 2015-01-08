@@ -38,13 +38,13 @@ def sendEvent(brokerName, topic):
     root.set("myname","myname")
     root.set("STATUS", "my special status")
     
-    originatorId = events.OriginatorID()
-    event = events.StatusEvent("srptestrun1", originatorId, root)
+    locationID = events.LocationID()
+    event = events.StatusEvent("srptestrun1", locationID, root)
 
     # ok...now publish it
     trans.publishEvent(event)
 
-    event = events.StatusEvent("test_runid_11_%d" % os.getpid(), originatorId, root)
+    event = events.StatusEvent("test_runid_11_%d" % os.getpid(), locationID, root)
 
     # ok...now publish it
     trans.publishEvent(event)
