@@ -31,6 +31,13 @@
 #include "lsst/ctrl/events.h"
 #include "lsst/pex/exceptions.h"
 
+#define BOOST_TEST_MODULE Events_1
+#define BOOST_TEST_DYN_LINK
+
+#include "boost/test/unit_test.hpp"
+
+BOOST_AUTO_TEST_SUITE(Events1Suite)
+
 namespace pexPolicy = lsst::pex::policy;
 namespace pexExceptions = lsst::pex::exceptions;
 namespace pexLogging = lsst::pex::logging;
@@ -46,7 +53,7 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
     }
 }
 
-int main() {
+BOOST_AUTO_TEST_CASE(all) {
 
     std::ostringstream oss;
     pexPolicy::Policy p;
@@ -68,14 +75,12 @@ int main() {
     }
 
     p.set("topicName", topic);
-    p.set("useLocalSockets", false);
     try {
         ctrlEvents::EventTransmitter et2(p);
     } catch (pexExceptions::NotFoundError&) {
     }
 
     p.set("topicName", topic);
-    p.set("useLocalSockets", false);
     p.set("hostName", "garbage");
     try {
         ctrlEvents::EventTransmitter et2(p);
@@ -105,7 +110,7 @@ int main() {
 
     // test getTopicName();
     std::string topicName = et4.getTopicName();
-    Assert(topicName == topic, "Topic name does not match initial name");
+    BOOST_CHECK_EQUAL(topicName, topic); //Assert(topicName == topic, "Topic name does not match initial name");
     std::cout << topicName << std::endl;
 
     // test publish("string", LogRecord)
@@ -125,3 +130,5 @@ int main() {
         std::cout << *iter << std::endl;
     }
 }
+
+BOOST_AUTO_TEST_SUITE_END()

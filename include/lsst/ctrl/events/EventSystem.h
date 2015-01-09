@@ -84,6 +84,8 @@ public:
     Event* receiveEvent(const std::string& topicName);
     Event* receiveEvent(const std::string& topicName, const long timeout);
 
+    LocationID *createOriginatorID(); // deprecated
+
     StatusEvent* castToStatusEvent(Event* event);
     CommandEvent* castToCommandEvent(Event* event);
 

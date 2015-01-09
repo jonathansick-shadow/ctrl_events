@@ -38,26 +38,20 @@ class EventSystemTestCase(unittest.TestCase):
         eventSystem = events.EventSystem().getDefaultEventSystem()
     
         # can't just pass in an empty policy file, because it
-        # expects a topicName and (hostName or useLocalSockets == true)
+        # expects a topicName
         p = policy.Policy()
         try:
             eventSystem.createTransmitter(p)
         except lsst.pex.exceptions.Exception as e:
             pass
     
-        # host wasn't specified...that's a no-no, since useLocalSockets is false
+        # host wasn't specified...that's a no-no,
         topic = "EventSystem_test_%s_%d" % (platform.node(), os.getpid())
         p.set("topicName", topic)
         try:
             eventSystem.createTransmitter(p)
         except lsst.pex.exceptions.Exception as e:
             pass
-    
-        # TODO:
-        #
-        # need to add a test where a transmitter is created when
-        # useLocalSockets is true, but currently you can't do that
-        # because adding booleans to Policy doesn't work (Trac #258)
     
         topic2 = "EventSystem_1_test_%s_%d" % (platform.node(), os.getpid())
     
@@ -69,9 +63,6 @@ class EventSystemTestCase(unittest.TestCase):
         event = events.Event("runid_es3", root)
         eventSystem.publishEvent(topic2, event)
     
-        # 
-        # TODO: fix this logging transmission and reception
-        #
         rec = logging.LogRecord(-1,10)
         rec.addComment("a comment")
         event = events.LogEvent("runid_es3_log", rec)

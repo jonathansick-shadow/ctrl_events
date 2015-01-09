@@ -101,8 +101,6 @@ StatusEvent::StatusEvent( const std::string& runID, const LocationID& originator
 void StatusEvent::_constructor(const std::string& runID, const LocationID& originatorID, const PropertySet& ps) {
     _init();
 
-
-    std::cout << "ipaddr: " <<  originatorID.getIPAddress() << std::endl;
     _psp->set(ORIG_IPID, originatorID.getIPAddress());
     _psp->set(ORIG_PROCESSID, originatorID.getProcessID());
     _psp->set(ORIG_LOCALID, originatorID.getLocalID());

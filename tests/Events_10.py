@@ -22,6 +22,7 @@
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
+import unittest
 
 import os
 import platform
@@ -29,68 +30,70 @@ import time
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 
-#
-# Send an event
-#
-def sendEvent(brokerName, topic):
-    trans = events.EventTransmitter(brokerName, topic)
-    
-    root = PropertySet()
-    root.set("TOPIC",topic)
-    root.set("myname","myname")
-    root.set("STATUS", "my special status")
-    root.set("RUNID","srptestrun")
-    
-    eventSystem = events.EventSystem.getDefaultEventSystem();
-    locationID = events.LocationID()
-    event = events.StatusEvent("test_runid_10", locationID, root)
+class StatusEventTestCase(unittest.TestCase):
+    def sendEvent(self, brokerName, topic):
+        trans = events.EventTransmitter(brokerName, topic)
+        
+        root = PropertySet()
+        root.set("TOPIC",topic)
+        root.set("myname","myname")
+        root.set("STATUS", "my special status")
+        root.set("RUNID","srptestrun")
+        
+        eventSystem = events.EventSystem.getDefaultEventSystem();
+        locationID = eventSystem.createOriginatorID()
+        event = events.StatusEvent("test_runid_10", locationID, root)
 
 
-    # ok...now publish it
-    trans.publishEvent(event)
+        # ok...now publish it
+        trans.publishEvent(event)
+
+    def testEventReceive(self):
+        host = platform.node()
+        pid = os.getpid()
+
+        host_pid = "%s_%d" % (host, pid)
+
+        broker = "lsst8.ncsa.illinois.edu"
+        topicA = "test_events_10_%s.A" % host_pid
+        topicB = "test_events_10_%s.B" % host_pid
+        topicC = "test_events_10_%s.*" % host_pid
+
+        yC = events.EventReceiver(broker, topicC)
+
+        #
+        # send a test event, and wait to receive it
+        #
+        self.sendEvent(broker, topicA)
+
+        # wait a short time so we can see the difference between the time 
+        # the event is created and the time it is published
+        time.sleep(1)
+
+        self.sendEvent(broker, topicB)
+
+        val = yC.receiveEvent()
+        self.assertNotEqual(val, None)
+        print "eventTime = ",val.getEventTime()
+        print "eventDate = ",val.getEventDate()
+        print "pubTime = ",val.getPubTime()
+        print "pubDate = ",val.getPubDate()
+
+        val = yC.receiveEvent()
+        self.assertNotEqual(val, None)
+        print "custom property names"
+        print val.getCustomPropertyNames()
+        print "Custom PropertySet"
+        ps = val.getCustomPropertySet()
+        print ps.toString()
+        print
+        print "filterable property names"
+        print val.getFilterablePropertyNames()
+
+        print "PropertySet"
+        ps = val.getPropertySet()
+        print ps.toString()
 
 if __name__ == "__main__":
-    host = platform.node()
-    pid = os.getpid()
+    unittest.main()
 
-    host_pid = "%s_%d" % (host, pid)
-
-    broker = "lsst8.ncsa.illinois.edu"
-    topicA = "test_events_10_%s.A" % host_pid
-    topicB = "test_events_10_%s.B" % host_pid
-    topicC = "test_events_10_%s.*" % host_pid
-
-    yC = events.EventReceiver(broker, topicC)
-
-    #
-    # send a test event, and wait to receive it
-    #
-    sendEvent(broker, topicA)
-
-    # wait a short time so we can see the difference between the time 
-    # the event is created and the time it is published
-    time.sleep(1)
-
-    sendEvent(broker, topicB)
-
-    val = yC.receiveEvent()
-    assert val != None
-    print "eventTime = ",val.getEventTime()
-    print "eventDate = ",val.getEventDate()
-    print "pubTime = ",val.getPubTime()
-    print "pubDate = ",val.getPubDate()
-
-    val = yC.receiveEvent()
-    assert val != None
-    print "custom property names"
-    print val.getCustomPropertyNames()
-    print "Custom PropertySet"
-    ps = val.getCustomPropertySet()
-    print ps.toString()
-    print
-    print "filterable property names"
-    print val.getFilterablePropertyNames()
-
-    print "PropertySet"
-    ps = val.getPropertySet()
-    print ps.toString()

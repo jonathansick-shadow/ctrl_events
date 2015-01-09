@@ -36,10 +36,6 @@ class EventSystemReceiveTestCase(unittest.TestCase):
         host = "lsst8.ncsa.illinois.edu"
         eventSystem = events.EventSystem().getDefaultEventSystem()
 
-        # need to add a test where a transmitter is created when
-        # useLocalSockets is true, but currently you can't do that
-        # because adding booleans to Policy doesn't work (Trac #258)
-
         topic = "EventSystem_8_test_%s_%d" % (platform.node(), os.getpid())
 
         

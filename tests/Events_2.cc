@@ -37,6 +37,13 @@ using lsst::pex::exceptions::RuntimeError;
 
 using lsst::ctrl::events::EventReceiver;
 
+#define BOOST_TEST_MODULE Events2
+#define BOOST_TEST_DYN_LINK
+
+#include "boost/test/unit_test.hpp"
+
+BOOST_AUTO_TEST_SUITE(EventReceiveSuite)
+
 #define Assert(b, m) tattle(b, m, __LINE__)
 
 void tattle(bool mustBeTrue, const string& failureMsg, int line) {
@@ -47,7 +54,7 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
     }
 }
 
-int main() {
+BOOST_AUTO_TEST_CASE(all) {
 
     Policy p;
     std::ostringstream oss;
@@ -70,14 +77,12 @@ int main() {
 
 
     p.set("topicName", topic);
-    p.set("useLocalSockets", false);
     try {
         EventReceiver er2(p);
     } catch (NotFoundError&) {
     }
 
     p.set("topicName", topic);
-    p.set("useLocalSockets", false);
     p.set("hostName", "garbage");
     try {
         EventReceiver er2(p);
@@ -85,7 +90,6 @@ int main() {
     }
 
     p.set("topicName", topic);
-    p.set("useLocalSockets", false);
     p.set("hostName", "lsst8.ncsa.illinois.edu");
     try {
         EventReceiver er2(p);
@@ -96,6 +100,8 @@ int main() {
 
     // test getTopicName();
     std::string topicName = er3.getTopicName();
-    Assert(topicName == topic, "Topic name does not match initial name");
+    BOOST_CHECK_EQUAL(topicName, topic); //Assert(topicName == topic, "Topic name does not match initial name");
 
 }
+
+BOOST_AUTO_TEST_SUITE_END()

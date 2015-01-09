@@ -37,6 +37,12 @@ using lsst::pex::exceptions::RuntimeError;
 
 using lsst::ctrl::events::EventSystem;
 
+#define BOOST_TEST_MODULE EventSystem2
+#define BOOST_TEST_DYN_LINK
+#include "boost/test/unit_test.hpp"
+
+BOOST_AUTO_TEST_SUITE(EventSystem2)
+
 #define Assert(b, m) tattle(b, m, __LINE__)
 
 void tattle(bool mustBeTrue, const string& failureMsg, int line) {
@@ -47,7 +53,7 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
     }
 }
 
-int main() {
+BOOST_AUTO_TEST_CASE(all) {
 
     Policy p;
     std::ostringstream oss;
@@ -93,3 +99,5 @@ int main() {
     std::string topic2 = oss.str();
     eventSystem.createReceiver("lsst8.ncsa.illinois.edu", topic2);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -52,6 +52,7 @@
 #include "lsst/ctrl/events/Host.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
+#include "lsst/ctrl/events/LocationID.h"
 
 namespace pexExceptions =lsst::pex::exceptions;
 
@@ -214,6 +215,9 @@ Event* EventSystem::receiveEvent(const std::string& topicName, const long timeou
     return receiver->receiveEvent(timeout);
 }
 
+LocationID *EventSystem::createOriginatorID() {
+    return new LocationID();
+}
 
 /** private method used to retrieve the named EventReceiver object
   */
