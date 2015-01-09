@@ -72,17 +72,17 @@ public:
     virtual ~StatusEvent();
 
     StatusEvent(cms::TextMessage *msg);
-    StatusEvent(const std::string& runid, const LocationID& originatorID, const PropertySet& ps);
-    StatusEvent(const std::string& runid, const LocationID& originatorID, const PropertySet::Ptr psp);
+    StatusEvent(const std::string& runid, const LocationID& originator, const PropertySet& ps);
+    StatusEvent(const std::string& runid, const LocationID& originator, const PropertySet::Ptr psp);
 
     virtual void populateHeader(cms::TextMessage *msg) const;
 
 
-    LocationID *getOriginatorId();
+    LocationID *getOriginator();
 
 private:
     void _init();
-    void _constructor(const std::string& runid, const LocationID& originatorID, const PropertySet& ps);
+    void _constructor(const std::string& runid, const LocationID& originator, const PropertySet& ps);
 
 };
 }

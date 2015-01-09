@@ -100,24 +100,24 @@ CommandEvent::CommandEvent(cms::TextMessage *msg) : Event(msg) {
 
 }
 
-CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originatorId, const LocationID& destinationId, const PropertySet::Ptr psp) : Event(runId, *psp) {
-    _constructor(runId, originatorId, destinationId, *psp);
+CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originator, const LocationID& destination, const PropertySet::Ptr psp) : Event(runId, *psp) {
+    _constructor(runId, originator, destination, *psp);
 }
 
-CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originatorId, const LocationID&  destinationId, const PropertySet& ps) : Event(runId, ps) {
-    _constructor(runId, originatorId, destinationId, ps);
+CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originator, const LocationID&  destination, const PropertySet& ps) : Event(runId, ps) {
+    _constructor(runId, originator, destination, ps);
 }
 
-void CommandEvent::_constructor( const std::string& runId, const LocationID&  originatorId, const LocationID&  destinationId, const PropertySet& ps) {
+void CommandEvent::_constructor( const std::string& runId, const LocationID&  originator, const LocationID&  destination, const PropertySet& ps) {
     _init();
 
-    _psp->set(ORIG_IPID, originatorId.getIPAddress());
-    _psp->set(ORIG_PROCESSID, originatorId.getProcessID());
-    _psp->set(ORIG_LOCALID, originatorId.getLocalID());
+    _psp->set(ORIG_IPID, originator.getIPAddress());
+    _psp->set(ORIG_PROCESSID, originator.getProcessID());
+    _psp->set(ORIG_LOCALID, originator.getLocalID());
 
-    _psp->set(DEST_IPID, destinationId.getIPAddress());
-    _psp->set(DEST_PROCESSID, destinationId.getProcessID());
-    _psp->set(DEST_LOCALID, destinationId.getLocalID());
+    _psp->set(DEST_IPID, destination.getIPAddress());
+    _psp->set(DEST_PROCESSID, destination.getProcessID());
+    _psp->set(DEST_LOCALID, destination.getLocalID());
 
     _psp->set(TYPE, EventTypes::COMMAND);
 
@@ -135,14 +135,14 @@ void CommandEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setIntProperty(DEST_LOCALID, _psp->get<int>(DEST_LOCALID));
 }
 
-LocationID *CommandEvent::getOriginatorId() { 
+LocationID *CommandEvent::getOriginator() { 
     int ip =  _psp->get<int>(ORIG_IPID);
     int pid =  _psp->get<int>(ORIG_PROCESSID);
     int local =  _psp->get<int>(ORIG_LOCALID);
     return new LocationID(ip, pid, local);
 }
 
-LocationID *CommandEvent::getDestinationId() { 
+LocationID *CommandEvent::getDestination() { 
     int ip = _psp->get<int>(DEST_IPID); 
     int pid = _psp->get<int>(DEST_PROCESSID); 
     int local = _psp->get<int>(DEST_LOCALID);

@@ -102,6 +102,7 @@ void StatusEvent::_constructor(const std::string& runID, const LocationID& origi
     _init();
 
 
+    std::cout << "ipaddr: " <<  originatorID.getIPAddress() << std::endl;
     _psp->set(ORIG_IPID, originatorID.getIPAddress());
     _psp->set(ORIG_PROCESSID, originatorID.getProcessID());
     _psp->set(ORIG_LOCALID, originatorID.getLocalID());
@@ -117,7 +118,7 @@ void StatusEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setIntProperty(ORIG_LOCALID, _psp->get<int>(ORIG_LOCALID));
 }
 
-LocationID *StatusEvent::getOriginatorId() {
+LocationID *StatusEvent::getOriginator() {
     int ip = _psp->get<int>(ORIG_IPID);
     int pid = _psp->get<int>(ORIG_PROCESSID);
     int local = _psp->get<int>(ORIG_LOCALID);

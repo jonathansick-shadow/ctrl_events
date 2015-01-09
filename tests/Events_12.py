@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # 
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
@@ -20,8 +22,7 @@
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
-
-#!/usr/bin/env python
+import unittest
 
 import os
 import platform
@@ -31,55 +32,59 @@ from lsst.daf.base import PropertySet
 #
 # Send an event
 #
-def sendEvent(brokerName, topic):
-    trans = events.EventTransmitter(brokerName, topic)
+class StatusEventTestCase(unittest.TestCase):
+    def sendEvent(self, brokerName, topic):
+        trans = events.EventTransmitter(brokerName, topic)
+        
+        root = PropertySet()
+        root.set("TOPIC",topic)
+        root.set("myname","myname")
+        root.set("STATUS", "my special status")
+        root.set("RUNID","srptestrun")
+        root.set("bazinga", "sheldon")
+        
+        originatorId = events.LocationID()
+        event = events.StatusEvent("srptestrun", originatorId, root)
     
-    root = PropertySet()
-    root.set("TOPIC",topic)
-    root.set("myname","myname")
-    root.set("STATUS", "my special status")
-    root.set("RUNID","srptestrun")
-    root.set("bazinga", "sheldon")
-    
-    originatorId = events.LocationID()
-    event = events.StatusEvent("srptestrun", originatorId, root)
+        # ok...now publish it
+        trans.publishEvent(event)
 
-    # ok...now publish it
-    trans.publishEvent(event)
+    def testStatusEvent(self):
+        broker = "lsst8.ncsa.illinois.edu"
+    
+        host = platform.node()
+        pid = os.getpid()
+        topicA = "test_events_12_%s_%d" % (host, pid)
+    
+        yC = events.EventReceiver(broker, topicA)
+    
+        #
+        # send a test event, and wait to receive it
+        #
+        self.sendEvent(broker, topicA)
+    
+        val = yC.receiveEvent()
+        assert val != None
+        print "custom property names"
+        print val.getCustomPropertyNames()
+        print "Custom PropertySet"
+        ps = val.getCustomPropertySet()
+        print ps.toString()
+        print
+        print "filterable property names"
+        print val.getFilterablePropertyNames()
+    
+        print "PropertySet"
+        ps = val.getPropertySet()
+        print ps.toString()
+    
+        eventSystem = events.EventSystem().getDefaultEventSystem()
+        statusevent = eventSystem.castToStatusEvent(val)
+        print "OriginatorId"
+        originatorID = statusevent.getOriginator()
+        print "localID", originatorID.getLocalID()
+        print "processID", originatorID.getProcessID()
+        print "IPAddress", originatorID.getIPAddress()
 
 if __name__ == "__main__":
-    broker = "lsst8.ncsa.illinois.edu"
-
-    host = platform.node()
-    pid = os.getpid()
-    topicA = "test_events_12_%s_%d" % (host, pid)
-
-    yC = events.EventReceiver(broker, topicA)
-
-    #
-    # send a test event, and wait to receive it
-    #
-    sendEvent(broker, topicA)
-
-    val = yC.receiveEvent()
-    assert val != None
-    print "custom property names"
-    print val.getCustomPropertyNames()
-    print "Custom PropertySet"
-    ps = val.getCustomPropertySet()
-    print ps.toString()
-    print
-    print "filterable property names"
-    print val.getFilterablePropertyNames()
-
-    print "PropertySet"
-    ps = val.getPropertySet()
-    print ps.toString()
-
-    eventSystem = events.EventSystem().getDefaultEventSystem()
-    statusevent = eventSystem.castToStatusEvent(val)
-    print "OriginatorId"
-    originatorID = statusevent.getOriginatorId()
-    print "localID", originatorID.getLocalID()
-    print "processID", originatorID.getProcessID()
-    print "IPAddress", originatorID.getIPAddress()
+    unittest.main()

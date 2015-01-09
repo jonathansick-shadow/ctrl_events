@@ -73,19 +73,19 @@ public:
     static const std::string DEST_LOCALID;
 
     CommandEvent();
-    CommandEvent(const std::string& runid, const LocationID& originatorId, const LocationID& destinationId, const PropertySet& ps);
-    CommandEvent(const std::string& runid, const LocationID& originatorId, const LocationID& destinationId, const PropertySet::Ptr psp);
+    CommandEvent(const std::string& runid, const LocationID& originator, const LocationID& destination, const PropertySet& ps);
+    CommandEvent(const std::string& runid, const LocationID& originator, const LocationID& destination, const PropertySet::Ptr psp);
     CommandEvent(cms::TextMessage *msg);
     virtual void populateHeader(cms::TextMessage *msg) const;
 
     virtual ~CommandEvent();
 
-    LocationID *getOriginatorId();
+    LocationID *getOriginator();
 
-    LocationID * getDestinationId();
+    LocationID * getDestination();
 
 protected:
-    void _constructor(const std::string& runId, const LocationID& originatorId, const LocationID& destinationId, const PropertySet& ps);
+    void _constructor(const std::string& runId, const LocationID& originator, const LocationID& destination, const PropertySet& ps);
 
 private:
     void _init();

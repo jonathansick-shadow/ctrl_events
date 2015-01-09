@@ -22,6 +22,8 @@
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
+import unittest
+
 import os
 import platform
 import lsst.ctrl.events as events
@@ -31,80 +33,86 @@ from lsst.daf.base import PropertySet
 #
 # Send an event
 #
-def sendEvent(brokerName, topic):
-    trans = events.EventTransmitter(brokerName, topic)
+class T451TestCase(unittest.TestCase):
 
-    originatorId = events.LocationID()
-
-    root = PropertySet()
-    root.set("TOPIC",topic)
-    root.set("myname","myname")
-    root.set("STATUS", "my special status")
+    def sendEvent(self, brokerName, topic):
+        trans = events.EventTransmitter(brokerName, topic)
     
-    event = events.StatusEvent("srptestrun", originatorId, root)
-
-    print "creating STATUS EVENT:"
-    printEvent(event)
-
-    statusOriginatorId = event.getOriginatorId()
-
-    destinationID = events.LocationID(statusOriginatorId)
-
-    commandOriginatorId = events.LocationID()
-
-    root2 = PropertySet()
-    root2.set("TOPIC",topic)
-    root2.set("myname","myname2")
-    root2.set("STATUS", "my special status2")
-    event = events.CommandEvent("srptestrun", commandOriginatorId, destinationID, root2)
-
-    print "command event:"
-    printEvent(event)
-
-    trans.publishEvent(event)
-
-def printEvent(val):
-    print "custom property names"
-    print val.getCustomPropertyNames()
-    print "Custom PropertySet"
-    ps = val.getCustomPropertySet()
-    print ps.toString()
-    print
-    print "filterable property names"
-    print val.getFilterablePropertyNames()
-
-    print "PropertySet"
-    ps = val.getPropertySet()
-    print ps.toString()
+        originatorId = events.LocationID()
+    
+        root = PropertySet()
+        root.set("TOPIC",topic)
+        root.set("myname","myname")
+        root.set("STATUS", "my special status")
+        
+        event = events.StatusEvent("srptestrun", originatorId, root)
+    
+        print "creating STATUS EVENT:"
+        self.printEvent(event)
+    
+        statusOriginatorId = event.getOriginator()
+    
+        destinationID = events.LocationID(statusOriginatorId)
+    
+        commandOriginatorId = events.LocationID()
+    
+        root2 = PropertySet()
+        root2.set("TOPIC",topic)
+        root2.set("myname","myname2")
+        root2.set("STATUS", "my special status2")
+        event = events.CommandEvent("srptestrun", commandOriginatorId, destinationID, root2)
+    
+        print "command event:"
+        self.printEvent(event)
+    
+        trans.publishEvent(event)
+    
+    def printEvent(self, val):
+        print "custom property names"
+        print val.getCustomPropertyNames()
+        print "Custom PropertySet"
+        ps = val.getCustomPropertySet()
+        print ps.toString()
+        print
+        print "filterable property names"
+        print val.getFilterablePropertyNames()
+    
+        print "PropertySet"
+        ps = val.getPropertySet()
+        print ps.toString()
+    
+    def test451(self):
+        broker = "lsst8.ncsa.illinois.edu"
+        topicA = "test_events_13_%s_%d" % (platform.node(), os.getpid())
+    
+        receiver = events.EventReceiver(broker, topicA)
+    
+        #
+        # send a test event, and wait to receive it
+        #
+        self.sendEvent(broker, topicA)
+    
+        val = receiver.receiveEvent()
+        self.assertNotEqual(val, None)
+        ps = val.getPropertySet()
+        print "received ps:"
+        print ps.toString()
+    
+        eventsystem = events.EventSystem.getDefaultEventSystem()
+        commandEvent = eventsystem.castToCommandEvent(val)
+        
+        orig = commandEvent.getOriginator()
+        
+        print "orig_localId = ", orig.getLocalID()
+        print "orig_processId = ", orig.getProcessID()
+        print "orig_IPId = ", orig.getIPAddress()
+    
+        dest = commandEvent.getDestination()
+    
+        print "dest_localId = ", dest.getLocalID()
+        print "dest_processId = ", dest.getProcessID()
+        print "dest_IPId = ", dest.getIPAddress()
 
 if __name__ == "__main__":
-    broker = "lsst8.ncsa.illinois.edu"
-    topicA = "test_events_13_%s_%d" % (platform.node(), os.getpid())
+    unittest.main()
 
-    receiver = events.EventReceiver(broker, topicA)
-
-    #
-    # send a test event, and wait to receive it
-    #
-    sendEvent(broker, topicA)
-
-    val = receiver.receiveEvent()
-    assert val != None
-    ps = val.getPropertySet()
-    print "received ps:"
-    print ps.toString()
-
-    eventsystem = events.EventSystem.getDefaultEventSystem()
-    commandEvent = eventsystem.castToCommandEvent(val)
-    
-    orig = commandEvent.getOriginatorId()
-    
-    print "orig_localId = ", orig.getLocalID()
-    print "orig_processId = ", orig.getProcessID()
-    print "orig_IPId = ", orig.getIPAddress()
-
-    dest = commandEvent.getDestinationId()
-
-    print "dest_localId = ", dest.getLocalID()
-    print "dest_processId = ", dest.getProcessID()
-    print "dest_IPId = ", dest.getIPAddress()

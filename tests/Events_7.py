@@ -22,21 +22,24 @@
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
+import unittest
 
 import lsst.ctrl.events as events
 import lsst.daf.base as datap
 import lsst.pex.exceptions as ex
 import os, platform
 
-
-if __name__ == "__main__":
-    broker = "unknown_broker.ncsa.illinois.edu"
-    topic = "test_events_7_%s_%d" % (platform.node(), os.getpid())
-
-    # Test to be sure that a bad broker name throws a runtime event
-    try:
-        trans = events.EventTransmitter(broker, topic)
-        assert 0
-    except ex.Exception as e:
-        pass
+class UnknownBrokerTestCase(unittest.TestCase):
+    def testUnknownBroker(self):
+        broker = "unknown_broker.ncsa.illinois.edu"
+        topic = "test_events_7_%s_%d" % (platform.node(), os.getpid())
     
+        # Test to be sure that a bad broker name throws a runtime event
+        try:
+            trans = events.EventTransmitter(broker, topic)
+            self.assertEqual(0, 1)
+        except ex.Exception as e:
+            pass
+    
+if __name__ == "__main__":
+    unittest.main()

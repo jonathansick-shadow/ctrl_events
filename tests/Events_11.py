@@ -22,6 +22,8 @@
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
+import unittest
+
 import os
 import platform
 import lsst.ctrl.events as events
@@ -30,55 +32,59 @@ from lsst.daf.base import PropertySet
 #
 # Send an event
 #
-def sendEvent(brokerName, topic):
-    trans = events.EventTransmitter(brokerName, topic)
+class EventSelectorTestCase(unittest.TestCase):
+    def sendEvent(self, brokerName, topic):
+        trans = events.EventTransmitter(brokerName, topic)
+        
+        root = PropertySet()
+        root.set("TOPIC",topic)
+        root.set("myname","myname")
+        root.set("STATUS", "my special status")
+        
+        locationID = events.LocationID()
+        event = events.StatusEvent("srptestrun1", locationID, root)
     
-    root = PropertySet()
-    root.set("TOPIC",topic)
-    root.set("myname","myname")
-    root.set("STATUS", "my special status")
+        # ok...now publish it
+        trans.publishEvent(event)
     
-    locationID = events.LocationID()
-    event = events.StatusEvent("srptestrun1", locationID, root)
+        event = events.StatusEvent("test_runid_11_%d" % os.getpid(), locationID, root)
+    
+        # ok...now publish it
+        trans.publishEvent(event)
 
-    # ok...now publish it
-    trans.publishEvent(event)
-
-    event = events.StatusEvent("test_runid_11_%d" % os.getpid(), locationID, root)
-
-    # ok...now publish it
-    trans.publishEvent(event)
+    def testEventSelector(self):
+        host = platform.node()
+        pid = os.getpid()
+    
+        host_pid = "%s_%d" % (host, pid)
+    
+        broker = "lsst8.ncsa.illinois.edu"
+        topicA = "test_events_11_%s.A" % host_pid
+        topicB = "test_events_11_%s.B" % host_pid
+        topicC = "test_events_11_%s.*" % host_pid
+    
+        yC = events.EventReceiver(broker, topicC, "RUNID = 'test_runid_11_%d'" % os.getpid())
+    
+        #
+        # send a test event, and wait to receive it
+        #
+        self.sendEvent(broker, topicA)
+    
+        # we'll get the second event, not the first
+        val = yC.receiveEvent()
+        self.assertNotEqual(val, None)
+        print "custom property names"
+        print val.getCustomPropertyNames()
+        print "Custom PropertySet"
+        ps = val.getCustomPropertySet()
+        print ps.toString()
+        print
+        print "filterable property names"
+        print val.getFilterablePropertyNames()
+    
+        print "PropertySet"
+        ps = val.getPropertySet()
+        print ps.toString()
 
 if __name__ == "__main__":
-    host = platform.node()
-    pid = os.getpid()
-
-    host_pid = "%s_%d" % (host, pid)
-
-    broker = "lsst8.ncsa.illinois.edu"
-    topicA = "test_events_11_%s.A" % host_pid
-    topicB = "test_events_11_%s.B" % host_pid
-    topicC = "test_events_11_%s.*" % host_pid
-
-    yC = events.EventReceiver(broker, topicC, "RUNID = 'test_runid_11_%d'" % os.getpid())
-
-    #
-    # send a test event, and wait to receive it
-    #
-    sendEvent(broker, topicA)
-
-    # we'll get the second event, not the first
-    val = yC.receiveEvent()
-    assert val != None
-    print "custom property names"
-    print val.getCustomPropertyNames()
-    print "Custom PropertySet"
-    ps = val.getCustomPropertySet()
-    print ps.toString()
-    print
-    print "filterable property names"
-    print val.getFilterablePropertyNames()
-
-    print "PropertySet"
-    ps = val.getPropertySet()
-    print ps.toString()
+    unittest.main()
