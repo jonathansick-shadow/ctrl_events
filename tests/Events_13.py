@@ -103,15 +103,15 @@ class T451TestCase(unittest.TestCase):
         
         orig = commandEvent.getOriginator()
         
-        print "orig_localId = ", orig.getLocalID()
-        print "orig_processId = ", orig.getProcessID()
-        print "orig_IPId = ", orig.getIPAddress()
+        print "orig: localID = ", orig.getLocalID()
+        print "orig: processID = ", orig.getProcessID()
+        print "orig: hostname = ", orig.getHostName()
     
         dest = commandEvent.getDestination()
     
-        print "dest_localId = ", dest.getLocalID()
-        print "dest_processId = ", dest.getProcessID()
-        print "dest_IPId = ", dest.getIPAddress()
+        print "dest: localId = ", dest.getLocalID()
+        print "dest: processId = ", dest.getProcessID()
+        print "dest: hostname = ", dest.getHostName()
 
 if __name__ == "__main__":
     unittest.main()

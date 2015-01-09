@@ -63,7 +63,7 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-const std::string StatusEvent::ORIG_IPID = "ORIG_IPID";
+const std::string StatusEvent::ORIG_HOSTNAME = "ORIG_HOSTNAME";
 const std::string StatusEvent::ORIG_PROCESSID = "ORIG_PROCESSID";
 const std::string StatusEvent::ORIG_LOCALID = "ORIG_LOCALID";
 
@@ -77,7 +77,7 @@ StatusEvent::StatusEvent() : Event() {
 
 
 void StatusEvent::_init() {
-    _keywords.insert(ORIG_IPID);
+    _keywords.insert(ORIG_HOSTNAME);
     _keywords.insert(ORIG_PROCESSID);
     _keywords.insert(ORIG_LOCALID);
 }
@@ -85,7 +85,7 @@ void StatusEvent::_init() {
 StatusEvent::StatusEvent(cms::TextMessage *msg) : Event(msg) {
     _init();
 
-    _psp->set(ORIG_IPID, (int)msg->getIntProperty(ORIG_IPID));
+    _psp->set(ORIG_HOSTNAME, (std::string)msg->getStringProperty(ORIG_HOSTNAME));
     _psp->set(ORIG_PROCESSID, (int)msg->getIntProperty(ORIG_PROCESSID));
     _psp->set(ORIG_LOCALID, (int)msg->getIntProperty(ORIG_LOCALID));
 }
@@ -101,7 +101,7 @@ StatusEvent::StatusEvent( const std::string& runID, const LocationID& originator
 void StatusEvent::_constructor(const std::string& runID, const LocationID& originatorID, const PropertySet& ps) {
     _init();
 
-    _psp->set(ORIG_IPID, originatorID.getIPAddress());
+    _psp->set(ORIG_HOSTNAME, originatorID.getHostName());
     _psp->set(ORIG_PROCESSID, originatorID.getProcessID());
     _psp->set(ORIG_LOCALID, originatorID.getLocalID());
     _psp->set(TYPE, EventTypes::STATUS);
@@ -111,16 +111,16 @@ void StatusEvent::_constructor(const std::string& runID, const LocationID& origi
 void StatusEvent::populateHeader(cms::TextMessage* msg) const {
     Event::populateHeader(msg);
 
-    msg->setIntProperty(ORIG_IPID, _psp->get<int>(ORIG_IPID));
+    msg->setStringProperty(ORIG_HOSTNAME, _psp->get<std::string>(ORIG_HOSTNAME));
     msg->setIntProperty(ORIG_PROCESSID, _psp->get<int>(ORIG_PROCESSID));
     msg->setIntProperty(ORIG_LOCALID, _psp->get<int>(ORIG_LOCALID));
 }
 
 LocationID *StatusEvent::getOriginator() {
-    int ip = _psp->get<int>(ORIG_IPID);
+    std::string hostname = _psp->get<std::string>(ORIG_HOSTNAME);
     int pid = _psp->get<int>(ORIG_PROCESSID);
     int local = _psp->get<int>(ORIG_LOCALID);
-    return new LocationID(ip, pid, local);
+    return new LocationID(hostname, pid, local);
 }
 
 /** \brief destructor

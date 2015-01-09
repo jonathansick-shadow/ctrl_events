@@ -84,7 +84,7 @@ class StatusEventTestCase(unittest.TestCase):
         originatorID = statusevent.getOriginator()
         print "localID", originatorID.getLocalID()
         print "processID", originatorID.getProcessID()
-        print "IPAddress", originatorID.getIPAddress()
+        print "HostName", originatorID.getHostName()
 
 if __name__ == "__main__":
     unittest.main()

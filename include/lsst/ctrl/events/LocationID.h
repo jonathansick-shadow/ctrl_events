@@ -33,6 +33,9 @@
 #ifndef LSST_CTRL_EVENTS_LOCATIONID_H
 #define LSST_CTRL_EVENTS_LOCATIONID_H
 
+#include <stdlib.h>
+#include <iostream>
+
 using namespace std;
 
 namespace lsst {
@@ -46,19 +49,19 @@ class LocationID {
 public:
     LocationID();
     LocationID(const LocationID& id);
-    LocationID(int ipAddress, int pid, int localID);
+    LocationID(const std::string& hostname, int pid, int localID);
 
     ~LocationID();
 
-    int getIPAddress() const;
+    std::string getHostName() const;
     int getProcessID() const;
     int getLocalID() const;
 
 protected:
-    void _constructor(int ipAddress, int pid, int localID);
+    void _constructor(const std::string& hostname, int pid, int localID);
     static int _localCounter;
     static int _localID;
-    static int _IPAddress;
+    static std::string _hostname;
     static int _pid;
 
 };

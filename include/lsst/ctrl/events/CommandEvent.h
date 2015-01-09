@@ -64,11 +64,11 @@ namespace events {
 class CommandEvent : public Event
 {
 public:
-    static const std::string ORIG_IPID;
+    static const std::string ORIG_HOSTNAME;
     static const std::string ORIG_PROCESSID;
     static const std::string ORIG_LOCALID;
 
-    static const std::string DEST_IPID;
+    static const std::string DEST_HOSTNAME;
     static const std::string DEST_PROCESSID;
     static const std::string DEST_LOCALID;
 

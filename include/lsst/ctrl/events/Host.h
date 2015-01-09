@@ -56,14 +56,14 @@ public:
 
     static Host& getHost();
 
-    int getIPAddress();
-    std::string getName();
+    unsigned int getIPAddress();
+    std::string getHostName();
 
 protected:
     static Host *thisHost;
 
-    static int _IPAddr;
-    static std::string _name;
+    static std::string _hostname;
+    static unsigned int _IPAddr;
 
 };
 }

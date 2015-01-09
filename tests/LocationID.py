@@ -45,15 +45,6 @@ class LocationIDTestCase(unittest.TestCase):
             exp = exp -1
         return addr
         
-    def ip2int(self):
-        hostname = socket.gethostname()
-        (name, aliaslist, ipaddrlist) = socket.gethostbyname_ex(hostname)
-
-        return struct.unpack("!I", socket.inet_aton(ipaddrlist[0]))[0]
-
-    def int2ip(self, addr):
-        print socket.inet_ntoa(struct.pack("!I", addr))
-
     def testLocationID(self):
         eventSystem = events.EventSystem().getDefaultEventSystem()
 
@@ -71,7 +62,7 @@ class LocationIDTestCase(unittest.TestCase):
         processId = locationID2.getProcessID()
         assert processId == os.getpid()
 
-        IPId = locationID2.getIPAddress()
+        hostname = locationID2.getHostName()
 
         root = PropertySet()
         root.set("myname","myname")
@@ -82,9 +73,10 @@ class LocationIDTestCase(unittest.TestCase):
 
         topic = "mytopic_%s_%d" % (platform.node(), os.getpid())
         transmitter = events.EventTransmitter("lsst8.ncsa.illinois.edu", topic)
-        sel = "%s = %d" % (events.StatusEvent.ORIG_IPID, IPId)
+        sel = "%s = '%s'" % (events.StatusEvent.ORIG_HOSTNAME, hostname)
         #sel = "RUNID = '%s'" % "my runid"
         #sel = "PROCESSID = %d" % processId
+        print topic
         print sel
         receiver = events.EventReceiver("lsst8.ncsa.illinois.edu", topic, sel)
 

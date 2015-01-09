@@ -78,7 +78,7 @@ Host& Host::getHost() {
         unsigned char a,b,c,d;
 
         gethostname(buf, 255) ;
-        _name.assign(buf,strlen(buf));
+        _hostname.assign(buf,strlen(buf));
         ent = (struct hostent *)gethostbyname(buf) ;
 
         a = ent->h_addr_list[0][0] & 0xFF;
@@ -87,7 +87,8 @@ Host& Host::getHost() {
         d = ent->h_addr_list[0][3] & 0xFF;
 
         _IPAddr = (a << 24) | (b << 16) | (c << 8) | d;
-        _IPAddr = _IPAddr & 0x0FFFFFFFF;
+        //_IPAddr = _IPAddr & 0x0FFFFFFFF;
+        std::cout << "ipaddr: " << _IPAddr << std::endl;
   
         // create the default EventSystem object
         thisHost = new Host();
@@ -97,15 +98,15 @@ Host& Host::getHost() {
 }
 
 Host *Host::thisHost = 0;
-int Host::_IPAddr = 0;
-std::string Host::_name;
+unsigned int Host::_IPAddr = 0;
+std::string Host::_hostname;
 
-int Host::getIPAddress() {
+unsigned int Host::getIPAddress() {
     return _IPAddr;
 }
 
-std::string Host::getName() {
-    return _name;
+std::string Host::getHostName() {
+    return _hostname;
 }
 
 }
