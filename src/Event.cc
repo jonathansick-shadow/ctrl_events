@@ -41,6 +41,7 @@
 #include <sys/un.h>
 #include <netdb.h>
 #include <time.h>
+#include <typeinfo>
 
 #include "boost/scoped_array.hpp"
 #include "boost/property_tree/ptree.hpp"
@@ -104,16 +105,70 @@ void Event::_init() {
 }
 
 Event::Event(cms::TextMessage *msg) {
-    _init();
+    // _init();
+
+    vector<std::string>names = msg->getPropertyNames();
+    unsigned int i;
+    for (i = 0; i < names.size(); i++) {
+        std::cout << "name: " << names[i] << std::endl;
+        cms::Message::ValueType vType = msg->getPropertyValueType(names[i]);
+        std::cout << "type: " << vType << std::endl;
+    }
 
     _psp = processTextMessage(msg);
 
+    for (i = 0; i < names.size(); i++)
+            _keywords.insert(names[i]);
+
+
+    _psp->set(EVENTTIME, msg->getCMSTimestamp());
+
+    for (i = 0; i < names.size(); i++) {
+        std::string name = names[i];
+        cms::Message::ValueType vType = msg->getPropertyValueType(names[i]);
+        switch(vType) {
+            case cms::Message::NULL_TYPE:
+                _psp->set(name, NULL);
+                break;
+            case cms::Message::BOOLEAN_TYPE:
+                _psp->set(name, msg->getBooleanProperty(name));
+                break;
+            case cms::Message::BYTE_TYPE:
+            case cms::Message::CHAR_TYPE:
+                _psp->set(name, msg->getByteProperty(name));
+                break;
+            case cms::Message::SHORT_TYPE:
+                _psp->set(name, msg->getShortProperty(name));
+                break;
+            case cms::Message::INTEGER_TYPE:
+                _psp->set(name, msg->getIntProperty(name));
+                break;
+            case cms::Message::LONG_TYPE:
+                _psp->set(name, msg->getLongProperty(name));
+                break;
+            case cms::Message::DOUBLE_TYPE:
+                _psp->set(name, msg->getDoubleProperty(name));
+                break;
+            case cms::Message::FLOAT_TYPE:
+                _psp->set(name, msg->getFloatProperty(name));
+                break;
+            case cms::Message::STRING_TYPE:
+                _psp->set(name, msg->getStringProperty(name));
+                break;
+            case cms::Message::BYTE_ARRAY_TYPE:
+            case cms::Message::UNKNOWN_TYPE:
+                break;
+        }
+    }
+    
+/*
     _psp->set(TYPE, msg->getStringProperty(TYPE));
     _psp->set(RUNID, msg->getStringProperty(RUNID));
     _psp->set(STATUS, msg->getStringProperty(STATUS));
     _psp->set(TOPIC, msg->getStringProperty(TOPIC));
     _psp->set(EVENTTIME, msg->getLongProperty(EVENTTIME));
     _psp->set(PUBTIME, msg->getLongProperty(PUBTIME));
+*/
 }
 
 vector<std::string> Event::getFilterablePropertyNames() {
@@ -142,14 +197,20 @@ vector<std::string> Event::getCustomPropertyNames() {
 }
 
 Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
-    _constructor(runId, *psp);
+    PropertySet *p = new PropertySet();
+    _constructor(runId, *psp, *p);
 }
 
 Event::Event( const std::string& runId, const PropertySet& ps) {
-    _constructor(runId, ps);
+    PropertySet *p = new PropertySet();
+    _constructor(runId, ps, *p);
 }
 
-void Event::_constructor( const std::string& runId, const PropertySet& ps) {
+Event::Event( const std::string& runId, const PropertySet& ps, const PropertySet& filterable) {
+    _constructor(runId, ps, filterable);
+}
+
+void Event::_constructor( const std::string& runId, const PropertySet& ps, const PropertySet& filterable) {
     long int host_len = sysconf(_SC_HOST_NAME_MAX);
 
     boost::scoped_array<char> hostname(new char[host_len]);
@@ -187,16 +248,49 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
 
     // _pubTime is filled in on publish and is ignored in the passed PropertySet
     _psp->set(PUBTIME, (long long)0);
+
+    if (filterable.nameCount() > 0) {
+        vector<std::string> names = filterable.names();
+        unsigned int i;
+        for (i = 0; i < names.size(); i++)
+            _keywords.insert(names[i]);
+
+        _psp->combine(filterable.PropertySet::deepCopy());
+    }
 }
 
 void Event::populateHeader(cms::TextMessage* msg)  const {
+/*
     msg->setStringProperty(TYPE, _psp->get<std::string>(TYPE));
     msg->setLongProperty(EVENTTIME, _psp->get<long long>(EVENTTIME));
     msg->setStringProperty(RUNID, _psp->get<std::string>(RUNID));
     msg->setStringProperty(STATUS, _psp->get<std::string>(STATUS));
     msg->setStringProperty(TOPIC, _psp->get<std::string>(TOPIC));
     msg->setLongProperty(PUBTIME, _psp->get<long long>(PUBTIME));
+*/
+    set<std::string>::iterator keyIterator;
+    for (keyIterator = _keywords.begin(); keyIterator != _keywords.end(); keyIterator++) {
+        std::string name = *keyIterator;
+        const std::type_info &t = _psp->typeOf(name);
+        if (t == typeid(bool))
+            msg->setBooleanProperty(name, _psp->get<bool>(name));
+        else if (t == typeid(short))
+            msg->setShortProperty(name, _psp->get<short>(name));
+        else if (t == typeid(int))
+            msg->setIntProperty(name, _psp->get<int>(name));
+        else if (t == typeid(long))
+            msg->setLongProperty(name, _psp->get<long>(name));
+        else if (t == typeid(long long))
+            msg->setLongProperty(name, _psp->get<long long>(name));
+        else if (t == typeid(double))
+            msg->setDoubleProperty(name, _psp->get<double>(name));
+        else if (t == typeid(float))
+            msg->setFloatProperty(name, _psp->get<float>(name));
+        else if (t == typeid(std::string))
+            msg->setStringProperty(name, _psp->get<std::string>(name));
+    }
 }
+            
 
 long long Event::getEventTime() {
     return _psp->get<long long>(EVENTTIME);
@@ -210,9 +304,11 @@ void Event::updateEventTime() {
     _psp->set(EVENTTIME,  (long long)dafBase::DateTime::now().nsecs());
 }
 
+
 /** \brief Get the creation date of this event
   * \return A formatted date string representing the event creation time
   */
+
 std::string Event::getEventDate() {
     long long eventTime = _psp->get<long long>(EVENTTIME);
     dafBase::DateTime dateTime(eventTime);

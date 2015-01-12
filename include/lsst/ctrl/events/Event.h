@@ -80,6 +80,7 @@ public:
     Event();
     Event(const std::string& runid, const PropertySet::Ptr ps);
     Event(const std::string& runid, const PropertySet& ps);
+    Event(const std::string& runid, const PropertySet& ps, const PropertySet& filterable);
     Event(cms::TextMessage *msg);
 
     virtual ~Event();
@@ -87,11 +88,13 @@ public:
     PropertySet::Ptr getPropertySet() const;
 
     std::string getPubDate();
+
     long long getPubTime();
     void setPubTime(long long t);
 
     long long getEventTime();
     void setEventTime(long long nsecs);
+
     void updateEventTime();
 
     std::string getEventDate();
@@ -110,13 +113,12 @@ public:
     virtual void populateHeader(cms::TextMessage* msg) const;
     void marshall(cms::TextMessage *msg);
 
-
-
 protected:
     PropertySet::Ptr _psp;
+    PropertySet::Ptr _filterable;
     set<std::string> _keywords;
     void _init();
-    void _constructor(const std::string& runid, const PropertySet& ps);
+    void _constructor(const std::string& runid, const PropertySet& ps, const PropertySet& filterable);
 
     template<typename T>void add(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
 
