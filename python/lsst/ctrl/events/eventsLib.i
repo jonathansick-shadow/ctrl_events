@@ -43,6 +43,7 @@ Access to the lsst::ctrl::events classes
 #include "lsst/pex/logging/ScreenLog.h"
 #include "lsst/pex/logging/DualLog.h"
 #include "lsst/pex/policy.h"
+#include "lsst/ctrl/events/Host.h"
 #include "lsst/ctrl/events/LocationID.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
@@ -65,6 +66,7 @@ Access to the lsst::ctrl::events classes
 %import "lsst/pex/logging/loggingLib.i"
 %import "lsst/pex/policy/policyLib.i"
 
+%include "lsst/ctrl/events/Host.h"
 %include "lsst/ctrl/events/LocationID.h"
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"

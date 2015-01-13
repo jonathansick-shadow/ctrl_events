@@ -70,6 +70,7 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
+
 /** \brief Creates Event which contains a PropertySet
   *
   * \throw throws NotFoundError if expected keywords are missing a property set
@@ -109,17 +110,11 @@ Event::Event(cms::TextMessage *msg) {
 
     vector<std::string>names = msg->getPropertyNames();
     unsigned int i;
-    for (i = 0; i < names.size(); i++) {
-        std::cout << "name: " << names[i] << std::endl;
-        cms::Message::ValueType vType = msg->getPropertyValueType(names[i]);
-        std::cout << "type: " << vType << std::endl;
-    }
 
     _psp = processTextMessage(msg);
 
     for (i = 0; i < names.size(); i++)
             _keywords.insert(names[i]);
-
 
     _psp->set(EVENTTIME, msg->getCMSTimestamp());
 
@@ -161,14 +156,6 @@ Event::Event(cms::TextMessage *msg) {
         }
     }
     
-/*
-    _psp->set(TYPE, msg->getStringProperty(TYPE));
-    _psp->set(RUNID, msg->getStringProperty(RUNID));
-    _psp->set(STATUS, msg->getStringProperty(STATUS));
-    _psp->set(TOPIC, msg->getStringProperty(TOPIC));
-    _psp->set(EVENTTIME, msg->getLongProperty(EVENTTIME));
-    _psp->set(PUBTIME, msg->getLongProperty(PUBTIME));
-*/
 }
 
 vector<std::string> Event::getFilterablePropertyNames() {
@@ -196,13 +183,24 @@ vector<std::string> Event::getCustomPropertyNames() {
     return names;
 }
 
+Event::Event(const PropertySet& ps) {
+    const std::string empty;
+    PropertySet::Ptr p (new PropertySet);
+    _constructor(empty, ps, *p);
+}
+
+Event::Event(const PropertySet& ps, const PropertySet& filterable) {
+    const std::string empty;
+    _constructor(empty, ps, filterable);
+}
+
 Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
-    PropertySet *p = new PropertySet();
+    PropertySet::Ptr p (new PropertySet);
     _constructor(runId, *psp, *p);
 }
 
 Event::Event( const std::string& runId, const PropertySet& ps) {
-    PropertySet *p = new PropertySet();
+    PropertySet::Ptr p (new PropertySet);
     _constructor(runId, ps, *p);
 }
 
@@ -224,11 +222,6 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps, const
     // do NOT alter the property set we were given. Make a copy of it,
     // and modify that one.
 
-    /*
-    std::string foo = psp->toString();
-    std::cout << "foo = " << foo << std::endl;
-    */
-
     if (!_psp->exists(STATUS)) {
         _psp->set(STATUS, "unknown");
     }
@@ -238,7 +231,8 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps, const
     }
    
     // _runId is filled in here and is ignored in the passed PropertySet
-    _psp->set(RUNID, runId);
+    if (!runId.empty())
+        _psp->set(RUNID, runId);
 
     // _type is filled in here and is ignored in the passed PropertySet
     _psp->set(TYPE, EventTypes::EVENT);
@@ -260,14 +254,6 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps, const
 }
 
 void Event::populateHeader(cms::TextMessage* msg)  const {
-/*
-    msg->setStringProperty(TYPE, _psp->get<std::string>(TYPE));
-    msg->setLongProperty(EVENTTIME, _psp->get<long long>(EVENTTIME));
-    msg->setStringProperty(RUNID, _psp->get<std::string>(RUNID));
-    msg->setStringProperty(STATUS, _psp->get<std::string>(STATUS));
-    msg->setStringProperty(TOPIC, _psp->get<std::string>(TOPIC));
-    msg->setLongProperty(PUBTIME, _psp->get<long long>(PUBTIME));
-*/
     set<std::string>::iterator keyIterator;
     for (keyIterator = _keywords.begin(); keyIterator != _keywords.end(); keyIterator++) {
         std::string name = *keyIterator;
@@ -407,7 +393,7 @@ std::string Event::marshall(const PropertySet& ps) {
     std::vector<std::string> v = ps.paramNames(false);
 
     boost::property_tree::ptree child;
-    // TODO: optimize this to get use getArray only when necessary
+ 
     unsigned int i;
     for (i = 0; i < v.size(); i++) {
         std::string name = v[i];
@@ -439,7 +425,6 @@ std::string Event::marshall(const PropertySet& ps) {
     }
     std::ostringstream payload;
     write_json(payload, child, false);
-    std::cout << "payload is "<< payload.str() << std::endl;
     return payload.str();
 }
 

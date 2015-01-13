@@ -31,7 +31,28 @@ from socket import gethostname
 class EventTestCase(unittest.TestCase):
     """A test case for Event."""
 
-    def testEvent(self):
+    def testEventEmpty(self):
+        status = "my special status"
+        event = events.Event()
+        props = event.getPropertySet() 
+        self.assertEqual(props.nameCount(), 0)
+
+    def testEventProperties(self):
+        status = "my special status"
+        root = PropertySet()
+        MYNAME = "myname"
+        root.set(MYNAME, MYNAME)
+        root.set(events.Event.STATUS, status)
+        
+        event = events.Event(root)
+        props = event.getPropertySet() 
+        custom = event.getCustomPropertySet()
+
+        self.assertEqual(props.nameCount(), 6)
+        self.assertEqual(custom.nameCount(), 1)
+        
+        
+    def testEventRunID(self):
         runid = "testrunid"
         status = "my special status"
         root = PropertySet()
@@ -43,9 +64,6 @@ class EventTestCase(unittest.TestCase):
     
         # return the property set
         props = event.getPropertySet()
-        print "PropertySet: "
-        print props.toString()
-        print
         self.assertGreater(props.get(events.Event.EVENTTIME), 0)
         self.assertEqual(props.get(events.Event.PUBTIME), 0)
         self.assertEqual(props.get(events.Event.RUNID), runid)
@@ -56,7 +74,6 @@ class EventTestCase(unittest.TestCase):
     
     
         filterableNames = event.getFilterablePropertyNames()
-        print "Filterable names = ",filterableNames
         filterableNames.remove(events.Event.EVENTTIME)
         filterableNames.remove(events.Event.PUBTIME)
         filterableNames.remove(events.Event.RUNID)
@@ -66,15 +83,10 @@ class EventTestCase(unittest.TestCase):
         assert len(filterableNames) == 0
     
         customNames = event.getCustomPropertyNames()
-        print "Custom names = ",customNames
-    
-        assert len(customNames) == 1
-        assert customNames[0] == MYNAME
+        self.assertEqual(len(customNames), 1)
+        self.assertEqual(customNames[0], MYNAME)
     
         eventTime = event.getEventTime()
-        print "getEventTime() = ",event.getEventTime()
-        print "getEventDate() = ",event.getEventDate()
-        print "getPubTime() = ",event.getPubTime()
         self.assertEqual(event.getPubTime(),0)
     
         self.assertEqual(event.getRunId(), runid)

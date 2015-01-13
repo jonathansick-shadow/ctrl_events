@@ -87,8 +87,6 @@ Host& Host::getHost() {
         d = ent->h_addr_list[0][3] & 0xFF;
 
         _IPAddr = (a << 24) | (b << 16) | (c << 8) | d;
-        //_IPAddr = _IPAddr & 0x0FFFFFFFF;
-        std::cout << "ipaddr: " << _IPAddr << std::endl;
   
         // create the default EventSystem object
         thisHost = new Host();

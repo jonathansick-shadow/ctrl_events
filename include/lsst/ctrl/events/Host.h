@@ -70,5 +70,4 @@ protected:
 }
 }
 
-#endif /*end LSST_CTRL_EVENTS_EVENTSYSTEM_H*/
-
+#endif /*end LSST_CTRL_EVENTS_HOST_H*/
