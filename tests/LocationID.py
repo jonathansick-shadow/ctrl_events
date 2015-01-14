@@ -51,16 +51,22 @@ class LocationIDTestCase(unittest.TestCase):
         locationID = events.LocationID()
 
         localId = locationID.getLocalID()
-        assert localId == 0
+        self.assertEqual(localId, 0)
+
+        hostname = locationID.getHostName()
+        self.assertEqual(hostname, socket.gethostname())
         processId = locationID.getProcessID()
-        assert processId == os.getpid()
+        self.assertEqual(processId, os.getpid())
 
         locationID2 = events.LocationID()
 
         localId = locationID2.getLocalID()
-        assert localId == 1
+        self.assertEqual(localId, 1)
+
+        hostname = locationID.getHostName()
+        self.assertEqual(hostname, socket.gethostname())
         processId = locationID2.getProcessID()
-        assert processId == os.getpid()
+        self.assertEqual(processId, os.getpid())
 
         hostname = locationID2.getHostName()
 
