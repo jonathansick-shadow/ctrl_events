@@ -34,7 +34,7 @@ from lsst.daf.base import PropertySet
 # Send an event
 #
 class EventSelectorTestCase(unittest.TestCase):
-    def sendEvent(self, brokerName, topic):
+    def sendEvent(self, runid, brokerName, topic):
         trans = events.EventTransmitter(brokerName, topic)
         
         root = PropertySet()
@@ -43,16 +43,11 @@ class EventSelectorTestCase(unittest.TestCase):
         root.set("STATUS", "my special status")
         
         locationID = events.LocationID()
-        event = events.StatusEvent("srptestrun1", locationID, root)
     
+        event = events.StatusEvent(runid, locationID, root)
         # ok...now publish it
         trans.publishEvent(event)
     
-        event = events.StatusEvent("test_runid_11_%d" % os.getpid(), locationID, root)
-    
-        # ok...now publish it
-        trans.publishEvent(event)
-
     def testEventSelector(self):
         host = platform.node()
         pid = os.getpid()
@@ -60,34 +55,28 @@ class EventSelectorTestCase(unittest.TestCase):
         host_pid = "%s_%d" % (host, pid)
     
         broker = "lsst8.ncsa.illinois.edu"
-        topicA = "test_events_11_%s.A" % host_pid
-        topicB = "test_events_11_%s.B" % host_pid
-        topicC = "test_events_11_%s.*" % host_pid
+        topic = "test_events_11_%s" % host_pid
     
-        yC = events.EventReceiver(broker, topicC, "RUNID = 'test_runid_11_%d'" % os.getpid())
-        print "selector is RUNID = 'test_runid_11_%d'" % os.getpid()
+        runid = 'test_runid_11_%d' % os.getpid()
+
+        rec = events.EventReceiver(broker, topic, "RUNID = '%s'" % runid)
     
         #
         # send a test event, and wait to receive it
         #
-        self.sendEvent(broker, topicA)
+        self.sendEvent(runid, broker, topic)
     
         # we'll get the second event, not the first
-        print "waiting to receive even for selector"
-        val = yC.receiveEvent()
+        val = rec.receiveEvent()
         self.assertNotEqual(val, None)
-        print "custom property names"
-        print val.getCustomPropertyNames()
-        print "Custom PropertySet"
-        ps = val.getCustomPropertySet()
-        print ps.toString()
-        print
-        print "filterable property names"
-        print val.getFilterablePropertyNames()
-    
-        print "PropertySet"
         ps = val.getPropertySet()
-        print ps.toString()
+        self.assertTrue(ps.exists('RUNID'))
+        self.assertEqual(ps.get('RUNID'),runid)
+
+        self.sendEvent("invalid", broker, topic)
+        # shouldn't receive anything else
+        val2 = rec.receiveEvent(1)
+        self.assertEqual(val2, None)
 
 if __name__ == "__main__":
     unittest.main()
