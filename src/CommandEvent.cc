@@ -68,7 +68,9 @@ const std::string CommandEvent::DEST_PROCESSID = "DEST_PROCESSID";
 const std::string CommandEvent::DEST_LOCALID = "DEST_LOCALID";
 
 /** \brief Creates CommandEvent which contains a PropertySet
-  *
+  *        consisting of an origination location ID and 
+  *        a destination location ID, plus additional
+  *        properties.
   */
 
 CommandEvent::CommandEvent() : Event() {
@@ -99,16 +101,23 @@ CommandEvent::CommandEvent(cms::TextMessage *msg) : Event(msg) {
     _psp->set(DEST_LOCALID, (int)msg->getIntProperty(DEST_LOCALID));
 
 }
+CommandEvent::CommandEvent(const LocationID&  originator, const LocationID& destination, const PropertySet::Ptr psp) : Event(*psp) {
+    _constructor(originator, destination);
+}
+
+CommandEvent::CommandEvent(const LocationID&  originator, const LocationID&  destination, const PropertySet& ps) : Event(ps) {
+    _constructor(originator, destination);
+}
 
 CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originator, const LocationID& destination, const PropertySet::Ptr psp) : Event(runId, *psp) {
-    _constructor(runId, originator, destination, *psp);
+    _constructor(originator, destination);
 }
 
 CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originator, const LocationID&  destination, const PropertySet& ps) : Event(runId, ps) {
-    _constructor(runId, originator, destination, ps);
+    _constructor(originator, destination);
 }
 
-void CommandEvent::_constructor( const std::string& runId, const LocationID&  originator, const LocationID&  destination, const PropertySet& ps) {
+void CommandEvent::_constructor(const LocationID&  originator, const LocationID&  destination) {
     _init();
 
     _psp->set(ORIG_HOSTNAME, originator.getHostName());

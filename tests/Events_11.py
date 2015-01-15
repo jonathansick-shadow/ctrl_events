@@ -65,6 +65,7 @@ class EventSelectorTestCase(unittest.TestCase):
         topicC = "test_events_11_%s.*" % host_pid
     
         yC = events.EventReceiver(broker, topicC, "RUNID = 'test_runid_11_%d'" % os.getpid())
+        print "selector is RUNID = 'test_runid_11_%d'" % os.getpid()
     
         #
         # send a test event, and wait to receive it
@@ -72,6 +73,7 @@ class EventSelectorTestCase(unittest.TestCase):
         self.sendEvent(broker, topicA)
     
         # we'll get the second event, not the first
+        print "waiting to receive even for selector"
         val = yC.receiveEvent()
         self.assertNotEqual(val, None)
         print "custom property names"

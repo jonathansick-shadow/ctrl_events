@@ -56,6 +56,9 @@ LocationID::LocationID(const std::string& hostname, int pid, int localID) {
     _constructor(hostname, pid, localID);
 }
 
+/** \brief LocationID object. This object represents the originating process
+  *        of an event.  When created, this represents a duplicated ID.
+  */
 LocationID::LocationID(const LocationID& id) {
     _constructor(id.getHostName(), id.getProcessID(), id.getLocalID());
 }

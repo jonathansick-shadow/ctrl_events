@@ -34,7 +34,7 @@ from lsst.daf.base import PropertySet
 #
 # Send an event
 #
-class T451TestCase(unittest.TestCase):
+class CommandTestCase(unittest.TestCase):
 
     def sendEvent(self, brokerName, topic):
         trans = events.EventTransmitter(brokerName, topic)
@@ -82,7 +82,7 @@ class T451TestCase(unittest.TestCase):
         ps = val.getPropertySet()
         print ps.toString()
     
-    def test451(self):
+    def testCommand(self):
         broker = "lsst8.ncsa.illinois.edu"
         topicA = "test_events_13_%s_%d" % (platform.node(), os.getpid())
     

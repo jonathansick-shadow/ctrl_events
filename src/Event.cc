@@ -99,7 +99,7 @@ Event::Event() {
 void Event::_init() {
     _keywords.insert(TYPE);
     _keywords.insert(EVENTTIME);
-    _keywords.insert(RUNID);
+//    _keywords.insert(RUNID);
     _keywords.insert(STATUS);
     _keywords.insert(TOPIC);
     _keywords.insert(PUBTIME);
@@ -212,7 +212,6 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps, const
     long int host_len = sysconf(_SC_HOST_NAME_MAX);
 
     boost::scoped_array<char> hostname(new char[host_len]);
-    //time_t rawtime;
 
     _init();
     
@@ -231,8 +230,10 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps, const
     }
    
     // _runId is filled in here and is ignored in the passed PropertySet
-    if (!runId.empty())
+    if (!runId.empty()) {
+        _keywords.insert(RUNID);
         _psp->set(RUNID, runId);
+    }
 
     // _type is filled in here and is ignored in the passed PropertySet
     _psp->set(TYPE, EventTypes::EVENT);
@@ -345,7 +346,9 @@ std::string Event::getPubDate() {
 }
 
 std::string Event::getRunId() {
-    return _psp->get<std::string>(RUNID);
+    if (_psp->exists(RUNID))
+        return _psp->get<std::string>(RUNID);
+    return std::string();
 }
 
 std::string Event::getType() {

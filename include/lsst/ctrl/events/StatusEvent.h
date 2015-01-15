@@ -72,8 +72,14 @@ public:
     virtual ~StatusEvent();
 
     StatusEvent(cms::TextMessage *msg);
+
+    StatusEvent(const LocationID& originator, const PropertySet& ps);
+    StatusEvent(const LocationID& originator, const PropertySet& ps, const PropertySet& filterable);
+
     StatusEvent(const std::string& runid, const LocationID& originator, const PropertySet& ps);
+    StatusEvent(const std::string& runid, const LocationID& originator, const PropertySet& ps, const PropertySet& filterable);
     StatusEvent(const std::string& runid, const LocationID& originator, const PropertySet::Ptr psp);
+    StatusEvent(const std::string& runid, const LocationID& originator, const PropertySet::Ptr psp, const PropertySet& filterable);
 
     virtual void populateHeader(cms::TextMessage *msg) const;
 
@@ -82,7 +88,7 @@ public:
 
 private:
     void _init();
-    void _constructor(const std::string& runid, const LocationID& originator, const PropertySet& ps);
+    void _constructor(const LocationID& originator);
 
 };
 }

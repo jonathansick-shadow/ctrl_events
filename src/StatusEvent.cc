@@ -90,15 +90,31 @@ StatusEvent::StatusEvent(cms::TextMessage *msg) : Event(msg) {
     _psp->set(ORIG_LOCALID, (int)msg->getIntProperty(ORIG_LOCALID));
 }
 
+StatusEvent::StatusEvent(const LocationID& originatorID, const PropertySet& ps) : Event(ps) {
+    _constructor(originatorID);
+}
+
+StatusEvent::StatusEvent(const LocationID& originatorID, const PropertySet& ps, const PropertySet& filterable) : Event(ps, filterable) {
+    _constructor(originatorID);
+}
+
 StatusEvent::StatusEvent( const std::string& runID, const LocationID& originatorID, const PropertySet::Ptr psp) : Event(runID, *psp) {
-    _constructor(runID, originatorID, *psp);
+    _constructor(originatorID);
+}
+
+StatusEvent::StatusEvent( const std::string& runID, const LocationID& originatorID, const PropertySet::Ptr psp, const PropertySet& filterable) : Event(runID, *psp, filterable) {
+    _constructor(originatorID);
 }
 
 StatusEvent::StatusEvent( const std::string& runID, const LocationID& originatorID, const PropertySet& ps) : Event(runID, ps) {
-    _constructor(runID, originatorID, ps);
+    _constructor(originatorID);
 }
 
-void StatusEvent::_constructor(const std::string& runID, const LocationID& originatorID, const PropertySet& ps) {
+StatusEvent::StatusEvent( const std::string& runID, const LocationID& originatorID, const PropertySet& ps, const PropertySet& filterable) : Event(runID, ps, filterable) {
+    _constructor(originatorID);
+}
+
+void StatusEvent::_constructor(const LocationID& originatorID) {
     _init();
 
     _psp->set(ORIG_HOSTNAME, originatorID.getHostName());
