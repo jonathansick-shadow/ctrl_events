@@ -60,9 +60,9 @@ public:
 protected:
     void _constructor(const std::string& hostname, int pid, int localID);
     static int _localCounter;
-    static int _localID;
-    static std::string _hostname;
-    static int _pid;
+    int _localID;
+    std::string _hostname;
+    int _pid;
 
 };
 }

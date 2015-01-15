@@ -25,21 +25,83 @@
 
 import unittest
 
-import os
-import platform
 import lsst.ctrl.events as events
+import os, platform
+
 from lsst.daf.base import PropertySet
 from socket import gethostname
 
-#
-# Send an event
-#
-class SendFilterableEventTestCase(unittest.TestCase):
+class EventFilteresTestCase(unittest.TestCase):
+    """A test case for Event."""
+
+    def testEventFilters(self):
+        runid = "testrunid"
+        status = "my special status"
+        root = PropertySet()
+        MYNAME = "myname"
+        root.set(MYNAME, MYNAME)
+        root.set(events.Event.STATUS, status)
+
+        filterable = PropertySet()
+        filterable.set("FOO", "bar")
+        filterable.set("XYZZY", 123)
+        
+        event = events.Event(runid, root, filterable)
+    
+        # return the property set
+        props = event.getPropertySet()
+        self.assertGreater(props.get(events.Event.EVENTTIME), 0)
+        self.assertEqual(props.get(events.Event.PUBTIME), 0)
+        self.assertEqual(props.get(events.Event.RUNID), runid)
+        self.assertEqual(props.get(events.Event.STATUS), status)
+        self.assertEqual(props.get(events.Event.TOPIC), events.Event.UNINITIALIZED)
+        self.assertEqual(props.get(events.Event.TYPE), events.EventTypes.EVENT)
+        self.assertEqual(props.get(MYNAME), MYNAME)
+    
+    
+        filterableNames = event.getFilterablePropertyNames()
+        
+        filterableNames.remove(events.Event.EVENTTIME)
+        filterableNames.remove(events.Event.PUBTIME)
+        filterableNames.remove(events.Event.RUNID)
+        filterableNames.remove(events.Event.STATUS)
+        filterableNames.remove(events.Event.TOPIC)
+        filterableNames.remove(events.Event.TYPE)
+        # also get the two from "filterable"
+        filterableNames.remove("FOO")
+        filterableNames.remove("XYZZY")
+        self.assertEqual(len(filterableNames), 0)
+    
+        customNames = event.getCustomPropertyNames()
+    
+        self.assertEqual(len(customNames), 1)
+        self.assertEqual(customNames[0], MYNAME)
+    
+        eventTime = event.getEventTime()
+        self.assertEqual(event.getPubTime(),0)
+    
+        self.assertEqual(event.getRunId(), runid)
+        self.assertEqual(event.getType(), events.EventTypes.EVENT)
+        self.assertEqual(event.getStatus(), status)
+    
+        # check to be sure we really update the time
+        event.updateEventTime()
+        self.assertLess(eventTime, event.getEventTime())
+    
+        # set the time to zero, and make sure we get back the same time.
+        event.setEventTime(0)
+        self.assertEqual(event.getEventTime(), 0)
+    
+        # reset the time to eventTime, and make sure we get back the same time.
+        event.setEventTime(eventTime)
+        self.assertEqual(event.getEventTime(), eventTime)
+
+
     def testFilterableSendEvent(self):
         broker = "lsst8.ncsa.illinois.edu"
-        topic = "test_events_3_%s_%d" % (platform.node(), os.getpid())
+        topic = "test_events_filters_%s_%d" % (platform.node(), os.getpid())
     
-        runId = "test3_runid"
+        runId = "test_filters_runid"
         recv = events.EventReceiver(broker, topic)
     
         trans = events.EventTransmitter(broker, topic)
@@ -99,7 +161,7 @@ class SendFilterableEventTestCase(unittest.TestCase):
         self.assertNotEqual(val, None)
     
         ps = val.getPropertySet()
-        print ps.toString()
+        
         self.assertEqual(ps.get(DATE), DATE_VAL)
         self.assertEqual(ps.get(BLANK), BLANK_VAL)
         self.assertEqual(ps.get(PID), PID_VAL)
@@ -123,7 +185,11 @@ class SendFilterableEventTestCase(unittest.TestCase):
 
 
         names = val.getFilterablePropertyNames()
-        print "names: ",names
+
+        values = ['EVENTTIME', 'FOO', 'PLOUGH', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE', 'XYZZY']
+
+        for x in values:
+            self.assertTrue(x in names)
         
         #
         # wait a short time to receive an event.  none was sent, so we should
@@ -134,4 +200,3 @@ class SendFilterableEventTestCase(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

@@ -74,11 +74,13 @@ public:
 
     CommandEvent();
 
-    CommandEvent(const LocationID& originator, const LocationID& destination, const PropertySet& ps);
     CommandEvent(const LocationID& originator, const LocationID& destination, const PropertySet::Ptr psp);
+    CommandEvent(const LocationID& originator, const LocationID& destination, const PropertySet& ps);
+    CommandEvent(const LocationID& originator, const LocationID& destination, const PropertySet& ps, const PropertySet& filterable);
 
-    CommandEvent(const std::string& runid, const LocationID& originator, const LocationID& destination, const PropertySet& ps);
     CommandEvent(const std::string& runid, const LocationID& originator, const LocationID& destination, const PropertySet::Ptr psp);
+    CommandEvent(const std::string& runid, const LocationID& originator, const LocationID& destination, const PropertySet& ps);
+    CommandEvent(const std::string& runid, const LocationID& originator, const LocationID& destination, const PropertySet& ps, const PropertySet& filterable);
 
     CommandEvent(cms::TextMessage *msg);
 

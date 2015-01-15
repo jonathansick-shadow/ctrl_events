@@ -109,11 +109,19 @@ CommandEvent::CommandEvent(const LocationID&  originator, const LocationID&  des
     _constructor(originator, destination);
 }
 
+CommandEvent::CommandEvent(const LocationID&  originator, const LocationID&  destination, const PropertySet& ps, const PropertySet& filterable) : Event(ps, filterable) {
+    _constructor(originator, destination);
+}
+
 CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originator, const LocationID& destination, const PropertySet::Ptr psp) : Event(runId, *psp) {
     _constructor(originator, destination);
 }
 
 CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originator, const LocationID&  destination, const PropertySet& ps) : Event(runId, ps) {
+    _constructor(originator, destination);
+}
+
+CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originator, const LocationID&  destination, const PropertySet& ps, const PropertySet& filterable) : Event(runId, ps, filterable) {
     _constructor(originator, destination);
 }
 

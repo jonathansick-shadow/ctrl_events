@@ -34,61 +34,75 @@ import lsst.pex.policy as policy
 from lsst.daf.base import PropertySet
 
 class LocationIDTestCase(unittest.TestCase):
-    # return the ip address in an integer
-    def getHostAddr(self):
-        
-        hostname = socket.gethostname()
-        (name, aliaslist, ipaddrlist) = socket.gethostbyname_ex(hostname)
-        exp = 3
-        addr = 0
-        for byte in ipaddrlist[0].split('.'):
-            addr = addr + (int(byte) * (256 ** exp))
-            exp = exp -1
-        return addr
         
     def testLocationID(self):
         eventSystem = events.EventSystem().getDefaultEventSystem()
 
         locationID = events.LocationID()
 
+        # check to see if localID is 0
         localId = locationID.getLocalID()
         self.assertEqual(localId, 0)
 
+        # check host name
         hostname = locationID.getHostName()
         self.assertEqual(hostname, socket.gethostname())
+
+        # check process id
         processId = locationID.getProcessID()
         self.assertEqual(processId, os.getpid())
 
         locationID2 = events.LocationID()
 
+        # check to see if localID is 1
         localId = locationID2.getLocalID()
         self.assertEqual(localId, 1)
 
+        self.assertEqual(locationID.getLocalID(), 0)
+
+        # check host name
         hostname = locationID.getHostName()
         self.assertEqual(hostname, socket.gethostname())
+
+        # check process id
         processId = locationID2.getProcessID()
         self.assertEqual(processId, os.getpid())
 
-        hostname = locationID2.getHostName()
 
         root = PropertySet()
         root.set("myname","myname")
         status = "my special status"
         root.set(events.Event.STATUS, status)
 
-        statusEvent = events.StatusEvent("my runid", locationID2, root)
+        statusEvent = events.StatusEvent("my runid", locationID, root)
+        statusEvent2 = events.StatusEvent("my runid", locationID2, root)
 
         topic = "mytopic_%s_%d" % (platform.node(), os.getpid())
         transmitter = events.EventTransmitter("lsst8.ncsa.illinois.edu", topic)
-        sel = "%s = '%s'" % (events.StatusEvent.ORIG_HOSTNAME, hostname)
-        #sel = "RUNID = '%s'" % "my runid"
-        #sel = "PROCESSID = %d" % processId
-        print topic
-        print sel
+
+        hostname = locationID2.getHostName()
+
+        # create a receiver selector with the hostname, process id and local id
+        sel = "%s = '%s' and %s = %d and %s = %d" % (events.StatusEvent.ORIG_HOSTNAME, hostname, events.StatusEvent.ORIG_PROCESSID, os.getpid(), events.StatusEvent.ORIG_LOCALID, 1)
+
         receiver = events.EventReceiver("lsst8.ncsa.illinois.edu", topic, sel)
 
+        # transmit the events
         transmitter.publishEvent(statusEvent)
+        transmitter.publishEvent(statusEvent2)
+
+        # should receive event with with the process id
         returnedEvent = receiver.receiveEvent()
+        ps = returnedEvent.getPropertySet()
+        self.assertEqual(ps.get('ORIG_HOSTNAME'), hostname)
+        self.assertEqual(ps.get('ORIG_PROCESSID'), os.getpid())
+        self.assertEqual(ps.get('ORIG_LOCALID'), 1)
+
+        # should NOT receive another event, because it was filtered out by
+        # the broker
+        returnedEvent2 = receiver.receiveEvent(1)
+        self.assertEqual(returnedEvent2, None)
+        
 
         print "done"
 

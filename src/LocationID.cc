@@ -22,7 +22,7 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file Location.cc
+/** \file LocationID.cc
   *
   * \brief host information
   *
@@ -75,9 +75,6 @@ LocationID::~LocationID() {
 }
 
 int LocationID::_localCounter=0;
-int LocationID::_localID=0;
-int LocationID::_pid=0;
-std::string LocationID::_hostname;
 
 std::string LocationID::getHostName() const {
     return _hostname;

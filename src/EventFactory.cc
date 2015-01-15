@@ -75,11 +75,6 @@ EventFactory::~EventFactory() {
 Event* EventFactory::createEvent(cms::TextMessage* msg) {
     vector<std::string> names = msg->getPropertyNames();
 
-/*
-    for (unsigned int i = 0; i < names.size(); i++) 
-        std::cout << names[i] << std::endl;
-*/
-
     std::string _type = msg->getStringProperty("TYPE");
 
     if (_type == EventTypes::LOG) {
@@ -87,7 +82,6 @@ Event* EventFactory::createEvent(cms::TextMessage* msg) {
     } else if (_type == EventTypes::STATUS) {
         return new StatusEvent(msg);
     } else if (_type == EventTypes::COMMAND) {
-        std::cout << "creating Command Event" << std::endl;
         return new CommandEvent(msg);
     }
     return new Event(msg);
