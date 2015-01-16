@@ -47,7 +47,7 @@ class MultiTopicSendTestCase(unittest.TestCase):
         root.set("EVNT","test")
         root.set("misc1","data 1")
         root.set("misc2","data 2")
-        root.setFloat("float_value", 3.14)
+        root.set("value", 3.14)
     
         event = events.Event("runid_test6",root)
         trans.publishEvent(event)

@@ -49,10 +49,20 @@ class EventSystemTestCase(unittest.TestCase):
         event = events.Event("runid_es3", root)
         eventSystem.publishEvent(topic, event)
     
+        eventSystem.createReceiver(host, topic)
+
         rec = logging.LogRecord(-1,10)
         rec.addComment("a comment")
         event = events.LogEvent("runid_es3_log", rec)
         eventSystem.publishEvent(topic, event)
+
+        val = eventSystem.receiveEvent(topic)
+        ps = val.getPropertySet()
+
+        names = [ "COMMENT", "DATE", "EVENTTIME", "LEVEL", "LOG", "PUBTIME", "RUNID", "STATUS", "TIMESTAMP", "TOPIC", "TYPE"]
+        self.assertEqual(ps.nameCount(), len(names))
+        for x in names:
+            self.assertTrue(ps.exists(x))
 
 if __name__ == "__main__":
     unittest.main()
