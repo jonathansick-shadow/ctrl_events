@@ -36,12 +36,51 @@ from lsst.daf.base import PropertySet
 #
 class CommandTestCase(unittest.TestCase):
 
+    #
+    # do a validity check on the values we received.
+    #
+    def checkValidity(self, val, names, origNum, destNum):
+        # get only the filterable properties and make sure we only get the names we expect
+        fnames = val.getFilterablePropertyNames()
+        self.assertTrue(len(fnames), len(names))
+
+        for x in names:
+            self.assertTrue(x in fnames)
+
+        # get the whole PropertySet and make sure we only get the names we expect
+
+        props = list(names)
+        props.append('myname')
+        ps = val.getPropertySet()
+        self.assertEqual(ps.nameCount(), len(props))
+        for x in names:
+            self.assertTrue(ps.exists(x))
+    
+        eventsystem = events.EventSystem.getDefaultEventSystem()
+        commandEvent = eventsystem.castToCommandEvent(val)
+        
+        # check originator values
+        orig = commandEvent.getOriginator()
+        self.assertEqual(orig.getLocalID(), origNum)
+        self.assertEqual(orig.getProcessID(), os.getpid())
+        self.assertEqual(orig.getHostName(), platform.node())
+        
+        dest = commandEvent.getDestination()
+
+        # check destination values
+        self.assertEqual(dest.getLocalID(), destNum)
+        self.assertEqual(dest.getProcessID(), os.getpid())
+        self.assertEqual(dest.getHostName(), platform.node())
+
+    # test command event and command event with additional filterable properties.
+    # this is run as one test, rather than two because of how LocationIDs are
+    # generated and the checks for the local values are order dependent
     def testCommandEvent(self):
         broker = "lsst8.ncsa.illinois.edu"
         topic = "test_events_command_%s_%d" % (platform.node(), os.getpid())
     
+        # send a command event
         receiver = events.EventReceiver(broker, topic)
-    
         trans = events.EventTransmitter(broker, topic)
     
         originatorId = events.LocationID()
@@ -62,64 +101,27 @@ class CommandTestCase(unittest.TestCase):
         event2 = events.CommandEvent("srptestrun", commandOriginatorId, destinationID, root2)
     
         trans.publishEvent(event2)
-    
         val = receiver.receiveEvent()
 
         # be sure we received an event
         self.assertNotEqual(val, None)
-
-        # get only the filterable properties and make sure we only get the names we expect
-        fnames = val.getFilterablePropertyNames()
-        self.assertTrue(len(fnames), 12)
-
+        # these are the filterable names we expect to see
         names = ['DEST_HOSTNAME', 'DEST_LOCALID', 'DEST_PROCESSID', 'EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE']
-        for x in names:
-            self.assertTrue(x in fnames)
+        self.checkValidity(val, names, 1, 0)
 
-        # get the whole PropertySet and make sure we only get the names we expect
-        names.append('myname')
-        ps = val.getPropertySet()
-        self.assertEqual(ps.nameCount(), 13)
-        for x in names:
-            self.assertTrue(ps.exists(x))
-    
-        eventsystem = events.EventSystem.getDefaultEventSystem()
-        commandEvent = eventsystem.castToCommandEvent(val)
-        
-        orig = commandEvent.getOriginator()
-        self.assertEqual(orig.getLocalID(), 1)
-        self.assertEqual(orig.getProcessID(), os.getpid())
-        self.assertEqual(orig.getHostName(), platform.node())
-        
-        dest = commandEvent.getDestination()
 
-        self.assertEqual(dest.getLocalID(), 0)
-        self.assertEqual(dest.getProcessID(), os.getpid())
-        self.assertEqual(dest.getHostName(), platform.node())
-
-    def testFilterableCommandEvent(self):
-        broker = "lsst8.ncsa.illinois.edu"
-        topic = "test_events_command_%s_%d" % (platform.node(), os.getpid())
-    
+        # send a command event with additional filterable properties
         receiver = events.EventReceiver(broker, topic)
     
         trans = events.EventTransmitter(broker, topic)
     
         originatorId = events.LocationID()
-        root = PropertySet()
-        root.set("TOPIC",topic)
-        root.set("myname","myname")
-        root.set("STATUS", "my special status")
         event = events.StatusEvent("srptestrun", originatorId, root)
     
         statusOriginatorId = event.getOriginator()
         destinationID = events.LocationID(statusOriginatorId)
     
         commandOriginatorId = events.LocationID()
-        root2 = PropertySet()
-        root2.set("TOPIC",topic)
-        root2.set("myname","myname2")
-        root2.set("STATUS", "my special status2")
 
         filterable = PropertySet()
         filterable.set("FOO", 12.3)
@@ -134,36 +136,9 @@ class CommandTestCase(unittest.TestCase):
         # be sure we received an event
         self.assertNotEqual(val, None)
 
-        # get only the filterable properties and make sure we only get the names we expect
-        fnames = val.getFilterablePropertyNames()
-        self.assertTrue(len(fnames), 14)
-
+        # these are the filterable names we expect to see
         names = ['DEST_HOSTNAME', 'DEST_LOCALID', 'DEST_PROCESSID', 'EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE', 'FOO', 'BAR']
-        for x in names:
-            self.assertTrue(x in fnames)
-
-        # get the whole PropertySet and make sure we only get the names we expect
-        names.append('myname')
-        ps = val.getPropertySet()
-        self.assertEqual(ps.nameCount(), 15)
-        for x in names:
-            self.assertTrue(ps.exists(x))
-    
-        eventsystem = events.EventSystem.getDefaultEventSystem()
-        commandEvent = eventsystem.castToCommandEvent(val)
-        
-        orig = commandEvent.getOriginator()
-        self.assertEqual(orig.getLocalID(), 3)
-        self.assertEqual(orig.getProcessID(), os.getpid())
-        self.assertEqual(orig.getHostName(), platform.node())
-        
-        dest = commandEvent.getDestination()
-
-        self.assertEqual(dest.getLocalID(), 2)
-        self.assertEqual(dest.getProcessID(), os.getpid())
-        self.assertEqual(dest.getHostName(), platform.node())
-
-
+        self.checkValidity(val, names, 3, 2)
 
 if __name__ == "__main__":
     unittest.main()

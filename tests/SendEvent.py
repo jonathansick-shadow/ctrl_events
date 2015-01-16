@@ -39,62 +39,63 @@ class SendEventTestCase(unittest.TestCase):
         broker = "lsst8.ncsa.illinois.edu"
         topic = "test_events_3_%s_%d" % (platform.node(), os.getpid())
     
-        runId = "test3_runid"
+        runID = "test3_runid"
         recv = events.EventReceiver(broker, topic)
     
         trans = events.EventTransmitter(broker, topic)
         
-        root = PropertySet()
     
         DATE = "date"
         DATE_VAL = "2007-07-01T14:28:32.546012"
-        root.set(DATE, DATE_VAL)
-    
+
         BLANK = "blank"
         BLANK_VAL = ""
-        root.set(BLANK, BLANK_VAL)
-    
+
         PID = "pid"
         PID_VAL = os.getpid()
-        root.setInt(PID, PID_VAL)
-    
+
         HOST = "host"
         HOST_VAL = "lsst8.ncsa.illinois.edu"
-        root.set(HOST, HOST_VAL)
-    
+
         IP = "ip"
         IP_VAL = "141.142.220.44"
-        root.set(IP, IP_VAL)
-    
+
         EVNT = "evnt"
         EVNT_VAL = "test"
-        root.set(EVNT, EVNT_VAL)
-    
+
         MISC1 = "misc1"
         MISC1_VAL = "data 1"
-        root.set(MISC1, MISC1_VAL)
-    
+
         MISC2 = "misc2"
         MISC2_VAL = "data 2"
-        root.set(MISC2, MISC2_VAL)
-    
+
         MISC3 = "misc3"
         MISC3_VAL = ""
-        root.set(MISC3, MISC3_VAL)
-    
+
         DATA = "data"
         DATA_VAL = 3.14
+
+        root = PropertySet()
+        root.set(DATE, DATE_VAL)
+        root.set(BLANK, BLANK_VAL)
+        root.setInt(PID, PID_VAL)
+        root.set(HOST, HOST_VAL)
+        root.set(IP, IP_VAL)
+        root.set(EVNT, EVNT_VAL)
+        root.set(MISC1, MISC1_VAL)
+        root.set(MISC2, MISC2_VAL)
+        root.set(MISC3, MISC3_VAL)
         root.setDouble(DATA, DATA_VAL)
         
-        event = events.Event(runId, root)
+        event = events.Event(runID, root)
         trans.publishEvent(event)
     
     
         val = recv.receiveEvent()
         self.assertNotEqual(val, None)
     
+        # check the validity of all sent values
         ps = val.getPropertySet()
-        print ps.toString()
         self.assertEqual(ps.get(DATE), DATE_VAL)
         self.assertEqual(ps.get(BLANK), BLANK_VAL)
         self.assertEqual(ps.get(PID), PID_VAL)
@@ -108,7 +109,7 @@ class SendEventTestCase(unittest.TestCase):
 
         self.assertGreater(ps.get(events.Event.EVENTTIME), 0)
         self.assertGreater(ps.get(events.Event.PUBTIME), 0)
-        self.assertEqual(ps.get(events.Event.RUNID), runId)
+        self.assertEqual(ps.get(events.Event.RUNID), runID)
         self.assertEqual(ps.get(events.Event.STATUS), "unknown")
         self.assertEqual(ps.get(events.Event.TOPIC), topic)
         self.assertEqual(ps.get(events.Event.TYPE), events.EventTypes.EVENT)

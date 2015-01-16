@@ -33,7 +33,7 @@ from lsst.daf.base import PropertySet
 #
 # Send an event
 #
-class StatusEventTestCase(unittest.TestCase):
+class StatusEventOriginatorTestCase(unittest.TestCase):
     def sendEvent(self, brokerName, topic):
         trans = events.EventTransmitter(brokerName, topic)
         
@@ -50,42 +50,32 @@ class StatusEventTestCase(unittest.TestCase):
         # ok...now publish it
         trans.publishEvent(event)
 
-    def testStatusEvent(self):
+    def testStatusEventOriginator(self):
         broker = "lsst8.ncsa.illinois.edu"
     
         host = platform.node()
         pid = os.getpid()
-        topicA = "test_events_12_%s_%d" % (host, pid)
+        topic = "test_events_12_%s_%d" % (host, pid)
     
-        yC = events.EventReceiver(broker, topicA)
+        recv = events.EventReceiver(broker, topic)
     
         #
         # send a test event, and wait to receive it
         #
-        self.sendEvent(broker, topicA)
+        self.sendEvent(broker, topic)
     
-        val = yC.receiveEvent()
+        val = recv.receiveEvent()
         assert val != None
-        print "custom property names"
-        print val.getCustomPropertyNames()
-        print "Custom PropertySet"
         ps = val.getCustomPropertySet()
-        print ps.toString()
-        print
-        print "filterable property names"
-        print val.getFilterablePropertyNames()
-    
-        print "PropertySet"
         ps = val.getPropertySet()
-        print ps.toString()
     
         eventSystem = events.EventSystem().getDefaultEventSystem()
         statusevent = eventSystem.castToStatusEvent(val)
-        print "OriginatorId"
+   
         originatorID = statusevent.getOriginator()
-        print "localID", originatorID.getLocalID()
-        print "processID", originatorID.getProcessID()
-        print "HostName", originatorID.getHostName()
+        self.assertEqual(originatorID.getLocalID(), 0)
+        self.assertEqual(originatorID.getProcessID(), os.getpid())
+        self.assertEqual(platform.node(), originatorID.getHostName())
 
 if __name__ == "__main__":
     unittest.main()

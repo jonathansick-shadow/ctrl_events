@@ -128,6 +128,39 @@ class StatusEventTestCase(unittest.TestCase):
         self.assertNotEqual(val.getPubTime(), 0)
         self.assertGreater(val.getPubTime(), val.getEventTime())
 
+    def testFilterableStatusEvent(self):
+        self.init()
+        topic = self.createTopicName("test_events_10_%s.C")
+
+        receiver = self.createReceiver(topic)
+
+        self.sendFilterableStatusEvent(topic)
+
+        val = receiver.receiveEvent()
+
+        self.assertNotEqual(val, None)
+
+        # should only be ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
+        # in some order
+        values = ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
+        self.checkValidity(val, values)
+
+    def testFilterableStatusEventWithRunID(self):
+        self.init()
+        topic = self.createTopicName("test_events_10_%s.D")
+
+        receiver = self.createReceiver(topic)
+
+        self.sendFilterableStatusEvent(topic, "test_runID_10")
+
+        val = receiver.receiveEvent()
+
+        # should receive an event
+        self.assertNotEqual(val, None)
+        values = ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE']
+        self.checkValidity(val, values)
+
+
     def checkValidity(self, val, values):
         # get custom property names
         names = val.getCustomPropertyNames()
@@ -167,40 +200,6 @@ class StatusEventTestCase(unittest.TestCase):
         self.assertEqual(ps.nameCount(), len(allValues))
         for x in allValues:
             self.assertTrue(ps.exists(x))
-
-    def testFilterableStatusEvent(self):
-        self.init()
-        topic = self.createTopicName("test_events_10_%s.C")
-
-        receiver = self.createReceiver(topic)
-
-        self.sendFilterableStatusEvent(topic)
-
-        val = receiver.receiveEvent()
-
-        self.assertNotEqual(val, None)
-
-        # should only be ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
-        # in some order
-        values = ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
-        self.checkValidity(val, values)
-
-
-    def testFilterableStatusEventWithRunID(self):
-        self.init()
-        topic = self.createTopicName("test_events_10_%s.D")
-
-        receiver = self.createReceiver(topic)
-
-        self.sendFilterableStatusEvent(topic, "test_runID_10")
-
-        val = receiver.receiveEvent()
-
-        # should receive an event
-        self.assertNotEqual(val, None)
-        values = ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE']
-        self.checkValidity(val, values)
-
 
 if __name__ == "__main__":
     unittest.main()

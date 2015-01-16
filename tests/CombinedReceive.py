@@ -66,35 +66,58 @@ class CombinedReceiveEventTestCase(unittest.TestCase):
         topicB = "test_events_9_%s.B" % host_pid
         topicC = "test_events_9_%s.*" % host_pid
     
-        yC = events.EventReceiver(broker, topicC)
+        recvA = events.EventReceiver(broker, topicA)
+        recvB = events.EventReceiver(broker, topicB)
+        recvC = events.EventReceiver(broker, topicC)
     
-        #
-        # send a test event, and wait to receive it
-        #
+        # send a test event on topicA and topicB
         self.sendEvent(broker, topicA)
         self.sendEvent(broker, topicB)
-    
-        val = yC.receiveEvent()
+
+        # receive event on topicA, and check to see it's the
+        # right one
+        val = recvA.receiveEvent()
         self.assertNotEqual(val, None)
-        print "eventTime = ",val.getEventTime()
-        print "eventDate = ",val.getEventDate()
-        print "pubTime = ",val.getPubTime()
-        print "pubDate = ",val.getPubDate()
-    
-        val = yC.receiveEvent()
-        self.assertNotEqual(val, None)
-        print "custom property names"
-        print val.getCustomPropertyNames()
-        print "Custom PropertySet"
-        ps = val.getCustomPropertySet()
-        print ps.toString()
-        print
-        print "filterable property names"
-        print val.getFilterablePropertyNames()
-    
-        print "PropertySet"
         ps = val.getPropertySet()
-        print ps.toString()
+        name = ps.get("TOPIC")
+        self.assertEqual(name, topicA)
+
+        # receiving no more messages on topicA
+        val = recvA.receiveEvent(1)
+        self.assertEqual(val, None)
+
+        # receive event on topicB, and check to see it's the
+        # right one
+        val = recvB.receiveEvent()
+        self.assertNotEqual(val, None)
+        ps = val.getPropertySet()
+        name = ps.get("TOPIC")
+        self.assertEqual(name, topicB)
+
+        # receiving no more messages on topicB
+        val = recvB.receiveEvent(1)
+        self.assertEqual(val, None)
+    
+        # receive event on topicC, and check to see it's
+        # the one sent to topicA
+        val = recvC.receiveEvent()
+        self.assertNotEqual(val, None)
+        ps = val.getPropertySet()
+        name = ps.get("TOPIC")
+        self.assertEqual(name, topicA)
+    
+        # receive event on topicC, and check to see it's
+        # the one sent to topicB
+        val = recvC.receiveEvent()
+        self.assertNotEqual(val, None)
+        ps = val.getPropertySet()
+        name = ps.get("TOPIC")
+        self.assertEqual(name, topicB)
+
+        # receiving no more messages on topicC
+        val = recvC.receiveEvent(1)
+        self.assertEqual(val, None)
+    
 
 if __name__ == "__main__":
     unittest.main()

@@ -28,53 +28,58 @@ import unittest
 import os
 import platform
 import lsst.ctrl.events as events
-from lsst.daf.base import PropertySet
+import lsst.daf.base as base
+
 
 #
 # Send an event
 #
+class MultiTopicSendTestCase(unittest.TestCase):
 
-class SendValidEventTestCase(unittest.TestCase):
     def sendEvent(self, broker, topic):
         trans = events.EventTransmitter(broker, topic)
         
-        root = PropertySet()
-        root.set("TOPIC",topic)
-        root.set("myname","myname")
-        root.set("STATUS", "my special status")
-        root.set("RUNID","srptestrun")
-        
-        event = events.Event("srptestrun", root)
+        root = base.PropertySet()
+        root.set("DATE","2007-07-01T14:28:32.546012")
+        root.setInt("PID",200)
+        root.set("HOST","lsst8.ncsa.illinois.edu")
+        root.set("IP","141.142.220.44")
+        root.set("EVNT","test")
+        root.set("misc1","data 1")
+        root.set("misc2","data 2")
+        root.setFloat("float_value", 3.14)
+    
+        event = events.Event("runid_test6",root)
         trans.publishEvent(event)
 
-    def testSendEvent(self):
+    def testMultiTopicSend(self):
         broker = "lsst8.ncsa.illinois.edu"
     
         host = platform.node()
         pid = os.getpid()
+    
         host_pid = "%s_%d" % (host, pid)
-        topicA = "test_events_8_%s.A" % host_pid
-        topicB = "test_events_8_%s.*" % host_pid
     
-        recv = events.EventReceiver(broker, topicB)
+        topic1 = "test_events_6_%s" % host_pid
+        topic2 = "test_events_6a_%s" % host_pid
+       
+        y1 = events.EventReceiver(broker, topic1)
+      
+        y2 = events.EventReceiver(broker, topic2)
     
         #
-        # send a test event, and wait to receive it
+        # send a test event on both topics at once, and have each receiver wait to
+        # receive it
         #
-        self.sendEvent(broker, topicA)
+        self.sendEvent(broker, topic1+","+topic2)
     
-        val = recv.receiveEvent()
+        val = y1.receiveEvent()
         self.assertNotEqual(val, None)
         ps = val.getPropertySet()
-        print ps.toString()
     
-        print "+++++"
-        retTopic = val.getTopic()
-        print "topic = ",retTopic
-        retStatus = val.getStatus()
-        print "status = ",retStatus
-        retRunId = val.getRunId()
-        print "runId = ", retRunId
+        val = y2.receiveEvent()
+        self.assertNotEqual(val, None)
+        ps = val.getPropertySet()
 
 if __name__ == "__main__":
     unittest.main()
