@@ -23,6 +23,8 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
+#6
+
 import unittest
 
 import lsst.ctrl.events as events

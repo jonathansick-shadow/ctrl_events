@@ -52,7 +52,6 @@
 
 using lsst::daf::base::PropertySet;
 
-namespace pexPolicy = lsst::pex::policy;
 namespace pexLogging = lsst::pex::logging;
 
 using namespace std;

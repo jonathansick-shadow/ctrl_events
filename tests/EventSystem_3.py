@@ -23,13 +23,13 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
+#3
 import unittest
 
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import lsst.pex.exceptions
 import lsst.pex.logging as logging
-import lsst.pex.policy as policy
 import os, platform
 
 class EventSystemTestCase(unittest.TestCase):
@@ -38,36 +38,21 @@ class EventSystemTestCase(unittest.TestCase):
         host = "lsst8.ncsa.illinois.edu"
         eventSystem = events.EventSystem().getDefaultEventSystem()
     
-        # can't just pass in an empty policy file, because it
-        # expects a topicName
-        p = policy.Policy()
-        try:
-            eventSystem.createTransmitter(p)
-        except lsst.pex.exceptions.Exception as e:
-            pass
-    
-        # host wasn't specified...that's a no-no,
         topic = "EventSystem_test_%s_%d" % (platform.node(), os.getpid())
-        p.set("topicName", topic)
-        try:
-            eventSystem.createTransmitter(p)
-        except lsst.pex.exceptions.Exception as e:
-            pass
     
-        topic2 = "EventSystem_1_test_%s_%d" % (platform.node(), os.getpid())
     
-        eventSystem.createTransmitter(host, topic2)
+        eventSystem.createTransmitter(host, topic)
     
         root = base.PropertySet()
         root.addInt("test", 12)
     
         event = events.Event("runid_es3", root)
-        eventSystem.publishEvent(topic2, event)
+        eventSystem.publishEvent(topic, event)
     
         rec = logging.LogRecord(-1,10)
         rec.addComment("a comment")
         event = events.LogEvent("runid_es3_log", rec)
-        eventSystem.publishEvent(topic2, event)
+        eventSystem.publishEvent(topic, event)
 
 if __name__ == "__main__":
     unittest.main()

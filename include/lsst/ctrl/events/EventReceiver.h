@@ -50,8 +50,6 @@
 
 using lsst::daf::base::PropertySet;
 
-namespace pexPolicy = lsst::pex::policy;
-
 using namespace std;
 
 namespace lsst {
@@ -62,8 +60,6 @@ namespace events {
  */
 class EventReceiver {
 public:
-    EventReceiver(const pexPolicy::Policy& policy);
-
     EventReceiver(const std::string& hostName, const std::string& topicName, int hostPort = EventBroker::DEFAULTHOSTPORT);
 
     EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort = EventBroker::DEFAULTHOSTPORT);

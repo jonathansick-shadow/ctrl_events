@@ -34,7 +34,6 @@ using namespace std;
 
 namespace pexExceptions = lsst::pex::exceptions;
 namespace pexLogging = lsst::pex::logging;
-namespace pexPolicy = lsst::pex::policy;
 namespace ctrlEvents = lsst::ctrl::events;
 
 #define BOOST_TEST_MODULE EventSystem_1
@@ -56,7 +55,6 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
 
 BOOST_AUTO_TEST_CASE(all) {
 
-    pexPolicy::Policy p;
     std::ostringstream oss;
     char host[128];
 
@@ -67,20 +65,6 @@ BOOST_AUTO_TEST_CASE(all) {
     std::string topic = oss.str();
 
     ctrlEvents::EventSystem eventSystem = ctrlEvents::EventSystem().getDefaultEventSystem();
-    //
-    // test EventTransmitter(const Policy& policy)
-    //
-    try {
-        eventSystem.createTransmitter(p);
-    } catch (pexExceptions::NotFoundError&) {
-    }
-
-    p.set("topicName", topic);
-    try {
-        eventSystem.createTransmitter(p);
-    } catch (pexExceptions::NotFoundError&) {
-        std::cout << "not created" << std::endl;
-    }
 
     eventSystem.createTransmitter("lsst8.ncsa.illinois.edu", topic);
 

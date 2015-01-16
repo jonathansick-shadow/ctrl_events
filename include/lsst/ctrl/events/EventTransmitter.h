@@ -53,7 +53,6 @@
 
 using lsst::daf::base::PropertySet;
 
-namespace pexPolicy = lsst::pex::policy;
 namespace pexLogging = lsst::pex::logging;
 
 namespace lsst {
@@ -67,8 +66,6 @@ namespace events {
 class EventTransmitter
 {
 public:
-    EventTransmitter(const pexPolicy::Policy& policy);
-
     EventTransmitter(const std::string& hostName, const std::string& topicName, int hostPort = EventBroker::DEFAULTHOSTPORT);
     ~EventTransmitter();
 

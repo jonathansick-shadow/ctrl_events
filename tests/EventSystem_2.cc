@@ -55,7 +55,6 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
 
 BOOST_AUTO_TEST_CASE(all) {
 
-    Policy p;
     std::ostringstream oss;
     char host[128];
 
@@ -66,31 +65,11 @@ BOOST_AUTO_TEST_CASE(all) {
     std::string topic = oss.str();
 
     EventSystem eventSystem = EventSystem().getDefaultEventSystem();
-    //
-    // test EventTransmitter(const Policy& policy)
-    //
-    try {
-        eventSystem.createReceiver(p);
-    } catch (NotFoundError&) {
-    }
 
-    p.set("topicName", topic);
-    p.set("useLocalSockets", false);
-    try {
-        eventSystem.createReceiver(p);
-    } catch (NotFoundError&) {
-    }
-
-    p.set("topicName", topic);
-    p.set("useLocalSockets", false);
-    p.set("hostName", "garbage");
-    try {
-        eventSystem.createReceiver(p);
-    } catch (RuntimeError&) {
-    }
-
+    eventSystem.createReceiver("lsst8.ncsa.illinois.edu", topic);
     try {
         eventSystem.createReceiver("lsst8.ncsa.illinois.edu", topic);
+        throw runtime_error("should never get here: can't create a receiver if one already exists");
     } catch (RuntimeError&) {
         // can't create a receiver if one already exists for that topic
     }

@@ -43,7 +43,6 @@
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/logging/Component.h"
-#include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -53,7 +52,6 @@
 #include <activemq/core/ActiveMQConnectionFactory.h>
 #include <activemq/exceptions/ActiveMQException.h>
 
-namespace pexPolicy = lsst::pex::policy;
 namespace pexExceptions = lsst::pex::exceptions;
 
 namespace activemqCore = activemq::core;
@@ -61,57 +59,6 @@ namespace activemqCore = activemq::core;
 namespace lsst {
 namespace ctrl {
 namespace events {
-
-/** \brief Receives events based on Policy file contents
-  *
-  * \param policy the policy object to use when building the receiver
-  * \throw throws lsst::pex::exceptions::NotFoundError if topicName isn't specified
-  * \throw throws lsst::pex::exceptions::NotFoundError if hostName isn't specified
-  * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
-  */
-
-EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
-    //EventLibrary().initializeLibrary();
-    int hostPort;
-
-    try {
-        _turnEventsOff = policy.getBool("turnEventsOff");
-    } catch (pexPolicy::NameNotFound& e) {
-        _turnEventsOff = false;
-    }
-    if (_turnEventsOff == true)
-        return;
-
-    if (!policy.exists("topicName")) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundError, "topicName not found in policy");
-    }
-
-    std::string topicName = policy.getString("topicName");
-    try {
-        _turnEventsOff = policy.getBool("turnEventsOff");
-    } catch (pexPolicy::NameNotFound& e) {
-        _turnEventsOff = false;
-    }
-
-    if (!policy.exists("hostName")) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundError, "hostName not found in policy");
-    }
-
-    std::string hostName = policy.getString("hostName");
-
-    try {
-        hostPort = policy.getInt("hostPort");
-    } catch (pexPolicy::NameNotFound& e) {
-        hostPort = EventBroker::DEFAULTHOSTPORT;
-    }
-
-    try {
-        _selector = policy.getString("selector");
-    } catch (pexPolicy::NameNotFound& e) {
-        _selector = "";
-    }
-    init(hostName, topicName, _selector, hostPort);
-}
 
 /** \brief Receives events from the specified host and topic
   *

@@ -37,7 +37,6 @@
 
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/logging/LogRecord.h"
-#include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/exceptions.h"
 
 #include "lsst/ctrl/events/Event.h"

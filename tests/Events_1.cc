@@ -38,7 +38,6 @@
 
 BOOST_AUTO_TEST_SUITE(Events1Suite)
 
-namespace pexPolicy = lsst::pex::policy;
 namespace pexExceptions = lsst::pex::exceptions;
 namespace pexLogging = lsst::pex::logging;
 namespace ctrlEvents = lsst::ctrl::events;
@@ -56,7 +55,7 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
 BOOST_AUTO_TEST_CASE(all) {
 
     std::ostringstream oss;
-    pexPolicy::Policy p;
+
     char host[128];
 
     int ret = gethostname(host,sizeof(host));
@@ -65,27 +64,6 @@ BOOST_AUTO_TEST_CASE(all) {
     oss << "events_1_test_" << host << "_" << getpid();
     std::string topic = oss.str();
 
-
-    //
-    // test EventTransmitter(const Policy& policy)
-    //
-    try {
-        ctrlEvents::EventTransmitter et1(p);
-    } catch (pexExceptions::NotFoundError&) {
-    }
-
-    p.set("topicName", topic);
-    try {
-        ctrlEvents::EventTransmitter et2(p);
-    } catch (pexExceptions::NotFoundError&) {
-    }
-
-    p.set("topicName", topic);
-    p.set("hostName", "garbage");
-    try {
-        ctrlEvents::EventTransmitter et2(p);
-    } catch (pexExceptions::RuntimeError&) {
-    }
 
     ctrlEvents::EventTransmitter et4("lsst8.ncsa.illinois.edu", topic);
 

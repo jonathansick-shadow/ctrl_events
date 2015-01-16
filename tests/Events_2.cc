@@ -30,7 +30,6 @@
 #include "lsst/ctrl/events.h"
 #include "lsst/pex/exceptions.h"
 using namespace std;
-using lsst::pex::policy::Policy;
 
 using lsst::pex::exceptions::NotFoundError;
 using lsst::pex::exceptions::RuntimeError;
@@ -56,7 +55,6 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
 
 BOOST_AUTO_TEST_CASE(all) {
 
-    Policy p;
     std::ostringstream oss;
     char host[128];
 
@@ -65,36 +63,6 @@ BOOST_AUTO_TEST_CASE(all) {
         throw runtime_error("error getting hostname");
     oss << "events_2_test_" << host << "_" << getpid();
     std::string topic = oss.str();
-
-    //
-    // test EventReceiver(const Policy& policy)
-    //
-    try {
-        EventReceiver er1(p);
-    } catch (NotFoundError&) {
-    }
-
-
-
-    p.set("topicName", topic);
-    try {
-        EventReceiver er2(p);
-    } catch (NotFoundError&) {
-    }
-
-    p.set("topicName", topic);
-    p.set("hostName", "garbage");
-    try {
-        EventReceiver er2(p);
-    } catch (RuntimeError&) {
-    }
-
-    p.set("topicName", topic);
-    p.set("hostName", "lsst8.ncsa.illinois.edu");
-    try {
-        EventReceiver er2(p);
-    } catch (RuntimeError&) {
-    }
 
     EventReceiver er3("lsst8.ncsa.illinois.edu", topic);
 

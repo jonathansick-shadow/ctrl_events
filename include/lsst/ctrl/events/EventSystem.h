@@ -40,7 +40,6 @@
 #include <list>
 #include <boost/shared_ptr.hpp>
 
-#include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
@@ -51,7 +50,6 @@
 #include "lsst/ctrl/events/EventBroker.h"
 
 using lsst::daf::base::PropertySet;
-namespace pexPolicy = lsst::pex::policy;
 
 using namespace std;
 
@@ -70,11 +68,9 @@ public:
 
     static EventSystem& getDefaultEventSystem();
 
-    void createTransmitter(const pexPolicy::Policy& policy);
     void createTransmitter(const std::string& hostName, const std::string& topicName, int hostPort = EventBroker::DEFAULTHOSTPORT);
 
 
-    void createReceiver(const pexPolicy::Policy& policy);
     void createReceiver(const std::string& hostName, const std::string& topicName, int hostPort = EventBroker::DEFAULTHOSTPORT);
 
     void createReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort = EventBroker::DEFAULTHOSTPORT);

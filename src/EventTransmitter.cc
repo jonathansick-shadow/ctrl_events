@@ -45,7 +45,6 @@
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/logging/Component.h"
-#include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -65,64 +64,6 @@ using std::numeric_limits;
 namespace lsst {
 namespace ctrl {
 namespace events {
-
-/** \brief Configures an EventTransmitter based on Policy contents.
-  *
-  * The Policy object is checked for four keywords:
-  *
-  * topicName - the name of the topic to send to       
-  * hostName - the name of the host hosting the event broker
-  * hostPort - the port the event broker is listening on 
-  * turnEventsOff - turn off event transmission
-  *
-  * Defaults are:
-  *
-  * turnEventsOff = false
-  * hostPort = EventSystem::DEFAULTHOSTPORT
-  * 
-  * The dependencies for these keywords are as follows:
-  *
-  * 1) If turnEventsOff is specified as true, no further checking is done, and 
-  * no events will be transmitted.
-  *
-  * 2) If no topicName is specified, a NotFound exception is thrown
-  *
-  * \param policy the policy object to use when building the receiver
-  * \throw throws NotFoundError if expected keywords are missing in Policy object
-  * \throw throws RuntimeError if connection to transport mechanism fails
-  */
-EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
-    int hostPort;
-
-    EventLibrary().initializeLibrary();
-
-    try {
-        _turnEventsOff = policy.getBool("turnEventsoff");
-    } catch (pexPolicy::NameNotFound& e) {
-        _turnEventsOff = false;
-    }
-    if (_turnEventsOff == true)
-        return;
-
-    if (!policy.exists("topicName")) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundError, "topicName not found in policy");
-    }
-    _topicName = policy.getString("topicName");
-
-    std::string hostName;
-    try {
-        hostName = policy.getString("hostName");
-    } catch (pexPolicy::NameNotFound& e) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundError, "hostName not found in policy");
-    }
-
-    try {
-        hostPort = policy.getInt("hostPort");
-    } catch (pexPolicy::NameNotFound& e) {
-        hostPort = EventBroker::DEFAULTHOSTPORT;
-    }
-    init(hostName, _topicName, hostPort);
-}
 
 /** \brief Transmits events to the specified host and topic
   *

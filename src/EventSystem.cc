@@ -43,7 +43,6 @@
 #include <netdb.h>
 
 #include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventSystem.h"
@@ -96,19 +95,6 @@ int EventSystem::_IPId = 0;
 short EventSystem::_localId = 0;
 
 /** \brief create an EventTransmitter to send messages to the message broker
-  * \param policy the Policy object to use to configure the EventTransmitter
-  */
-void EventSystem::createTransmitter(const pexPolicy::Policy& policy) {
-    boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(policy));
-    boost::shared_ptr<EventTransmitter> transmitter2;
-    if ((transmitter2 = getTransmitter(transmitter->getTopicName())) == 0) {
-        _transmitters.push_back(transmitter);
-        return;
-    }
-    throw LSST_EXCEPT(pexExceptions::RuntimeError, "topic "+ transmitter->getTopicName() + " is already registered with EventSystem");
-}
-
-/** \brief create an EventTransmitter to send messages to the message broker
   * \param hostName the location of the message broker to use
   * \param topicName the topic to transmit events to
   * \param hostPort the port where the broker can be reached
@@ -121,19 +107,6 @@ void EventSystem::createTransmitter(const std::string& hostName, const std::stri
         return;
     }
     throw LSST_EXCEPT(pexExceptions::RuntimeError, "topic "+ topicName + " is already registered with EventSystem");
-}
-
-/** \brief create an EventReceiver to receive messages from the message broker
-  * \param policy the Policy object to use to configure the EventReceiver
-  */
-void EventSystem::createReceiver(const pexPolicy::Policy& policy) {
-    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(policy));
-    boost::shared_ptr<EventReceiver> receiver2;
-    if ((receiver2 = getReceiver(receiver->getTopicName())) == 0) {
-        _receivers.push_back(receiver);
-        return;
-    }
-    throw LSST_EXCEPT(pexExceptions::RuntimeError, "topic " + receiver->getTopicName() + " is already registered with EventSystem");
 }
 
 /** \brief create an EventReceiver which will receive message
