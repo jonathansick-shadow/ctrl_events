@@ -29,8 +29,6 @@
   * \brief provides access to primary application interface classes for 
   * sending and receiving events.  
   *
-  * \author Stephen Pietrowicz, NCSA
-  *
   */
 
 #ifndef LSST_CTRL_EVENTS_H_
