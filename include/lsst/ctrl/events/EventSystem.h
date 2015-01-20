@@ -1,5 +1,6 @@
 // -*- lsst-c++ -*-
 
+/*
  * LSST Data Management System
  * Copyright 2008-2014  AURA/LSST.
  * 
