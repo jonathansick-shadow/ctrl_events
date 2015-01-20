@@ -28,8 +28,6 @@
   *
   * \ingroup ctrl/events
   *
-  * \author Stephen R. Pietrowicz, NCSA
-  *
   */
 #include <iomanip>
 #include <sstream>

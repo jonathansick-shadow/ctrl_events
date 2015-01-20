@@ -11,10 +11,10 @@ For the first three examples, run the activemq message broker.  You'll
 need to change the example code's constructors to point at the machine 
 where you are running it, if you don't use the broker on lsst8.
 
-EventSystemTrans_1.py - transmits an event to EventSystemRecv_1
+EventSystemTransmit_1.py - transmits an event to EventSystemRecv_1
 EventSystemRecv_1.py - blocking receive
 
-EventSystemTrans_2.py - transmits an event to EventSystemRecv_2
+EventSystemTransmit_2.py - transmits an event to EventSystemRecv_2
 EventSystemRecv_2.py - blocking receive with timeout
 
 If I'm running in one window, I generally run:

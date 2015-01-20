@@ -30,8 +30,6 @@
   *
   * \ingroup events
   *
-  * \author Stephen R. Pietrowicz, NCSA
-  *
   */
 #include <cstring>
 #include <iomanip>
