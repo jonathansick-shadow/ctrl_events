@@ -7,15 +7,15 @@ receive_1.py - blocking receive with timeout
 transmit_2.py - transmits an event to receive_2
 receive_2.py - blocking receive
 
-transmit_3.py - transmits an event to receive_3
-receive_3.py - blocking receive
-
-transmit_4.py - transmits an event to receive_4
-receive_4.py - blocking receive for local sockets
-
 For the first three examples, run the activemq message broker.  You'll 
 need to change the example code's constructors to point at the machine 
 where you are running it, if you don't use the broker on lsst8.
+
+EventSystemTrans_1.py - transmits an event to EventSystemRecv_1
+EventSystemRecv_1.py - blocking receive
+
+EventSystemTrans_2.py - transmits an event to EventSystemRecv_2
+EventSystemRecv_2.py - blocking receive with timeout
 
 If I'm running in one window, I generally run:
 
@@ -37,5 +37,3 @@ like:
 $ python receive_1.py
 
 without the transmit.  The receive will timeout.
-
-The *[34].py examples use policy files
