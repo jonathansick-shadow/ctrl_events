@@ -36,4 +36,6 @@ if __name__ == "__main__":
     root.add("misc2","data 2")
     root.addFloat("float_value", 3.14)
 
-    x.publish(root)
+    ev = events.Event(root)
+
+    x.publishEvent(ev)

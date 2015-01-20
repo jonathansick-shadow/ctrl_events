@@ -29,22 +29,25 @@ if __name__ == "__main__":
     system.createReceiver("lsst8.ncsa.uiuc.edu", "test2")
     system.createReceiver("lsst8.ncsa.uiuc.edu", "test3")
 
-    dp1 = system.receive("test1", 5000)
+    dp1 = system.receiveEvent("test1", 5000)
     if dp1 == None:
         print "Nothing received from test1"
     else:
-        print dp1.toString()
+        ps = dp1.getPropertySet()
+        print ps.toString()
 
 
-    dp2 = system.receive("test2", 5000)
+    dp2 = system.receiveEvent("test2", 5000)
     if dp2 == None:
         print "Nothing received from test2"
     else:
-        print dp2.toString()
+        ps = dp2.getPropertySet()
+        print ps.toString()
 
-    dp3 = system.receive("test3", 5000)
+    dp3 = system.receiveEvent("test3", 5000)
     if dp3 == None:
         print "Nothing received from test3"
     else:
-        print dp3.toString()
+        ps = dp3.getPropertySet()
+        print ps.toString()
 

@@ -20,6 +20,7 @@
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
+import lsst.daf.base as base
 import lsst.ctrl.events as events
 
 if __name__ == "__main__":
@@ -29,12 +30,14 @@ if __name__ == "__main__":
     system.createReceiver("lsst8.ncsa.uiuc.edu", "test2")
     system.createReceiver("lsst8.ncsa.uiuc.edu", "test3")
 
-    dp1 = system.receive("test1")
-    print dp1.toString()
+    dp1 = system.receiveEvent("test1")
+    ps = dp1.getPropertySet()
+    print ps.toString()
 
-    dp2 = system.receive("test2")
-    print dp2.toString()
+    dp2 = system.receiveEvent("test2")
+    ps = dp2.getPropertySet()
+    print ps.toString()
 
-    dp3 = system.receive("test3")
-    print dp3.toString()
-
+    dp3 = system.receiveEvent("test3")
+    ps = dp3.getPropertySet()
+    print ps.toString()

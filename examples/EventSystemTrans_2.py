@@ -40,8 +40,8 @@ if __name__ == "__main__":
     root.add("EVNT","test")
     root.add("misc1","data 1")
     root.add("misc2","data 2")
-    root.addDouble("float_value", 3.14)
+    root.addDouble("value", 3.14)
 
-    newSystem.publish("test1", root)
-    newSystem.publish("test2", root)
-    newSystem.publish("test3", root)
+    newSystem.publishEvent("test1", events.Event(root))
+    newSystem.publishEvent("test2", events.Event(root))
+    newSystem.publishEvent("test3", events.Event(root))
