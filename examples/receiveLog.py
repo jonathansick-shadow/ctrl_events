@@ -25,10 +25,12 @@ import time
 
 if __name__ == "__main__":
     print "starting...\n"
-    x = events.EventReceiver("lsst8.ncsa.uiuc.edu", "LSSTLogging")
+    x = events.EventReceiver("lsst8.ncsa.illinois.edu", events.EventLog.LOGGING_TOPIC)
     print "waiting on receive...\n"
-    for i in range(8): 
-        val = x.receive(8000)
-        print "finished!\n"
-        if val.get() != None:
-            print val.toString()
+    for i in range(5): 
+        ev = x.receiveEvent(8000)
+        if ev is not None:
+            ps = ev.getPropertySet()
+            print "finished!\n"
+            if ps.nameCount() != None:
+                print ps.toString()

@@ -26,9 +26,9 @@ import lsst.ctrl.events as events
 if __name__ == "__main__":
 
     system = events.EventSystem.getDefaultEventSystem()
-    system.createReceiver("lsst8.ncsa.uiuc.edu", "test1")
-    system.createReceiver("lsst8.ncsa.uiuc.edu", "test2")
-    system.createReceiver("lsst8.ncsa.uiuc.edu", "test3")
+    system.createReceiver("lsst8.ncsa.illinois.edu", "test1")
+    system.createReceiver("lsst8.ncsa.illinois.edu", "test2")
+    system.createReceiver("lsst8.ncsa.illinois.edu", "test3")
 
     dp1 = system.receiveEvent("test1")
     ps = dp1.getPropertySet()
