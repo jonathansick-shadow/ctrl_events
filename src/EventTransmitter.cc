@@ -138,6 +138,9 @@ void EventTransmitter::init( const std::string& hostName, const std::string& top
     }
 }
 
+/* \brief Publish an Event to this object's topic.
+ * \param event an Event to publish
+ */
 void EventTransmitter::publishEvent(Event& event) {
     long long pubtime;
     cms::TextMessage* message = _session->createTextMessage();
@@ -164,16 +167,6 @@ std::string EventTransmitter::getTopicName() {
   */
 EventTransmitter::~EventTransmitter() {
 
-/*
-    // Destroy resources.
-    try {
-        if( _destination != NULL )
-            delete _destination;
-    } catch ( cms::CMSException& e ) {
-        e.printStackTrace();
-    }
-    _destination = NULL;
-*/
     if (_topic != NULL)
         delete _topic;
 

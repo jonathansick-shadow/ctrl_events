@@ -76,6 +76,8 @@ CommandEvent::CommandEvent() : Event() {
 }
 
 
+/** private method to initialize the CommandEvent
+  */
 void CommandEvent::_init() {
     _keywords.insert(ORIG_HOSTNAME);
     _keywords.insert(ORIG_PROCESSID);
@@ -86,6 +88,10 @@ void CommandEvent::_init() {
     _keywords.insert(DEST_LOCALID);
 }
 
+/**
+  * \brief Constructor for CommandEvent
+  * \param msg a cms::TextMessage to convert into a CommandEvent
+  */
 CommandEvent::CommandEvent(cms::TextMessage *msg) : Event(msg) {
     _init();
 
@@ -99,30 +105,75 @@ CommandEvent::CommandEvent(cms::TextMessage *msg) : Event(msg) {
     _psp->set(DEST_LOCALID, (int)msg->getIntProperty(DEST_LOCALID));
 
 }
+/**
+  * \brief Constructor for CommandEvent
+  * \param originator originating location of this event
+  * \param destination destination location for this event
+  * \param psp PropertySet to pass in this event
+  */
 CommandEvent::CommandEvent(const LocationID&  originator, const LocationID& destination, const PropertySet::Ptr psp) : Event(*psp) {
     _constructor(originator, destination);
 }
 
+/**
+  * \brief Constructor for CommandEvent
+  * \param originator originating location of this event
+  * \param destination destination location for this event
+  * \param ps PropertySet to pass in this event
+  */
 CommandEvent::CommandEvent(const LocationID&  originator, const LocationID&  destination, const PropertySet& ps) : Event(ps) {
     _constructor(originator, destination);
 }
 
+/**
+  * \brief Constructor for CommandEvent
+  * \param originator originating location of this event
+  * \param destination destination location for this event
+  * \param ps PropertySet to pass in this event
+  * \param filterable additional, broker-filterable, PropertySet parameters
+  */
 CommandEvent::CommandEvent(const LocationID&  originator, const LocationID&  destination, const PropertySet& ps, const PropertySet& filterable) : Event(ps, filterable) {
     _constructor(originator, destination);
 }
 
+/**
+  * \brief Constructor for CommandEvent
+  * \param runId name of the run which this event is used in
+  * \param originator originating location of this event
+  * \param destination destination location for this event
+  * \param psp PropertySet to pass in this event
+  */
 CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originator, const LocationID& destination, const PropertySet::Ptr psp) : Event(runId, *psp) {
     _constructor(originator, destination);
 }
 
+/**
+  * \brief Constructor for CommandEvent
+  * \param runId name of the run which this event is used in
+  * \param originator originating location of this event
+  * \param destination destination location for this event
+  * \param ps PropertySet to pass in this event
+  */
 CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originator, const LocationID&  destination, const PropertySet& ps) : Event(runId, ps) {
     _constructor(originator, destination);
 }
 
+/**
+  * \brief Constructor for CommandEvent
+  * \param runId name of the run which this event is used in
+  * \param originator originating location of this event
+  * \param destination destination location for this event
+  * \param ps PropertySet to pass in this event
+  * \param filterable additional, broker-filterable, PropertySet parameters
+  */
 CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originator, const LocationID&  destination, const PropertySet& ps, const PropertySet& filterable) : Event(runId, ps, filterable) {
     _constructor(originator, destination);
 }
 
+/** private method common to all constructors containing, originator, the 
+  * originating location of this event, and destination, the destination
+  * location for this event.
+  */
 void CommandEvent::_constructor(const LocationID&  originator, const LocationID&  destination) {
     _init();
 
@@ -138,6 +189,9 @@ void CommandEvent::_constructor(const LocationID&  originator, const LocationID&
 
 }
 
+/** private method to initialize CommandEvent internal info into the given
+  * TextMessage object
+  */
 void CommandEvent::populateHeader(cms::TextMessage* msg) const {
     Event::populateHeader(msg);
 
@@ -150,6 +204,9 @@ void CommandEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setIntProperty(DEST_LOCALID, _psp->get<int>(DEST_LOCALID));
 }
 
+/**
+  * \brief retrieve an object containing the OriginatoDesination LocationID
+  */
 LocationID *CommandEvent::getOriginator() { 
     std::string hostname =  _psp->get<std::string>(ORIG_HOSTNAME);
     int pid =  _psp->get<int>(ORIG_PROCESSID);
@@ -157,6 +214,9 @@ LocationID *CommandEvent::getOriginator() {
     return new LocationID(hostname, pid, local);
 }
 
+/**
+  * \brief retrieve an object containing the Desination LocationID
+  */
 LocationID *CommandEvent::getDestination() { 
     std::string hostname = _psp->get<std::string>(DEST_HOSTNAME); 
     int pid = _psp->get<int>(DEST_PROCESSID); 

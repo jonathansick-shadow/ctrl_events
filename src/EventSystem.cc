@@ -202,10 +202,18 @@ boost::shared_ptr<EventReceiver> EventSystem::getReceiver(const std::string& nam
 }
 
 
+/** \brief cast an Event to StatusEvent
+  * \param event an Event
+  * \return a StatusEvent
+  */
 StatusEvent* EventSystem::castToStatusEvent(Event* event) {
     return (StatusEvent *)event;
 }
 
+/** \brief cast an Event to CommandEvent
+  * \param event an Event
+  * \return a CommandEvent
+  */
 CommandEvent* EventSystem::castToCommandEvent(Event* event) {
     return (CommandEvent *)event;
 }

@@ -40,7 +40,9 @@ namespace ctrl {
 namespace events {
 
 /** \brief LocationID object. This object represents the originating process
-  *        of an event.  When created, this represents a unique ID.
+  *        of an event. This consists of the host name, the process id of the 
+  *        process that created this LocationID and a local id which is unique
+  *        for this process. When created, this represents a unique location ID.
   */
 LocationID::LocationID() {
     Host host = Host().getHost();
@@ -63,29 +65,40 @@ LocationID::LocationID(const LocationID& id) {
     _constructor(id.getHostName(), id.getProcessID(), id.getLocalID());
 }
 
+/** private helper method to initialize the object
+  */
 void LocationID::_constructor(const std::string& hostname, int pid, int localID) {
     _hostname = hostname;
     _pid = pid;
     _localID = localID;
 }
 
-/** \brief destructor
-  */
-LocationID::~LocationID() {
-}
-
 int LocationID::_localCounter=0;
 
+/** \brief Retrieve the host name
+  * \return a string containing the name of a host
+  */
 std::string LocationID::getHostName() const {
     return _hostname;
 }
 
+/** \brief Retrieve the process id
+  * \return an int of the process id
+  */
 int LocationID::getProcessID() const {
     return _pid;
 }
 
+/** \brief Retrieve the local id
+  * \return an int of local id
+  */
 int LocationID::getLocalID() const {
     return _localID;
+}
+
+/** \brief destructor
+  */
+LocationID::~LocationID() {
 }
 
 }

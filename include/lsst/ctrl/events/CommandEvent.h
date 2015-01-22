@@ -82,18 +82,18 @@ public:
 
     CommandEvent(cms::TextMessage *msg);
 
-    virtual void populateHeader(cms::TextMessage *msg) const;
-
     virtual ~CommandEvent();
 
     LocationID *getOriginator();
 
     LocationID * getDestination();
 
-protected:
-    void _constructor(const LocationID& originator, const LocationID& destination);
+// protected:
 
 private:
+    void _constructor(const LocationID& originator, const LocationID& destination);
+    virtual void populateHeader(cms::TextMessage *msg) const;
+
     void _init();
 
 };
