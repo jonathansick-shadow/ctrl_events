@@ -186,7 +186,7 @@ Event* EventSystem::receiveEvent(const std::string& topicName, const long timeou
     return receiver->receiveEvent(timeout);
 }
 
-LocationID *EventSystem::createOriginatorID() {
+LocationID *EventSystem::createOriginatorId() {
     return new LocationID();
 }
 
