@@ -450,7 +450,6 @@ PropertySet::Ptr Event::parsePropertySet(boost::property_tree::ptree child) {
     BOOST_FOREACH(boost::property_tree::ptree::value_type const &v, child.get_child("")) {
         std::string label = v.first;
         BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, child.get_child(label)) {
-            std::cout << "pps1 label: " << label << " first: " << v2.first << "second: " << v2.second.data() << std::endl;
             if (v2.first == "string") {
                 psp->add(label, v2.second.get_value<std::string>());
             } else if (v2.first == "bool") {
@@ -469,13 +468,13 @@ PropertySet::Ptr Event::parsePropertySet(boost::property_tree::ptree child) {
                 long long value = v2.second.get_value<long long>();
                 psp->add(label, lsst::daf::base::DateTime(value, lsst::daf::base::DateTime::UTC));
             } else {
-                std::cout << "v2.first>"<< v2.first << "< parsed" << std::endl;
-                std::cout << "v2.second>"<< v2.second.data() << "< parsed" << std::endl;
                 PropertySet::Ptr p2 = parsePropertySet(child.get_child(label));
                 psp->add(label, p2);
+                break;
             }
         }
     }
+    std::cout << "--PPS done--" << std::endl;
     return psp;
 }
 
@@ -528,6 +527,7 @@ PropertySet::Ptr Event::unmarshall(const std::string& text) {
                 std::string value = child.get<std::string>(key2);
                 PropertySet::Ptr p = parsePropertySet(child);
                 psp->add(key, p);
+                break;
             }
         }
     }
