@@ -385,6 +385,7 @@ template<typename T>void Event::add(const std::string& name, const std::string& 
     typename std::vector<T>::iterator iter;
     for (iter = vec.begin(); iter != vec.end(); iter++) {
         boost::property_tree::ptree pt;
+        std::cout << "tag: " << tag << "*iter: " << *iter << std::endl;
         pt.put(tag, *iter);
         child.put_child(name, pt);
     }
@@ -398,6 +399,7 @@ std::string Event::marshall(const PropertySet& ps) {
     unsigned int i;
     for (i = 0; i < v.size(); i++) {
         std::string name = v[i];
+        std::cout << "MARSHALLING: " << name << std::endl;
         if (ps.typeOf(name) == typeid(bool)) {
             add<bool>(name, "bool", ps, child);
         } else if (ps.typeOf(name) == typeid(long)) {
@@ -411,6 +413,7 @@ std::string Event::marshall(const PropertySet& ps) {
         } else if (ps.typeOf(name) == typeid(double)) {
             add<double>(name, "double", ps, child);
         } else if (ps.typeOf(name) == typeid(std::string)) {
+            std::cout << "encoding string name: " << name << std::endl;
             add<std::string>(name, "string", ps, child);
         } else if (ps.typeOf(name) == typeid(lsst::daf::base::DateTime)) {
             std::vector<lsst::daf::base::DateTime> vec  = ps.getArray<lsst::daf::base::DateTime>(name);
@@ -426,6 +429,7 @@ std::string Event::marshall(const PropertySet& ps) {
     }
     std::ostringstream payload;
     write_json(payload, child, false);
+    std::cout << "payload: " << payload.str() << std::endl;
     return payload.str();
 }
 
@@ -439,6 +443,42 @@ PropertySet::Ptr Event::processTextMessage(cms::TextMessage* textMessage) {
 
     return unmarshall(text);
 }
+
+PropertySet::Ptr Event::parsePropertySet(boost::property_tree::ptree child) {
+    PropertySet::Ptr psp(new PropertySet);
+    
+    BOOST_FOREACH(boost::property_tree::ptree::value_type const &v, child.get_child("")) {
+        std::string label = v.first;
+        BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, child.get_child(label)) {
+            std::cout << "pps1 label: " << label << " first: " << v2.first << "second: " << v2.second.data() << std::endl;
+            if (v2.first == "string") {
+                psp->add(label, v2.second.get_value<std::string>());
+            } else if (v2.first == "bool") {
+                psp->add(label, v2.second.get_value<bool>());
+            } else if (v2.first == "long") {
+                psp->add(label, v2.second.get_value<long>());
+            } else if (v2.first == "long long") {
+                psp->add(label, v2.second.get_value<long long>());
+            } else if (v2.first == "int") {
+                psp->add(label, v2.second.get_value<int>());
+            } else if (v2.first == "float") {
+                psp->add(label, v2.second.get_value<float>());
+            } else if (v2.first == "double") {
+                psp->add(label, v2.second.get_value<double>());
+            } else if (v2.first == "datetime") {
+                long long value = v2.second.get_value<long long>();
+                psp->add(label, lsst::daf::base::DateTime(value, lsst::daf::base::DateTime::UTC));
+            } else {
+                std::cout << "v2.first>"<< v2.first << "< parsed" << std::endl;
+                std::cout << "v2.second>"<< v2.second.data() << "< parsed" << std::endl;
+                PropertySet::Ptr p2 = parsePropertySet(child.get_child(label));
+                psp->add(label, p2);
+            }
+        }
+    }
+    return psp;
+}
+
 /** private method unmarshall the DataProperty from a text string
   */
 PropertySet::Ptr Event::unmarshall(const std::string& text) {
@@ -448,6 +488,10 @@ PropertySet::Ptr Event::unmarshall(const std::string& text) {
     read_json(is, pt);
 
     PropertySet::Ptr psp(new PropertySet);
+
+    BOOST_FOREACH(boost::property_tree::ptree::value_type &srp, pt) {
+            std::cout << "UNMARSHALL " << srp.first << ":" << srp.second.data() << std::endl;
+    }
 
     BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt) {
         std::string key = v.first;
@@ -480,6 +524,10 @@ PropertySet::Ptr Event::unmarshall(const std::string& text) {
             } else if (key2 == "datetime") {
                 long long value = child.get<long long>(key2);
                 psp->add(key, lsst::daf::base::DateTime(value, lsst::daf::base::DateTime::UTC));
+            } else {
+                std::string value = child.get<std::string>(key2);
+                PropertySet::Ptr p = parsePropertySet(child);
+                psp->add(key, p);
             }
         }
     }

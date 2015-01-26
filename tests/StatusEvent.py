@@ -54,9 +54,13 @@ class StatusEventTestCase(unittest.TestCase):
         root.set("TOPIC",topic)
         root.set("myname","myname")
         root.set("STATUS", "my special status")
+        root.set("logger.status", "my logger special status")
+        root.set("logger.pid", "1")
+        #root.set("logger.pid.foo", 1)
+        #root.set("logger.pid.bar", 2)
         
         eventSystem = events.EventSystem.getDefaultEventSystem();
-        locationID = eventSystem.createOriginatorID()
+        locationID = eventSystem.createOriginatorId()
         if runID is None:
             event = events.StatusEvent(locationID, root)
         else:
@@ -79,7 +83,7 @@ class StatusEventTestCase(unittest.TestCase):
         filter.set("PLOVER", 0.45)
         
         eventSystem = events.EventSystem.getDefaultEventSystem();
-        locationID = eventSystem.createOriginatorID()
+        locationID = eventSystem.createOriginatorId()
         if runID is None:
             event = events.StatusEvent(locationID, root, filter)
         else:
@@ -101,7 +105,7 @@ class StatusEventTestCase(unittest.TestCase):
 
         self.assertNotEqual(val, None)
         values = ['EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
-        self.checkValidity(val, values)
+        self.checkValidity(val, values, 2)
 
         self.assertNotEqual(val.getEventTime(), 0)
         self.assertNotEqual(val.getPubTime(), 0)
@@ -122,7 +126,7 @@ class StatusEventTestCase(unittest.TestCase):
         val = receiverA.receiveEvent()
         self.assertNotEqual(val, None)
         values = ['EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE', 'RUNID']
-        self.checkValidity(val, values)
+        self.checkValidity(val, values, 2)
 
         self.assertNotEqual(val.getEventTime(), 0)
         self.assertNotEqual(val.getPubTime(), 0)
@@ -143,7 +147,7 @@ class StatusEventTestCase(unittest.TestCase):
         # should only be ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
         # in some order
         values = ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
-        self.checkValidity(val, values)
+        self.checkValidity(val, values, 1)
 
     def testFilterableStatusEventWithRunID(self):
         self.init()
@@ -158,15 +162,15 @@ class StatusEventTestCase(unittest.TestCase):
         # should receive an event
         self.assertNotEqual(val, None)
         values = ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE']
-        self.checkValidity(val, values)
+        self.checkValidity(val, values, 1)
 
 
-    def checkValidity(self, val, values):
+    def checkValidity(self, val, values, customCount):
         # get custom property names
         names = val.getCustomPropertyNames()
 
         # should only be one custom property name...
-        self.assertEqual(len(names), 1)
+        self.assertEqual(len(names), customCount)
 
         # ...and that name should be "myname"
         self.assertEqual(names[0], "myname")
@@ -176,7 +180,7 @@ class StatusEventTestCase(unittest.TestCase):
         ps = val.getCustomPropertySet()
 
         # should only be one custom property name...
-        self.assertEqual(ps.nameCount(), 1)
+        self.assertEqual(ps.nameCount(), customCount)
 
         # ...and that should be "myname"
         self.assertTrue(ps.exists("myname"))
@@ -192,12 +196,12 @@ class StatusEventTestCase(unittest.TestCase):
 
         # get the entire property set
         ps = val.getPropertySet()
+        print "Entire property set"
+        print ps.toString()
 
         allValues = list(values)
         allValues.append('myname')
 
-        # test that we only have 12, and they're the ones we expect to be there
-        self.assertEqual(ps.nameCount(), len(allValues))
         for x in allValues:
             self.assertTrue(ps.exists(x))
 
