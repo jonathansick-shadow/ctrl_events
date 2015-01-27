@@ -444,23 +444,13 @@ PropertySet::Ptr Event::processTextMessage(cms::TextMessage* textMessage) {
     return unmarshall(text);
 }
 
-PropertySet::Ptr Event::parsePropertySet(boost::property_tree::ptree child) {
-    PropertySet::Ptr psp(new PropertySet);
-    
-    BOOST_FOREACH(boost::property_tree::ptree::value_type const &v, child.get_child("")) {
-        std::string label = v.first;
-        BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, child.get_child(label)) {
-            bool b = addDataItem(v2.first, v2.second, label, *psp);
-            if (b == false) {
-                PropertySet::Ptr p2 = parsePropertySet(child.get_child(label));
-                psp->add(label, p2);
-                break;
-            }
-        }
-    }
-    return psp;
-}
-
+/** private method to try to add data to a property set
+ * \param typeInfo a string containing the name of the data type
+ * \param item a node of a boost::property_tree::ptree containing data
+ * \param key the name of the data
+ * \param ps a PropertySet to store the name and data into.
+ * \return true if data was added to the PropertySet
+  */
 bool Event::addDataItem(std::string typeInfo, boost::property_tree::ptree& item, std::string key, PropertySet& ps) {
     if (typeInfo == "string") {
         std::string value = item.get_value<std::string>();
@@ -492,7 +482,31 @@ bool Event::addDataItem(std::string typeInfo, boost::property_tree::ptree& item,
     return true;
 }
 
+/** private method to iterate through the representation of a propertyset
+  * within the boost::property_tree::ptree
+  * \param child a boost::property_tree::ptree to iterate through
+  * \return a PropertySet::Ptr containing the data that was stored in child.
+  */
+PropertySet::Ptr Event::parsePropertySet(boost::property_tree::ptree child) {
+    PropertySet::Ptr psp(new PropertySet);
+    
+    BOOST_FOREACH(boost::property_tree::ptree::value_type const &v, child.get_child("")) {
+        std::string label = v.first;
+        BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, child.get_child(label)) {
+            bool b = addDataItem(v2.first, v2.second, label, *psp);
+            if (b == false) {
+                PropertySet::Ptr p2 = parsePropertySet(child.get_child(label));
+                psp->add(label, p2);
+                break;
+            }
+        }
+    }
+    return psp;
+}
+
 /** private method unmarshall the DataProperty from a text string
+  * \param text a JSON text string
+  * \return a PropertySet::Ptr containing the data that was stored in text
   */
 PropertySet::Ptr Event::unmarshall(const std::string& text) {
 
