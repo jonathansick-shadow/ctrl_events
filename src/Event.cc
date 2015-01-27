@@ -245,8 +245,9 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps, const
     if (filterable.nameCount() > 0) {
         vector<std::string> names = filterable.names();
         unsigned int i;
-        for (i = 0; i < names.size(); i++)
+        for (i = 0; i < names.size(); i++) {
             _keywords.insert(names[i]);
+        }
 
         _psp->combine(filterable.PropertySet::deepCopy());
     }
@@ -273,6 +274,10 @@ void Event::populateHeader(cms::TextMessage* msg)  const {
             msg->setFloatProperty(name, _psp->get<float>(name));
         else if (t == typeid(std::string))
             msg->setStringProperty(name, _psp->get<std::string>(name));
+        else {
+            std::string msg("Data type represented in "+name+" is not permitted in event header");
+            throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
+        }
     }
 }
             
@@ -385,7 +390,6 @@ template<typename T>void Event::add(const std::string& name, const std::string& 
     typename std::vector<T>::iterator iter;
     for (iter = vec.begin(); iter != vec.end(); iter++) {
         boost::property_tree::ptree pt;
-        std::cout << "tag: " << tag << "*iter: " << *iter << std::endl;
         pt.put(tag, *iter);
         child.put_child(name, pt);
     }
@@ -399,7 +403,7 @@ std::string Event::marshall(const PropertySet& ps) {
     unsigned int i;
     for (i = 0; i < v.size(); i++) {
         std::string name = v[i];
-        std::cout << "MARSHALLING: " << name << std::endl;
+
         if (ps.typeOf(name) == typeid(bool)) {
             add<bool>(name, "bool", ps, child);
         } else if (ps.typeOf(name) == typeid(long)) {
@@ -413,7 +417,6 @@ std::string Event::marshall(const PropertySet& ps) {
         } else if (ps.typeOf(name) == typeid(double)) {
             add<double>(name, "double", ps, child);
         } else if (ps.typeOf(name) == typeid(std::string)) {
-            std::cout << "encoding string name: " << name << std::endl;
             add<std::string>(name, "string", ps, child);
         } else if (ps.typeOf(name) == typeid(lsst::daf::base::DateTime)) {
             std::vector<lsst::daf::base::DateTime> vec  = ps.getArray<lsst::daf::base::DateTime>(name);
@@ -424,12 +427,13 @@ std::string Event::marshall(const PropertySet& ps) {
                 child.put_child(name, pt);
             }
         } else {
-            std::cout << "Couldn't marshall "<< name << std::endl;
+            std::string msg("Couldn't marshall "+name);
+            throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
         }
     }
     std::ostringstream payload;
     write_json(payload, child, false);
-    std::cout << "payload: " << payload.str() << std::endl;
+
     return payload.str();
 }
 

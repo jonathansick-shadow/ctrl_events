@@ -30,6 +30,7 @@ import platform
 import time
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
+import lsst.pex.exceptions as ex
 
 class ComplexDataTestCase(unittest.TestCase):
     def init(self):
@@ -72,6 +73,37 @@ class ComplexDataTestCase(unittest.TestCase):
         # ok...now publish it
         trans.publishEvent(event)
 
+    def sendFilterableStatusEvent(self, topic):
+        trans = events.EventTransmitter(self.broker, topic)
+
+        root = PropertySet()
+        root.set("TOPIC",topic)
+        root.set("myname","myname")
+        root.set("STATUS", "my special status")
+
+        filter = PropertySet()
+        filter.set("FOO", "bar")
+        filter.set("PLOUGH", 123)
+
+        eventSystem = events.EventSystem.getDefaultEventSystem();
+        locationID = eventSystem.createOriginatorId()
+        event = events.StatusEvent(locationID, root, filter)
+
+        # ok...now publish it
+        trans.publishEvent(event)
+
+    def testFilterableStatusEvent(self):
+        self.init()
+        topic = self.createTopicName("test_events_10_%s.B")
+        receiver = self.createReceiver(topic)
+        #
+        # send a test event, and wait to receive it
+        #
+        self.sendFilterableStatusEvent(topic)
+        val = receiver.receiveEvent()
+
+        self.assertNotEqual(val, None)
+
     def testPlainStatusEvent(self):
         self.init()
         topic = self.createTopicName("test_events_10_%s.A")
@@ -90,6 +122,41 @@ class ComplexDataTestCase(unittest.TestCase):
         self.assertNotEqual(val.getEventTime(), 0)
         self.assertNotEqual(val.getPubTime(), 0)
         self.assertGreater(val.getPubTime(), val.getEventTime())
+
+    def testIllegalFilterableStatusEvent(self):
+        self.init()
+        topic = self.createTopicName("test_events_10_%s.A")
+
+        broker = "lsst8.ncsa.illinois.edu"
+        receiver = events.EventReceiver(broker, topic)
+        #
+        # send a test event, and wait to receive it
+        #
+        trans = events.EventTransmitter(self.broker, topic)
+
+        root = PropertySet()
+        root.set("TOPIC",topic)
+        root.set("myname","myname")
+        root.set("STATUS", "my special status")
+
+        filter = PropertySet()
+        filter.set("FOO", "bar")
+        filter.set("PLOUGH", 123)
+        filter.set("PLOVER.FIRST", 1)
+        filter.set("PLOVER.SECOND", 2)
+
+        eventSystem = events.EventSystem.getDefaultEventSystem();
+        locationID = eventSystem.createOriginatorId()
+        event = events.StatusEvent(locationID, root, filter)
+
+        # ok...now publish it
+        try: 
+            trans.publishEvent(event)
+            # should never reach here
+            self.assertTrue(1 == 0) 
+        except ex.Exception as e:
+            print "exception thrown, as expected"
+            pass
 
     def checkValidity(self, val, values):
         # get custom property names
