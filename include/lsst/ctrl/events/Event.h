@@ -128,6 +128,7 @@ private:
     PropertySet::Ptr processTextMessage(cms::TextMessage *textMessage);
     PropertySet::Ptr unmarshall(const std::string& text);
     PropertySet::Ptr parsePropertySet(boost::property_tree::ptree child);
+    bool addDataItem(std::string typeInfo, boost::property_tree::ptree& item, std::string key, PropertySet& ps);
 };
 
 }

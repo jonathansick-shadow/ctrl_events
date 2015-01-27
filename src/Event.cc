@@ -450,32 +450,46 @@ PropertySet::Ptr Event::parsePropertySet(boost::property_tree::ptree child) {
     BOOST_FOREACH(boost::property_tree::ptree::value_type const &v, child.get_child("")) {
         std::string label = v.first;
         BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, child.get_child(label)) {
-            if (v2.first == "string") {
-                psp->add(label, v2.second.get_value<std::string>());
-            } else if (v2.first == "bool") {
-                psp->add(label, v2.second.get_value<bool>());
-            } else if (v2.first == "long") {
-                psp->add(label, v2.second.get_value<long>());
-            } else if (v2.first == "long long") {
-                psp->add(label, v2.second.get_value<long long>());
-            } else if (v2.first == "int") {
-                psp->add(label, v2.second.get_value<int>());
-            } else if (v2.first == "float") {
-                psp->add(label, v2.second.get_value<float>());
-            } else if (v2.first == "double") {
-                psp->add(label, v2.second.get_value<double>());
-            } else if (v2.first == "datetime") {
-                long long value = v2.second.get_value<long long>();
-                psp->add(label, lsst::daf::base::DateTime(value, lsst::daf::base::DateTime::UTC));
-            } else {
+            bool b = addDataItem(v2.first, v2.second, label, *psp);
+            if (b == false) {
                 PropertySet::Ptr p2 = parsePropertySet(child.get_child(label));
                 psp->add(label, p2);
                 break;
             }
         }
     }
-    std::cout << "--PPS done--" << std::endl;
     return psp;
+}
+
+bool Event::addDataItem(std::string typeInfo, boost::property_tree::ptree& item, std::string key, PropertySet& ps) {
+    if (typeInfo == "string") {
+        std::string value = item.get_value<std::string>();
+        ps.add(key, value);
+    } else if (typeInfo == "bool") {
+        bool value = item.get_value<bool>();
+        ps.add(key, value);
+    } else if (typeInfo == "long") {
+        long value = item.get_value<long>();
+        ps.add(key, value);
+    } else if (typeInfo == "long long") {
+        long long value = item.get_value<long long>();
+        ps.add(key, value);
+    } else if (typeInfo == "int") {
+        int value = item.get_value<int>();
+        ps.add(key, value);
+    } else if (typeInfo == "float") {
+        float value = item.get_value<float>();
+        ps.add(key, value);
+    } else if (typeInfo == "double") {
+        double value = item.get_value<double>();
+        ps.add(key, value);
+    } else if (typeInfo == "datetime") {
+        long long value = item.get_value<long long>();
+        ps.add(key, lsst::daf::base::DateTime(value, lsst::daf::base::DateTime::UTC));
+    } else {
+        return false;
+    }
+    return true;
 }
 
 /** private method unmarshall the DataProperty from a text string
@@ -488,10 +502,6 @@ PropertySet::Ptr Event::unmarshall(const std::string& text) {
 
     PropertySet::Ptr psp(new PropertySet);
 
-    BOOST_FOREACH(boost::property_tree::ptree::value_type &srp, pt) {
-            std::cout << "UNMARSHALL " << srp.first << ":" << srp.second.data() << std::endl;
-    }
-
     BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt) {
         std::string key = v.first;
 
@@ -499,32 +509,9 @@ PropertySet::Ptr Event::unmarshall(const std::string& text) {
         BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, child) {
             std::string key2 = v2.first;
 
-            if (key2 == "string") {
-                std::string value = child.get<std::string>(key2);
-                psp->add(key, value);
-            } else if (key2 == "bool") {
-                bool value = child.get<bool>(key2);
-                psp->add(key, value);
-            } else if (key2 == "long") {
-                long value = child.get<long>(key2);
-                psp->add(key, value);
-            } else if (key2 == "long long") {
-                long long value = child.get<long long>(key2);
-                psp->add(key, value);
-            } else if (key2 == "int") {
-                int value = child.get<int>(key2);
-                psp->add(key, value);
-            } else if (key2 == "float") {
-                float value = child.get<float>(key2);
-                psp->add(key, value);
-            } else if (key2 == "double") {
-                double value = child.get<double>(key2);
-                psp->add(key, value);
-            } else if (key2 == "datetime") {
-                long long value = child.get<long long>(key2);
-                psp->add(key, lsst::daf::base::DateTime(value, lsst::daf::base::DateTime::UTC));
-            } else {
-                std::string value = child.get<std::string>(key2);
+            bool b = addDataItem(key2, v2.second, key, *psp);
+            if (b == false) {
+                std::string value = v2.second.get_value<std::string>();
                 PropertySet::Ptr p = parsePropertySet(child);
                 psp->add(key, p);
                 break;
@@ -532,7 +519,6 @@ PropertySet::Ptr Event::unmarshall(const std::string& text) {
         }
     }
         
-    
     return psp;
 }
 
