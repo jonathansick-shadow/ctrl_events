@@ -36,7 +36,7 @@ from lsst.daf.base import PropertySet
 class LocationIDTestCase(unittest.TestCase):
         
     def testLocationID(self):
-        eventSystem = events.EventSystem().getDefaultEventSystem()
+        eventSystem = events.EventSystem.getDefaultEventSystem()
 
         locationID = events.LocationID()
 

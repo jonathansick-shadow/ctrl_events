@@ -36,7 +36,7 @@ class EventSystemTestCase(unittest.TestCase):
 
     def testEventSystem(self):
         host = "lsst8.ncsa.illinois.edu"
-        eventSystem = events.EventSystem().getDefaultEventSystem()
+        eventSystem = events.EventSystem.getDefaultEventSystem()
     
         topic = "EventSystem_test_%s_%d" % (platform.node(), os.getpid())
     

@@ -69,7 +69,7 @@ class StatusEventOriginatorTestCase(unittest.TestCase):
         ps = val.getCustomPropertySet()
         ps = val.getPropertySet()
     
-        eventSystem = events.EventSystem().getDefaultEventSystem()
+        eventSystem = events.EventSystem.getDefaultEventSystem()
         statusevent = eventSystem.castToStatusEvent(val)
    
         originatorID = statusevent.getOriginator()

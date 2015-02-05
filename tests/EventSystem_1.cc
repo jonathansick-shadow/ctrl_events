@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(all) {
     oss << "eventsystem_1_test_" << host << "_" << getpid();
     std::string topic = oss.str();
 
-    ctrlEvents::EventSystem eventSystem = ctrlEvents::EventSystem().getDefaultEventSystem();
+    ctrlEvents::EventSystem eventSystem = ctrlEvents::EventSystem::getDefaultEventSystem();
 
     eventSystem.createTransmitter("lsst8.ncsa.illinois.edu", topic);
 

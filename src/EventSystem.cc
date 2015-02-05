@@ -77,20 +77,14 @@ EventSystem::~EventSystem() {
   * \return The EventSystem object
   */
 EventSystem& EventSystem::getDefaultEventSystem() {
-    if (defaultEventSystem == 0) {
-
-        Host host = Host().getHost();
-        _IPId = host.getIPAddress();
-        // create the default EventSystem object
-        defaultEventSystem = new EventSystem();
-    }
-    return *defaultEventSystem;
+    static EventSystem eventSystem;
+    return eventSystem;
 
 }
 
 EventSystem *EventSystem::defaultEventSystem = 0;
-int EventSystem::_IPId = 0;
-short EventSystem::_localId = 0;
+list<boost::shared_ptr<EventTransmitter> >EventSystem::_transmitters;
+list<boost::shared_ptr<EventReceiver> >EventSystem::_receivers;
 
 /** \brief create an EventTransmitter to send messages to the message broker
   * \param hostName the location of the message broker to use
@@ -153,8 +147,9 @@ void EventSystem::publishEvent(const std::string& topicName, Event& event) {
 boost::shared_ptr<EventTransmitter> EventSystem::getTransmitter(const std::string& name) {
     list<boost::shared_ptr<EventTransmitter> >::iterator i;
     for (i = _transmitters.begin(); i != _transmitters.end(); i++) {
-        if ((*i)->getTopicName() == name)
+        if ((*i)->getTopicName() == name) {
             return *i;
+        }
     }
     return boost::shared_ptr<EventTransmitter>();
 }

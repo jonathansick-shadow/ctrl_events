@@ -64,12 +64,13 @@ BOOST_AUTO_TEST_CASE(all) {
     oss << "eventsystem_2_test_" << host << "_" << getpid();
     std::string topic = oss.str();
 
-    EventSystem eventSystem = EventSystem().getDefaultEventSystem();
+    EventSystem eventSystem = EventSystem::getDefaultEventSystem();
 
     eventSystem.createReceiver("lsst8.ncsa.illinois.edu", topic);
     try {
         eventSystem.createReceiver("lsst8.ncsa.illinois.edu", topic);
-        throw runtime_error("should never get here: can't create a receiver if one already exists");
+        // should never get here
+        BOOST_CHECK_EQUAL(0,1);
     } catch (RuntimeError&) {
         // can't create a receiver if one already exists for that topic
     }

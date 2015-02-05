@@ -61,8 +61,6 @@ namespace events {
  */
 class EventSystem {
 public:
-    EventSystem();
-
     ~EventSystem();
 
     static EventSystem& getDefaultEventSystem();
@@ -85,17 +83,17 @@ public:
     CommandEvent* castToCommandEvent(Event* event);
 
 private:
+    static EventSystem *defaultEventSystem;
+
     boost::shared_ptr<EventTransmitter> getTransmitter(const std::string& name);
     boost::shared_ptr<EventReceiver> getReceiver(const std::string& name);
 
 protected:
-    static EventSystem *defaultEventSystem;
+    EventSystem();
 
-    static short _localId;
-    static int _IPId;
 
-    list<boost::shared_ptr<EventTransmitter> >_transmitters;
-    list<boost::shared_ptr<EventReceiver> >_receivers;
+    static list<boost::shared_ptr<EventTransmitter> >_transmitters;
+    static list<boost::shared_ptr<EventReceiver> >_receivers;
 };
 }
 }
