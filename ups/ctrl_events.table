@@ -7,6 +7,9 @@ setupRequired(pex_exceptions)
 setupRequired(pex_policy)
 setupRequired(cat)
 setupRequired(daf_persistence)
+setupRequired(log4cxx)
+setupRequired(log)
+
 
 setupOptional("swig")
 setupOptional("doxygen")
