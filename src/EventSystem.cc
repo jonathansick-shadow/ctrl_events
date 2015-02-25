@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2014  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,16 +19,14 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
+
 /** \file EventSystem.cc
   *
   * \brief Coordinate EventTransmitters and EventReceiver objects
   *
   * \ingroup events
-  *
-  * \author Stephen R. Pietrowicz, NCSA
   *
   */
 #include <iomanip>
@@ -43,14 +41,15 @@
 #include <netdb.h>
 
 #include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/ctrl/events/EventLibrary.h"
 #include "lsst/ctrl/events/Event.h"
+#include "lsst/ctrl/events/Host.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
+#include "lsst/ctrl/events/LocationID.h"
 
 namespace pexExceptions =lsst::pex::exceptions;
 
@@ -78,49 +77,14 @@ EventSystem::~EventSystem() {
   * \return The EventSystem object
   */
 EventSystem& EventSystem::getDefaultEventSystem() {
-    if (defaultEventSystem == 0) {
-
-        // create the _IPId here, rather than
-        // reconstructing it every time we create an
-        // identificationId
-
-        char buf [255];
-        struct hostent *ent;
-        unsigned char a,b,c,d;
-
-        gethostname(buf, 255) ;
-        ent = (struct hostent *)gethostbyname(buf) ;
-
-        a = ent->h_addr_list[0][0] & 0xFF;
-        b = ent->h_addr_list[0][1] & 0xFF;
-        c = ent->h_addr_list[0][2] & 0xFF;
-        d = ent->h_addr_list[0][3] & 0xFF;
-
-        _IPId = (a << 24) | (b << 16) | (c << 8) | d;
-  
-        // create the default EventSystem object
-        defaultEventSystem = new EventSystem();
-    }
-    return *defaultEventSystem;
+    static EventSystem eventSystem;
+    return eventSystem;
 
 }
 
 EventSystem *EventSystem::defaultEventSystem = 0;
-int EventSystem::_IPId = 0;
-short EventSystem::_localId = 0;
-
-/** \brief create an EventTransmitter to send messages to the message broker
-  * \param policy the Policy object to use to configure the EventTransmitter
-  */
-void EventSystem::createTransmitter(const pexPolicy::Policy& policy) {
-    boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(policy));
-    boost::shared_ptr<EventTransmitter> transmitter2;
-    if ((transmitter2 = getTransmitter(transmitter->getTopicName())) == 0) {
-        _transmitters.push_back(transmitter);
-        return;
-    }
-    throw LSST_EXCEPT(pexExceptions::RuntimeError, "topic "+ transmitter->getTopicName() + " is already registered with EventSystem");
-}
+list<boost::shared_ptr<EventTransmitter> >EventSystem::_transmitters;
+list<boost::shared_ptr<EventReceiver> >EventSystem::_receivers;
 
 /** \brief create an EventTransmitter to send messages to the message broker
   * \param hostName the location of the message broker to use
@@ -135,19 +99,6 @@ void EventSystem::createTransmitter(const std::string& hostName, const std::stri
         return;
     }
     throw LSST_EXCEPT(pexExceptions::RuntimeError, "topic "+ topicName + " is already registered with EventSystem");
-}
-
-/** \brief create an EventReceiver to receive messages from the message broker
-  * \param policy the Policy object to use to configure the EventReceiver
-  */
-void EventSystem::createReceiver(const pexPolicy::Policy& policy) {
-    boost::shared_ptr<EventReceiver> receiver(new EventReceiver(policy));
-    boost::shared_ptr<EventReceiver> receiver2;
-    if ((receiver2 = getReceiver(receiver->getTopicName())) == 0) {
-        _receivers.push_back(receiver);
-        return;
-    }
-    throw LSST_EXCEPT(pexExceptions::RuntimeError, "topic " + receiver->getTopicName() + " is already registered with EventSystem");
 }
 
 /** \brief create an EventReceiver which will receive message
@@ -196,8 +147,9 @@ void EventSystem::publishEvent(const std::string& topicName, Event& event) {
 boost::shared_ptr<EventTransmitter> EventSystem::getTransmitter(const std::string& name) {
     list<boost::shared_ptr<EventTransmitter> >::iterator i;
     for (i = _transmitters.begin(); i != _transmitters.end(); i++) {
-        if ((*i)->getTopicName() == name)
+        if ((*i)->getTopicName() == name) {
             return *i;
+        }
     }
     return boost::shared_ptr<EventTransmitter>();
 }
@@ -229,6 +181,9 @@ Event* EventSystem::receiveEvent(const std::string& topicName, const long timeou
     return receiver->receiveEvent(timeout);
 }
 
+LocationID *EventSystem::createOriginatorId() {
+    return new LocationID();
+}
 
 /** private method used to retrieve the named EventReceiver object
   */
@@ -241,45 +196,19 @@ boost::shared_ptr<EventReceiver> EventSystem::getReceiver(const std::string& nam
     return boost::shared_ptr<EventReceiver>();
 }
 
-int64_t EventSystem::createOriginatorId() {
-    int64_t pid = getpid();
-    
-    int64_t originatorId = _IPId & 0x0FFFFFFFF;
-    int64_t locid = _localId & 0x7FFF;
 
-    originatorId = (locid << 49) | (pid << 32) | originatorId;
-
-    _localId++;
-    return originatorId;
-}
-
-/** \brief extract the 32-bit IPId embedded in this identificationId.
-  *        This is the integer representation of the IPV4 network address
-  *        of the host associated with this identificationId
-  * \return the 32-bit IPId
+/** \brief cast an Event to StatusEvent
+  * \param event an Event
+  * \return a StatusEvent
   */
-int EventSystem::extractIPId(int64_t identificationId) {
-    return identificationId & 0xFFFFFFFF;
-}
-
-/** \brief extract the 17-bit processId embedded in this identificationId
-  * \return the 17-bit processId
-  */
-int EventSystem::extractProcessId(int64_t identificationId) {
-    return (identificationId & 0x1FFFF00000000LL) >> 32;
-}
-
-/** \brief extract the 15-bit localId embedded in this identificationId
-  * \return the 15-bit localId
-  */
-short EventSystem::extractLocalId(int64_t identificationId) {
-    return (identificationId & 0xFFFE000000000000LL) >> 49;
-}
-
 StatusEvent* EventSystem::castToStatusEvent(Event* event) {
     return (StatusEvent *)event;
 }
 
+/** \brief cast an Event to CommandEvent
+  * \param event an Event
+  * \return a CommandEvent
+  */
 CommandEvent* EventSystem::castToCommandEvent(Event* event) {
     return (CommandEvent *)event;
 }

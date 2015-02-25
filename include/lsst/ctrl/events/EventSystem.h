@@ -1,8 +1,8 @@
 // -*- lsst-c++ -*-
 
-/* 
+/*
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2014  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,16 +19,15 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
+
 /** \file EventSystem.h
   *
   * \ingroup events
   *
   * \brief defines the EventSystem class
   *
-  * \author Stephen Pietrowicz, NCSA
   */
 
 #ifndef LSST_CTRL_EVENTS_EVENTSYSTEM_H
@@ -40,7 +39,6 @@
 #include <list>
 #include <boost/shared_ptr.hpp>
 
-#include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
@@ -51,7 +49,6 @@
 #include "lsst/ctrl/events/EventBroker.h"
 
 using lsst::daf::base::PropertySet;
-namespace pexPolicy = lsst::pex::policy;
 
 using namespace std;
 
@@ -64,17 +61,13 @@ namespace events {
  */
 class EventSystem {
 public:
-    EventSystem();
-
     ~EventSystem();
 
     static EventSystem& getDefaultEventSystem();
 
-    void createTransmitter(const pexPolicy::Policy& policy);
     void createTransmitter(const std::string& hostName, const std::string& topicName, int hostPort = EventBroker::DEFAULTHOSTPORT);
 
 
-    void createReceiver(const pexPolicy::Policy& policy);
     void createReceiver(const std::string& hostName, const std::string& topicName, int hostPort = EventBroker::DEFAULTHOSTPORT);
 
     void createReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort = EventBroker::DEFAULTHOSTPORT);
@@ -84,26 +77,23 @@ public:
     Event* receiveEvent(const std::string& topicName);
     Event* receiveEvent(const std::string& topicName, const long timeout);
 
-    int64_t createOriginatorId();
-    int extractIPId(int64_t identificationId);
-    int extractProcessId(int64_t identificationId);
-    short extractLocalId(int64_t identificationId);
+    LocationID *createOriginatorId();
 
     StatusEvent* castToStatusEvent(Event* event);
     CommandEvent* castToCommandEvent(Event* event);
 
 private:
+    static EventSystem *defaultEventSystem;
+
     boost::shared_ptr<EventTransmitter> getTransmitter(const std::string& name);
     boost::shared_ptr<EventReceiver> getReceiver(const std::string& name);
 
 protected:
-    static EventSystem *defaultEventSystem;
+    EventSystem();
 
-    static short _localId;
-    static int _IPId;
 
-    list<boost::shared_ptr<EventTransmitter> >_transmitters;
-    list<boost::shared_ptr<EventReceiver> >_receivers;
+    static list<boost::shared_ptr<EventTransmitter> >_transmitters;
+    static list<boost::shared_ptr<EventReceiver> >_receivers;
 };
 }
 }
