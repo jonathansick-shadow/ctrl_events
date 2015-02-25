@@ -25,19 +25,23 @@ import lsst.ctrl.events as events
 
 if __name__ == "__main__":
 
-    system = events.EventSystem.getDefaultEventSystem()
-    system.createReceiver("lsst8.ncsa.illinois.edu", "test1")
-    system.createReceiver("lsst8.ncsa.illinois.edu", "test2")
-    system.createReceiver("lsst8.ncsa.illinois.edu", "test3")
+    system = events.EventSystem().getDefaultEventSystem()
+    system.createTransmitter("lsst8.ncsa.illinois.edu", "test1")
+    system.createTransmitter("lsst8.ncsa.illinois.edu", "test2")
+    system.createTransmitter("lsst8.ncsa.illinois.edu", "test3")
 
-    dp1 = system.receiveEvent("test1")
-    ps = dp1.getPropertySet()
-    print ps.toString()
+    newSystem = events.EventSystem().getDefaultEventSystem()
 
-    dp2 = system.receiveEvent("test2")
-    ps = dp2.getPropertySet()
-    print ps.toString()
+    root = base.PropertySet()
+    root.add("DATE","2007-07-01T14:28:32.546012")
+    root.addInt("PID",200)
+    root.add("HOST","lsst8.ncsa.illinois.edu")
+    root.add("IP","141.142.220.44")
+    root.add("EVNT","test")
+    root.add("misc1","data 1")
+    root.add("misc2","data 2")
+    root.addDouble("value", 3.14)
 
-    dp3 = system.receiveEvent("test3")
-    ps = dp3.getPropertySet()
-    print ps.toString()
+    newSystem.publishEvent("test1", events.Event(root))
+    newSystem.publishEvent("test2", events.Event(root))
+    newSystem.publishEvent("test3", events.Event(root))
