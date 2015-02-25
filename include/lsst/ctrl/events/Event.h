@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2014  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,16 +19,14 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
+
 /** \file Event.h
   *
   * \ingroup events
   *
   * \brief defines the Event class
-  *
-  * \author Stephen Pietrowicz, NCSA
   *
   */
 
@@ -44,7 +42,6 @@
 #include <set>
 
 #include "lsst/pex/logging/LogRecord.h"
-#include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
@@ -52,7 +49,6 @@
 
 using lsst::daf::base::PropertySet;
 
-namespace pexPolicy = lsst::pex::policy;
 namespace pexLogging = lsst::pex::logging;
 
 using namespace std;
@@ -71,7 +67,6 @@ public:
 
     static const std::string TYPE;
     static const std::string EVENTTIME;
-    static const std::string HOSTID;
     static const std::string RUNID;
     static const std::string STATUS;
     static const std::string TOPIC;
@@ -79,8 +74,12 @@ public:
     static const std::string UNINITIALIZED;
 
     Event();
+    Event(const PropertySet& ps);
+    Event(const PropertySet& ps, const PropertySet& filterable);
+
     Event(const std::string& runid, const PropertySet::Ptr ps);
     Event(const std::string& runid, const PropertySet& ps);
+    Event(const std::string& runid, const PropertySet& ps, const PropertySet& filterable);
     Event(cms::TextMessage *msg);
 
     virtual ~Event();
@@ -88,16 +87,17 @@ public:
     PropertySet::Ptr getPropertySet() const;
 
     std::string getPubDate();
+
     long long getPubTime();
     void setPubTime(long long t);
 
     long long getEventTime();
     void setEventTime(long long nsecs);
+
     void updateEventTime();
 
     std::string getEventDate();
 
-    std::string getHostId();
     std::string getRunId();
     std::string getType();
     std::string getStatus();
@@ -112,20 +112,22 @@ public:
     virtual void populateHeader(cms::TextMessage* msg) const;
     void marshall(cms::TextMessage *msg);
 
-
-
 protected:
     PropertySet::Ptr _psp;
+    PropertySet::Ptr _filterable;
     set<std::string> _keywords;
     void _init();
-    void _constructor(const std::string& runid, const PropertySet& ps);
+    void _constructor(const std::string& runid, const PropertySet& ps, const PropertySet& filterable);
 
     template<typename T>void add(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+
 
 private:
     std::string marshall(const PropertySet& ps);
     PropertySet::Ptr processTextMessage(cms::TextMessage *textMessage);
     PropertySet::Ptr unmarshall(const std::string& text);
+    PropertySet::Ptr parsePropertySet(boost::property_tree::ptree child);
+    bool addDataItem(std::string typeInfo, boost::property_tree::ptree& item, std::string key, PropertySet& ps);
 };
 
 }

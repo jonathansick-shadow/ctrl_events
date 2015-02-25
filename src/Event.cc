@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2014  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,16 +19,14 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
+
 /** \file Event.cc
   *
   * \brief Object to transmit information through the event framework.
   *
   * \ingroup ctrl/events
-  *
-  * \author Stephen R. Pietrowicz, NCSA
   *
   */
 #include <iomanip>
@@ -41,12 +39,14 @@
 #include <sys/un.h>
 #include <netdb.h>
 #include <time.h>
+#include <typeinfo>
 
 #include "boost/scoped_array.hpp"
 #include "boost/property_tree/ptree.hpp"
 #include "boost/property_tree/json_parser.hpp"
 #include "boost/foreach.hpp"
 
+#include "lsst/ctrl/events/Host.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/daf/base/DateTime.h"
@@ -68,6 +68,7 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
+
 /** \brief Creates Event which contains a PropertySet
   *
   * \throw throws NotFoundError if expected keywords are missing a property set
@@ -82,7 +83,6 @@ namespace events {
 
 const std::string Event::TYPE = "TYPE";
 const std::string Event::EVENTTIME = "EVENTTIME";
-const std::string Event::HOSTID = "HOSTID";
 const std::string Event::RUNID = "RUNID";
 const std::string Event::STATUS = "STATUS";
 const std::string Event::TOPIC = "TOPIC";
@@ -97,27 +97,63 @@ Event::Event() {
 void Event::_init() {
     _keywords.insert(TYPE);
     _keywords.insert(EVENTTIME);
-    _keywords.insert(HOSTID);
-    _keywords.insert(RUNID);
+//    _keywords.insert(RUNID);
     _keywords.insert(STATUS);
     _keywords.insert(TOPIC);
     _keywords.insert(PUBTIME);
 }
 
 Event::Event(cms::TextMessage *msg) {
-    _init();
+    // _init();
+
+    vector<std::string>names = msg->getPropertyNames();
+    unsigned int i;
 
     _psp = processTextMessage(msg);
 
-    _psp->set(TYPE, msg->getStringProperty(TYPE));
-    _psp->set(HOSTID, msg->getStringProperty(HOSTID));
-    _psp->set(RUNID, msg->getStringProperty(RUNID));
-    _psp->set(STATUS, msg->getStringProperty(STATUS));
-    _psp->set(TOPIC, msg->getStringProperty(TOPIC));
-    _psp->set(EVENTTIME, msg->getLongProperty(EVENTTIME));
-    _psp->set(PUBTIME, msg->getLongProperty(PUBTIME));
-/*
-*/
+    for (i = 0; i < names.size(); i++)
+            _keywords.insert(names[i]);
+
+    _psp->set(EVENTTIME, msg->getCMSTimestamp());
+
+    for (i = 0; i < names.size(); i++) {
+        std::string name = names[i];
+        cms::Message::ValueType vType = msg->getPropertyValueType(names[i]);
+        switch(vType) {
+            case cms::Message::NULL_TYPE:
+                _psp->set(name, NULL);
+                break;
+            case cms::Message::BOOLEAN_TYPE:
+                _psp->set(name, msg->getBooleanProperty(name));
+                break;
+            case cms::Message::BYTE_TYPE:
+            case cms::Message::CHAR_TYPE:
+                _psp->set(name, msg->getByteProperty(name));
+                break;
+            case cms::Message::SHORT_TYPE:
+                _psp->set(name, msg->getShortProperty(name));
+                break;
+            case cms::Message::INTEGER_TYPE:
+                _psp->set(name, msg->getIntProperty(name));
+                break;
+            case cms::Message::LONG_TYPE:
+                _psp->set(name, msg->getLongProperty(name));
+                break;
+            case cms::Message::DOUBLE_TYPE:
+                _psp->set(name, msg->getDoubleProperty(name));
+                break;
+            case cms::Message::FLOAT_TYPE:
+                _psp->set(name, msg->getFloatProperty(name));
+                break;
+            case cms::Message::STRING_TYPE:
+                _psp->set(name, msg->getStringProperty(name));
+                break;
+            case cms::Message::BYTE_ARRAY_TYPE:
+            case cms::Message::UNKNOWN_TYPE:
+                break;
+        }
+    }
+    
 }
 
 vector<std::string> Event::getFilterablePropertyNames() {
@@ -145,19 +181,35 @@ vector<std::string> Event::getCustomPropertyNames() {
     return names;
 }
 
+Event::Event(const PropertySet& ps) {
+    const std::string empty;
+    PropertySet::Ptr p (new PropertySet);
+    _constructor(empty, ps, *p);
+}
+
+Event::Event(const PropertySet& ps, const PropertySet& filterable) {
+    const std::string empty;
+    _constructor(empty, ps, filterable);
+}
+
 Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
-    _constructor(runId, *psp);
+    PropertySet::Ptr p (new PropertySet);
+    _constructor(runId, *psp, *p);
 }
 
 Event::Event( const std::string& runId, const PropertySet& ps) {
-    _constructor(runId, ps);
+    PropertySet::Ptr p (new PropertySet);
+    _constructor(runId, ps, *p);
 }
 
-void Event::_constructor( const std::string& runId, const PropertySet& ps) {
+Event::Event( const std::string& runId, const PropertySet& ps, const PropertySet& filterable) {
+    _constructor(runId, ps, filterable);
+}
+
+void Event::_constructor( const std::string& runId, const PropertySet& ps, const PropertySet& filterable) {
     long int host_len = sysconf(_SC_HOST_NAME_MAX);
 
     boost::scoped_array<char> hostname(new char[host_len]);
-    //time_t rawtime;
 
     _init();
     
@@ -167,11 +219,6 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
     // do NOT alter the property set we were given. Make a copy of it,
     // and modify that one.
 
-    /*
-    std::string foo = psp->toString();
-    std::cout << "foo = " << foo << std::endl;
-    */
-
     if (!_psp->exists(STATUS)) {
         _psp->set(STATUS, "unknown");
     }
@@ -180,16 +227,11 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
         updateEventTime();
     }
    
-
-    if (!_psp->exists(HOSTID)) {
-        std::string name;
-        gethostname(hostname.get(), host_len);
-        name = hostname.get();
-        _psp->set(HOSTID, name);
-    }
-
     // _runId is filled in here and is ignored in the passed PropertySet
-    _psp->set(RUNID, runId);
+    if (!runId.empty()) {
+        _keywords.insert(RUNID);
+        _psp->set(RUNID, runId);
+    }
 
     // _type is filled in here and is ignored in the passed PropertySet
     _psp->set(TYPE, EventTypes::EVENT);
@@ -199,17 +241,46 @@ void Event::_constructor( const std::string& runId, const PropertySet& ps) {
 
     // _pubTime is filled in on publish and is ignored in the passed PropertySet
     _psp->set(PUBTIME, (long long)0);
+
+    if (filterable.nameCount() > 0) {
+        vector<std::string> names = filterable.names();
+        unsigned int i;
+        for (i = 0; i < names.size(); i++) {
+            _keywords.insert(names[i]);
+        }
+
+        _psp->combine(filterable.PropertySet::deepCopy());
+    }
 }
 
 void Event::populateHeader(cms::TextMessage* msg)  const {
-    msg->setStringProperty(TYPE, _psp->get<std::string>(TYPE));
-    msg->setLongProperty(EVENTTIME, _psp->get<long long>(EVENTTIME));
-    msg->setStringProperty(HOSTID, _psp->get<std::string>(HOSTID));
-    msg->setStringProperty(RUNID, _psp->get<std::string>(RUNID));
-    msg->setStringProperty(STATUS, _psp->get<std::string>(STATUS));
-    msg->setStringProperty(TOPIC, _psp->get<std::string>(TOPIC));
-    msg->setLongProperty(PUBTIME, _psp->get<long long>(PUBTIME));
+    set<std::string>::iterator keyIterator;
+    for (keyIterator = _keywords.begin(); keyIterator != _keywords.end(); keyIterator++) {
+        std::string name = *keyIterator;
+        const std::type_info &t = _psp->typeOf(name);
+        if (t == typeid(bool))
+            msg->setBooleanProperty(name, _psp->get<bool>(name));
+        else if (t == typeid(short))
+            msg->setShortProperty(name, _psp->get<short>(name));
+        else if (t == typeid(int))
+            msg->setIntProperty(name, _psp->get<int>(name));
+        else if (t == typeid(long))
+            msg->setLongProperty(name, _psp->get<long>(name));
+        else if (t == typeid(long long))
+            msg->setLongProperty(name, _psp->get<long long>(name));
+        else if (t == typeid(double))
+            msg->setDoubleProperty(name, _psp->get<double>(name));
+        else if (t == typeid(float))
+            msg->setFloatProperty(name, _psp->get<float>(name));
+        else if (t == typeid(std::string))
+            msg->setStringProperty(name, _psp->get<std::string>(name));
+        else {
+            std::string msg("Data type represented in "+name+" is not permitted in event header");
+            throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
+        }
+    }
 }
+            
 
 long long Event::getEventTime() {
     return _psp->get<long long>(EVENTTIME);
@@ -223,9 +294,11 @@ void Event::updateEventTime() {
     _psp->set(EVENTTIME,  (long long)dafBase::DateTime::now().nsecs());
 }
 
+
 /** \brief Get the creation date of this event
   * \return A formatted date string representing the event creation time
   */
+
 std::string Event::getEventDate() {
     long long eventTime = _psp->get<long long>(EVENTTIME);
     dafBase::DateTime dateTime(eventTime);
@@ -275,13 +348,10 @@ std::string Event::getPubDate() {
     return asctime(&pubTime);
 }
 
-
-std::string Event::getHostId() {
-    return _psp->get<std::string>(HOSTID);
-}
-
 std::string Event::getRunId() {
-    return _psp->get<std::string>(RUNID);
+    if (_psp->exists(RUNID))
+        return _psp->get<std::string>(RUNID);
+    return std::string();
 }
 
 std::string Event::getType() {
@@ -329,10 +399,11 @@ std::string Event::marshall(const PropertySet& ps) {
     std::vector<std::string> v = ps.paramNames(false);
 
     boost::property_tree::ptree child;
-    // TODO: optimize this to get use getArray only when necessary
+ 
     unsigned int i;
     for (i = 0; i < v.size(); i++) {
         std::string name = v[i];
+
         if (ps.typeOf(name) == typeid(bool)) {
             add<bool>(name, "bool", ps, child);
         } else if (ps.typeOf(name) == typeid(long)) {
@@ -356,12 +427,13 @@ std::string Event::marshall(const PropertySet& ps) {
                 child.put_child(name, pt);
             }
         } else {
-            std::cout << "Couldn't marshall "<< name << std::endl;
+            std::string msg("Couldn't marshall "+name);
+            throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
         }
     }
     std::ostringstream payload;
     write_json(payload, child, false);
-    std::cout << "payload is "<< payload.str() << std::endl;
+
     return payload.str();
 }
 
@@ -375,7 +447,70 @@ PropertySet::Ptr Event::processTextMessage(cms::TextMessage* textMessage) {
 
     return unmarshall(text);
 }
+
+/** private method to try to add data to a property set
+ * \param typeInfo a string containing the name of the data type
+ * \param item a node of a boost::property_tree::ptree containing data
+ * \param key the name of the data
+ * \param ps a PropertySet to store the name and data into.
+ * \return true if data was added to the PropertySet
+  */
+bool Event::addDataItem(std::string typeInfo, boost::property_tree::ptree& item, std::string key, PropertySet& ps) {
+    if (typeInfo == "string") {
+        std::string value = item.get_value<std::string>();
+        ps.add(key, value);
+    } else if (typeInfo == "bool") {
+        bool value = item.get_value<bool>();
+        ps.add(key, value);
+    } else if (typeInfo == "long") {
+        long value = item.get_value<long>();
+        ps.add(key, value);
+    } else if (typeInfo == "long long") {
+        long long value = item.get_value<long long>();
+        ps.add(key, value);
+    } else if (typeInfo == "int") {
+        int value = item.get_value<int>();
+        ps.add(key, value);
+    } else if (typeInfo == "float") {
+        float value = item.get_value<float>();
+        ps.add(key, value);
+    } else if (typeInfo == "double") {
+        double value = item.get_value<double>();
+        ps.add(key, value);
+    } else if (typeInfo == "datetime") {
+        long long value = item.get_value<long long>();
+        ps.add(key, lsst::daf::base::DateTime(value, lsst::daf::base::DateTime::UTC));
+    } else {
+        return false;
+    }
+    return true;
+}
+
+/** private method to iterate through the representation of a propertyset
+  * within the boost::property_tree::ptree
+  * \param child a boost::property_tree::ptree to iterate through
+  * \return a PropertySet::Ptr containing the data that was stored in child.
+  */
+PropertySet::Ptr Event::parsePropertySet(boost::property_tree::ptree child) {
+    PropertySet::Ptr psp(new PropertySet);
+    
+    BOOST_FOREACH(boost::property_tree::ptree::value_type const &v, child.get_child("")) {
+        std::string label = v.first;
+        BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, child.get_child(label)) {
+            bool b = addDataItem(v2.first, v2.second, label, *psp);
+            if (b == false) {
+                PropertySet::Ptr p2 = parsePropertySet(child.get_child(label));
+                psp->add(label, p2);
+                break;
+            }
+        }
+    }
+    return psp;
+}
+
 /** private method unmarshall the DataProperty from a text string
+  * \param text a JSON text string
+  * \return a PropertySet::Ptr containing the data that was stored in text
   */
 PropertySet::Ptr Event::unmarshall(const std::string& text) {
 
@@ -387,40 +522,21 @@ PropertySet::Ptr Event::unmarshall(const std::string& text) {
 
     BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt) {
         std::string key = v.first;
-        std::cout << "key: " << key << std::endl;
+
         boost::property_tree::ptree child = v.second;
         BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, child) {
             std::string key2 = v2.first;
-            std::cout << "key2: " << key2 << std::endl;
-            if (key2 == "string") {
-                std::string value = child.get<std::string>(key2);
-                psp->add(key, value);
-            } else if (key2 == "bool") {
-                bool value = child.get<bool>(key2);
-                psp->add(key, value);
-            } else if (key2 == "long") {
-                long value = child.get<long>(key2);
-                psp->add(key, value);
-            } else if (key2 == "long long") {
-                long long value = child.get<long long>(key2);
-                psp->add(key, value);
-            } else if (key2 == "int") {
-                int value = child.get<int>(key2);
-                psp->add(key, value);
-            } else if (key2 == "float") {
-                float value = child.get<float>(key2);
-                psp->add(key, value);
-            } else if (key2 == "double") {
-                double value = child.get<double>(key2);
-                psp->add(key, value);
-            } else if (key2 == "datetime") {
-                long long value = child.get<long long>(key2);
-                psp->add(key, lsst::daf::base::DateTime(value, lsst::daf::base::DateTime::UTC));
+
+            bool b = addDataItem(key2, v2.second, key, *psp);
+            if (b == false) {
+                std::string value = v2.second.get_value<std::string>();
+                PropertySet::Ptr p = parsePropertySet(child);
+                psp->add(key, p);
+                break;
             }
         }
     }
         
-    
     return psp;
 }
 
