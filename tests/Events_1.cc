@@ -1,7 +1,7 @@
-/*
+/* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
- *
+ * Copyright 2008-2014  AURA/LSST.
+ * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
  *
@@ -9,15 +9,15 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * You should have received a copy of the LSST License Statement and
- * the GNU General Public License along with this program.  If not,
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * 
+ * You should have received a copy of the LSST License Statement and 
+ * the GNU General Public License along with this program.  If not, 
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
 /**
@@ -31,7 +31,13 @@
 #include "lsst/ctrl/events.h"
 #include "lsst/pex/exceptions.h"
 
-namespace pexPolicy = lsst::pex::policy;
+#define BOOST_TEST_MODULE Events_1
+#define BOOST_TEST_DYN_LINK
+
+#include "boost/test/unit_test.hpp"
+
+BOOST_AUTO_TEST_SUITE(Events1Suite)
+
 namespace pexExceptions = lsst::pex::exceptions;
 namespace pexLogging = lsst::pex::logging;
 namespace ctrlEvents = lsst::ctrl::events;
@@ -46,10 +52,10 @@ void tattle(bool mustBeTrue, const string& failureMsg, int line) {
     }
 }
 
-int main() {
+BOOST_AUTO_TEST_CASE(all) {
 
     std::ostringstream oss;
-    pexPolicy::Policy p;
+
     char host[128];
 
     int ret = gethostname(host,sizeof(host));
@@ -58,29 +64,6 @@ int main() {
     oss << "events_1_test_" << host << "_" << getpid();
     std::string topic = oss.str();
 
-
-    //
-    // test EventTransmitter(const Policy& policy)
-    //
-    try {
-        ctrlEvents::EventTransmitter et1(p);
-    } catch (pexExceptions::NotFoundError&) {
-    }
-
-    p.set("topicName", topic);
-    p.set("useLocalSockets", false);
-    try {
-        ctrlEvents::EventTransmitter et2(p);
-    } catch (pexExceptions::NotFoundError&) {
-    }
-
-    p.set("topicName", topic);
-    p.set("useLocalSockets", false);
-    p.set("hostName", "garbage");
-    try {
-        ctrlEvents::EventTransmitter et2(p);
-    } catch (pexExceptions::RuntimeError&) {
-    }
 
     ctrlEvents::EventTransmitter et4("lsst8.ncsa.illinois.edu", topic);
 
@@ -105,7 +88,7 @@ int main() {
 
     // test getTopicName();
     std::string topicName = et4.getTopicName();
-    Assert(topicName == topic, "Topic name does not match initial name");
+    BOOST_CHECK_EQUAL(topicName, topic); //Assert(topicName == topic, "Topic name does not match initial name");
     std::cout << topicName << std::endl;
 
     // test publish("string", LogRecord)
@@ -125,3 +108,5 @@ int main() {
         std::cout << *iter << std::endl;
     }
 }
+
+BOOST_AUTO_TEST_SUITE_END()
