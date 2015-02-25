@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2014  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,16 +19,14 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
+
 /** \file LogEvent.cc
   *
   * \brief Log Event implementation
   *
   * \ingroup ctrl/events
-  *
-  * \author Stephen R. Pietrowicz, NCSA
   *
   */
 #include <iomanip>
@@ -68,12 +66,17 @@ LogEvent::LogEvent() : Event() {
 }
 
 
+/** private method to add keywords used in LogEvent JMS headers
+  */
 void LogEvent::_init() {
     _keywords.insert(LogEvent::COMMENT);
     _keywords.insert(LogEvent::LEVEL);
     _keywords.insert(LogEvent::LOG);
 }
 
+/** \brief Constructor to take a JMS TextMessage and turn it into a LogEvent
+  *  \param msg a TextMessage
+  */
 LogEvent::LogEvent(cms::TextMessage *msg) : Event(msg) {
     _init();
 
@@ -102,6 +105,10 @@ LogEvent::LogEvent(cms::TextMessage *msg) : Event(msg) {
 
 }
 
+/** \brief Constructor to take a runID and a LogRecord and create a LogEvent
+  * \param runId a string to identify which run this log message came from
+  * \param rec a LogRecord containing the logging message
+  */
 LogEvent::LogEvent( const std::string& runId, const pexLogging::LogRecord& rec) : Event(runId, rec.getProperties()) {
     _init();
 
@@ -131,6 +138,9 @@ LogEvent::LogEvent( const std::string& runId, const pexLogging::LogRecord& rec) 
     }
 }
 
+/** private method used to populate the LogEvent
+  */
+
 void LogEvent::populateHeader(cms::TextMessage* msg) const {
     Event::populateHeader(msg);
 
@@ -149,14 +159,23 @@ void LogEvent::populateHeader(cms::TextMessage* msg) const {
 
 }
 
+/** \brief retreive the log comment
+  * \return std::string vector containing the comment
+  */
 std::vector<std::string> LogEvent::getComment() {
     return _psp->getArray<std::string>(LogEvent::COMMENT);
 }
 
+/** \brief retreive the log level
+  * \return the logging level at which the LogRecord message was set
+  */
 int LogEvent::getLevel() {
     return _psp->get<int>(LogEvent::LEVEL);
 }
 
+/** \brief Retreive the log message 
+  * \return a string containing the log message itself
+  */
 std::string LogEvent::getLog() {
     return _psp->get<std::string>(LogEvent::LOG);
 }
