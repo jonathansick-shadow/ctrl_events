@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2014  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,16 +19,14 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
+
 /** \file EventFactory.cc
   *
   * \brief Coordinate EventTransmitters and EventReceiver objects
   *
   * \ingroup events
-  *
-  * \author Stephen R. Pietrowicz, NCSA
   *
   */
 #include <iomanip>
@@ -37,14 +35,12 @@
 
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/logging/LogRecord.h"
-#include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/exceptions.h"
 
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
 #include "lsst/ctrl/events/LogEvent.h"
-#include "lsst/ctrl/events/PipelineLogEvent.h"
 #include "lsst/ctrl/events/EventTypes.h"
 
 #include "lsst/ctrl/events/EventLog.h"
@@ -76,10 +72,7 @@ EventFactory::~EventFactory() {
 Event* EventFactory::createEvent(cms::TextMessage* msg) {
     vector<std::string> names = msg->getPropertyNames();
 
-/*
-    for (unsigned int i = 0; i < names.size(); i++) 
-        std::cout << names[i] << std::endl;
-*/
+    unsigned int i;
 
     std::string _type = msg->getStringProperty("TYPE");
 
@@ -89,8 +82,6 @@ Event* EventFactory::createEvent(cms::TextMessage* msg) {
         return new StatusEvent(msg);
     } else if (_type == EventTypes::COMMAND) {
         return new CommandEvent(msg);
-    } else if (_type == EventTypes::PIPELINELOG) {
-        return new PipelineLogEvent(msg);
     }
     return new Event(msg);
 }

@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2014  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,16 +19,14 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
+
 /** \file EventReceiver.cc
   *
   * \brief Object to receive Events from the specified event bus
   *
   * \ingroup events
-  *
-  * \author Stephen R. Pietrowicz, NCSA
   *
   */
 #include <iomanip>
@@ -43,7 +41,6 @@
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/logging/Component.h"
-#include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -53,7 +50,6 @@
 #include <activemq/core/ActiveMQConnectionFactory.h>
 #include <activemq/exceptions/ActiveMQException.h>
 
-namespace pexPolicy = lsst::pex::policy;
 namespace pexExceptions = lsst::pex::exceptions;
 
 namespace activemqCore = activemq::core;
@@ -61,57 +57,6 @@ namespace activemqCore = activemq::core;
 namespace lsst {
 namespace ctrl {
 namespace events {
-
-/** \brief Receives events based on Policy file contents
-  *
-  * \param policy the policy object to use when building the receiver
-  * \throw throws lsst::pex::exceptions::NotFoundError if topicName isn't specified
-  * \throw throws lsst::pex::exceptions::NotFoundError if hostName isn't specified
-  * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
-  */
-
-EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
-    //EventLibrary().initializeLibrary();
-    int hostPort;
-
-    try {
-        _turnEventsOff = policy.getBool("turnEventsOff");
-    } catch (pexPolicy::NameNotFound& e) {
-        _turnEventsOff = false;
-    }
-    if (_turnEventsOff == true)
-        return;
-
-    if (!policy.exists("topicName")) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundError, "topicName not found in policy");
-    }
-
-    std::string topicName = policy.getString("topicName");
-    try {
-        _turnEventsOff = policy.getBool("turnEventsOff");
-    } catch (pexPolicy::NameNotFound& e) {
-        _turnEventsOff = false;
-    }
-
-    if (!policy.exists("hostName")) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundError, "hostName not found in policy");
-    }
-
-    std::string hostName = policy.getString("hostName");
-
-    try {
-        hostPort = policy.getInt("hostPort");
-    } catch (pexPolicy::NameNotFound& e) {
-        hostPort = EventBroker::DEFAULTHOSTPORT;
-    }
-
-    try {
-        _selector = policy.getString("selector");
-    } catch (pexPolicy::NameNotFound& e) {
-        _selector = "";
-    }
-    init(hostName, topicName, _selector, hostPort);
-}
 
 /** \brief Receives events from the specified host and topic
   *
@@ -121,7 +66,6 @@ EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
   * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
   */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, int hostPort) {
-    _turnEventsOff = false;
     init(hostName, topicName, "", hostPort);
 }
 
@@ -134,12 +78,10 @@ EventReceiver::EventReceiver(const std::string& hostName, const std::string& top
   * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
   */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort) {
-    _turnEventsOff = false;
     init(hostName, topicName, selector, hostPort);
 }
 
-/** private method for initialization of EventReceiver.  Sets up use of local
-  * sockets or activemq, depending on how the policy file was configured.  
+/** private method for initialization of EventReceiver.
   */
 void EventReceiver::init(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort) {
 
@@ -150,9 +92,6 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
     _consumer = NULL;
     _topic = topicName;
     _selector = selector;
-
-    if (_turnEventsOff == true)
-        return;
 
     try {
         std::stringstream ss;
@@ -208,10 +147,6 @@ Event* EventReceiver::receiveEvent() {
 Event* EventReceiver::receiveEvent(long timeout) {
     PropertySet::Ptr psp;
 
-    if (_turnEventsOff == true)
-        return NULL;
-
-    
     cms::TextMessage* textMessage;
     try {
         cms::Message* msg = _consumer->receive(timeout);

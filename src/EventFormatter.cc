@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2014  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,16 +19,14 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
+
 /** \file EventFormatter.cc
   *
   * \brief EventFormatter class required for logging support for events
   *
   * \ingroup events
-  *
-  * \author Stephen R. Pietrowicz, NCSA
   *
   */
 #include <iomanip>
@@ -38,7 +36,6 @@
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/LogEvent.h"
-#include "lsst/ctrl/events/PipelineLogEvent.h"
 #include "lsst/ctrl/events/EventFormatter.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/logging/Component.h"
@@ -73,13 +70,8 @@ void EventFormatter::write(ostream *os, const pexLogging::LogRecord& rec) {
         return;
     } 
     std::string runid = ps.get<std::string>(Event::RUNID);
-    if (ps.exists(PipelineLogEvent::SLICEID)) {
-        PipelineLogEvent event(runid,rec);
-        system.publishEvent(EventLog::LOGGING_TOPIC, event);
-    } else {
-        LogEvent event(runid,rec);
-        system.publishEvent(EventLog::LOGGING_TOPIC, event);
-    }
+    LogEvent event(runid,rec);
+    system.publishEvent(EventLog::LOGGING_TOPIC, event);
 }
 
 }

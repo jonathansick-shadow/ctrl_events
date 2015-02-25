@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2014  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,9 +19,9 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
+
 /** \file EventLog.cc
   *
   * \brief LSST event logging class
@@ -30,14 +30,14 @@
   *
   * \ingroup events
   *
-  * \author Stephen R. Pietrowicz, NCSA
-  *
   */
 #include <cstring>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
 #include <unistd.h>
+#include <boost/scoped_array.hpp>
+
 
 #include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventFormatter.h"
