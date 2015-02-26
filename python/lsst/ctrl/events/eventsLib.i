@@ -42,7 +42,6 @@ Access to the lsst::ctrl::events classes
 #include "lsst/pex/logging/BlockTimingLog.h"
 #include "lsst/pex/logging/ScreenLog.h"
 #include "lsst/pex/logging/DualLog.h"
-#include "lsst/pex/policy.h"
 #include "lsst/ctrl/events/Host.h"
 #include "lsst/ctrl/events/LocationID.h"
 #include "lsst/ctrl/events/Event.h"
@@ -62,9 +61,17 @@ Access to the lsst::ctrl::events classes
 
 %shared_ptr(lsst::ctrl::events::EventFormatter)
 
+
 %import "lsst/daf/base/baseLib.i"
 %import "lsst/pex/logging/loggingLib.i"
-%import "lsst/pex/policy/policyLib.i"
+
+%typemap(out) std::vector<std::string > {
+    int len = ($1).size();
+    $result = PyList_New(len);
+    for (int i = 0; i < len; i++) {
+        PyList_SetItem($result,i,PyString_FromString(($1)[i].c_str()));
+    }
+}
 
 %include "lsst/ctrl/events/Host.h"
 %include "lsst/ctrl/events/LocationID.h"
