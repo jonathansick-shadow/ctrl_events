@@ -33,7 +33,6 @@
 using namespace std;
 
 namespace pexExceptions = lsst::pex::exceptions;
-namespace pexLogging = lsst::pex::logging;
 namespace ctrlEvents = lsst::ctrl::events;
 
 #define BOOST_TEST_MODULE EventSystem_1
@@ -74,13 +73,6 @@ BOOST_AUTO_TEST_CASE(all) {
 
     ctrlEvents::Event event("runid1",psp);
     eventSystem.publishEvent(topic, event);
-
-    // test publish("string", LogRecord)
-    pexLogging::LogRecord lr(-1, 10);
-    const char *comment = "a comment";
-    lr.addComment(comment);
-    ctrlEvents::LogEvent logEvent("logrec", lr);
-    eventSystem.publishEvent(topic, logEvent);
 
 }
 

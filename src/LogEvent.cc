@@ -42,8 +42,14 @@
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
 
+#include <log4cxx/helpers/stringhelper.h>
+#include <log4cxx/helpers/pool.h>
+#include <log4cxx/spi/location/locationinfo.h>
+
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+
 namespace pexExceptions = lsst::pex::exceptions;
-namespace pexLogging = lsst::pex::logging;
 
 
 using namespace std;
@@ -52,26 +58,49 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-const std::string LogEvent::COMMENT = "COMMENT";
 const std::string LogEvent::LEVEL = "LEVEL";
-const std::string LogEvent::LOG = "LOG";
-const std::string LogEvent::DELIMITER = "|@|";
+const std::string LogEvent::LOGGER = "LOG";
 
 /** \brief Creates LogEvent which contains a PropertySet
   *
   */
-
 LogEvent::LogEvent() : Event() {
     _init();
+}
+
+LogEvent::LogEvent(const log4cxx::spi::LoggingEventPtr& event, log4cxx::helpers::Pool& p) : Event() {
+    _init();
+
+    _psp->set(TYPE, EventTypes::LOG);
+    _psp->set(LogEvent::LOGGER, event->getLoggerName());
+    _psp->set(LogEvent::LEVEL, event->getLevel()->toInt());
+
+    // commented out for now... this info is sent in the message header
+    // for broker-side parsing.
+
+    //psp->set("logger", event->getLoggerName());
+    //psp->set("level", event->getLevel()->toInt());
+    _psp->set("message", event->getMessage());
+    _psp->set("timestamp", event->getTimeStamp());
+    _psp->set("threadname", event->getThreadName());
+
+    spi::LocationInfo location = event->getLocationInformation();
+
+    PropertySet::Ptr loc(new PropertySet);
+    loc->set("filename", location.getFileName());
+    loc->set("classname", location.getClassName());
+    loc->set("methodname", location.getMethodName());
+    loc->set("linenumber", location.getLineNumber());
+
+    _psp->set("location", loc);
 }
 
 
 /** private method to add keywords used in LogEvent JMS headers
   */
 void LogEvent::_init() {
-    _keywords.insert(LogEvent::COMMENT);
     _keywords.insert(LogEvent::LEVEL);
-    _keywords.insert(LogEvent::LOG);
+    _keywords.insert(LogEvent::LOGGER);
 }
 
 /** \brief Constructor to take a JMS TextMessage and turn it into a LogEvent
@@ -80,62 +109,10 @@ void LogEvent::_init() {
 LogEvent::LogEvent(cms::TextMessage *msg) : Event(msg) {
     _init();
 
-    vector<std::string>results;
-
-    std::string str = msg->getStringProperty(LogEvent::COMMENT);
-
-    std::string::size_type cutAt;
-
-    std::string::size_type delim_len = LogEvent::DELIMITER.length();
-    while( (cutAt = str.find(LogEvent::DELIMITER)) != str.npos ) {
-        if(cutAt > 0) {
-            results.push_back(str.substr(0,cutAt));
-        }
-        str = str.substr(cutAt+delim_len);
-    }
-    if(str.length() > 0) {
-        results.push_back(str);
-    }
-
-    _psp->set(LogEvent::COMMENT, results);
-
     _psp->set(LogEvent::LEVEL, msg->getIntProperty(LogEvent::LEVEL));
 
-    _psp->set(LogEvent::LOG, msg->getStringProperty(LogEvent::LOG));
+    _psp->set(LogEvent::LOGGER, msg->getStringProperty(LogEvent::LOGGER));
 
-}
-
-/** \brief Constructor to take a runID and a LogRecord and create a LogEvent
-  * \param runId a string to identify which run this log message came from
-  * \param rec a LogRecord containing the logging message
-  */
-LogEvent::LogEvent( const std::string& runId, const pexLogging::LogRecord& rec) : Event(runId, rec.getProperties()) {
-    _init();
-
-
-    const PropertySet& ps = rec.getProperties();
-
-    _psp->set(TYPE, EventTypes::LOG);
-
-    if (!ps.exists(LogEvent::LOG))
-        _psp->set(LogEvent::LOG, "default");
-    else
-        _psp->set(LogEvent::LOG, ps.getAsString(LogEvent::LOG));
-
-    if (!ps.exists(LogEvent::LEVEL))
-        _psp->set(LogEvent::LEVEL, -1);
-    else
-        _psp->set(LogEvent::LEVEL, rec.getImportance());
-
-
-
-    if (ps.exists(LogEvent::COMMENT)) {
-        std::vector<std::string> commentArray = ps.getArray<std::string>(LogEvent::COMMENT);
-    
-        _psp->set(LogEvent::COMMENT, commentArray);
-    } else {
-        _psp->set(LogEvent::COMMENT, "none|@|");
-    }
 }
 
 /** private method used to populate the LogEvent
@@ -144,26 +121,10 @@ LogEvent::LogEvent( const std::string& runId, const pexLogging::LogRecord& rec) 
 void LogEvent::populateHeader(cms::TextMessage* msg) const {
     Event::populateHeader(msg);
 
-    std::vector<std::string> vec  = _psp->getArray<std::string>(LogEvent::COMMENT);
-    std::ostringstream comment;
-    std::vector<std::string>::iterator iter;
-    for (iter = vec.begin(); iter != vec.end(); iter++) {
-        comment << *iter << LogEvent::DELIMITER;
-    }
-
-    msg->setStringProperty(LogEvent::COMMENT, comment.str());
-
     msg->setIntProperty(LogEvent::LEVEL, _psp->get<int>(LogEvent::LEVEL));
 
-    msg->setStringProperty(LogEvent::LOG, _psp->get<std::string>(LogEvent::LOG));
+    msg->setStringProperty(LogEvent::LOGGER, _psp->get<std::string>(LogEvent::LOGGER));
 
-}
-
-/** \brief retreive the log comment
-  * \return std::string vector containing the comment
-  */
-std::vector<std::string> LogEvent::getComment() {
-    return _psp->getArray<std::string>(LogEvent::COMMENT);
 }
 
 /** \brief retreive the log level
@@ -176,8 +137,8 @@ int LogEvent::getLevel() {
 /** \brief Retreive the log message 
   * \return a string containing the log message itself
   */
-std::string LogEvent::getLog() {
-    return _psp->get<std::string>(LogEvent::LOG);
+std::string LogEvent::getLogger() {
+    return _psp->get<std::string>(LogEvent::LOGGER);
 }
 
 /** \brief destructor

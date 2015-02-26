@@ -39,7 +39,6 @@
 BOOST_AUTO_TEST_SUITE(Events1Suite)
 
 namespace pexExceptions = lsst::pex::exceptions;
-namespace pexLogging = lsst::pex::logging;
 namespace ctrlEvents = lsst::ctrl::events;
 
 #define Assert(b, m) tattle(b, m, __LINE__)
@@ -79,34 +78,10 @@ BOOST_AUTO_TEST_CASE(all) {
     ctrlEvents::Event event2("event2", psp2);
     et4.publishEvent(event2);
 
-    // test publish("string", LogRecord)
-    pexLogging::LogRecord lr(-1, 10);
-    const char *comment = "a comment";
-    lr.addComment(comment);
-    ctrlEvents::LogEvent logEvent("logrec", lr);
-    et4.publishEvent(logEvent);
-
     // test getTopicName();
     std::string topicName = et4.getTopicName();
     BOOST_CHECK_EQUAL(topicName, topic); //Assert(topicName == topic, "Topic name does not match initial name");
-    std::cout << topicName << std::endl;
 
-    // test publish("string", LogRecord)
-    pexLogging::LogRecord lr2(-1, 10);
-    const char *comment2 = "a comment";
-    lr2.addComment(comment2);
-    lr2.addComment("a second comment");
-    lr2.addProperty("LOG", "Log value");
-    lr2.addProperty("NAME", "name value");
-
-    ctrlEvents::LogEvent logEvent2("myrunid", lr2);
-    et4.publishEvent(logEvent2);
-
-    std::vector<std::string>vec = logEvent.getComment();
-    std::vector<std::string>::iterator iter;
-    for (iter = vec.begin(); iter != vec.end(); iter++) {
-        std::cout << *iter << std::endl;
-    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

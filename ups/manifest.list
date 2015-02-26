@@ -1,7 +1,6 @@
 >merge: build
 >merge: utils
 >merge: daf_base
->merge: pex_logging
 >merge: pex_exceptions
 >merge: boost
 >merge: swig

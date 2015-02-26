@@ -52,15 +52,10 @@ Access to the lsst::ctrl::events classes
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/ctrl/events/EventReceiver.h"
 #include "lsst/ctrl/events/EventSystem.h"
-#include "lsst/ctrl/events/EventLog.h"
-#include "lsst/ctrl/events/EventFormatter.h"
 
 %}
 
 %include "lsst/p_lsstSwig.i"
-
-%shared_ptr(lsst::ctrl::events::EventFormatter)
-
 
 %import "lsst/daf/base/baseLib.i"
 %import "lsst/pex/logging/loggingLib.i"
@@ -88,8 +83,6 @@ Access to the lsst::ctrl::events classes
 %newobject lsst::ctrl::events::EventReceiver::receiveCommandEvent;
 %newobject lsst::ctrl::events::EventReceiver::receiveLogEvent;
 %include "lsst/ctrl/events/EventReceiver.h"
-%include "lsst/ctrl/events/EventLog.h"
-%include "lsst/ctrl/events/EventFormatter.h"
 %include "lsst/ctrl/events/EventSystem.h"
 
 %extend lsst::ctrl::events::EventReceiver {

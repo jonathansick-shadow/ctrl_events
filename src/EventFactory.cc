@@ -34,7 +34,6 @@
 #include <stdexcept>
 
 #include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/logging/LogRecord.h"
 #include "lsst/pex/exceptions.h"
 
 #include "lsst/ctrl/events/Event.h"
@@ -43,11 +42,9 @@
 #include "lsst/ctrl/events/LogEvent.h"
 #include "lsst/ctrl/events/EventTypes.h"
 
-#include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventFactory.h"
 #include "lsst/ctrl/events/EventLibrary.h"
 
-namespace pexLogging =lsst::pex::logging;
 namespace pexExceptions =lsst::pex::exceptions;
 
 using namespace std;

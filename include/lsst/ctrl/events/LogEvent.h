@@ -40,8 +40,13 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include <log4cxx/spi/loggingevent.h>
+#include <log4cxx/helpers/pool.h>
+#include <log4cxx/level.h>
+
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/pex/logging/LogRecord.h"
+#include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
@@ -63,12 +68,11 @@ namespace events {
 class LogEvent : public Event
 {
 public:
-    static const std::string COMMENT;
     static const std::string LEVEL;
-    static const std::string LOG;
+    static const std::string LOGGER;
 
     LogEvent();
-    LogEvent(const std::string& runid, const pexLogging::LogRecord& rec);
+    LogEvent(const log4cxx::spi::LoggingEventPtr& event, log4cxx::helpers::Pool& p);
     LogEvent(cms::TextMessage *msg);
 
     virtual ~LogEvent();
@@ -77,8 +81,7 @@ public:
 
     int getLevel();
 
-    std::string getLog();
-    vector<std::string> getComment();
+    std::string getLogger();
 
 private:
     static const std::string DELIMITER;
