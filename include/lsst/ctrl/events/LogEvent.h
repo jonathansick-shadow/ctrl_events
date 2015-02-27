@@ -45,15 +45,11 @@
 #include <log4cxx/level.h>
 
 #include "lsst/ctrl/events/Event.h"
-#include "lsst/pex/logging/LogRecord.h"
-#include "lsst/pex/policy.h"
-#include "lsst/pex/logging/Component.h"
+
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 
 using lsst::daf::base::PropertySet;
-
-namespace pexLogging = lsst::pex::logging;
 
 using namespace std;
 
@@ -70,6 +66,18 @@ class LogEvent : public Event
 public:
     static const std::string LEVEL;
     static const std::string LOGGER;
+    static const std::string LOGGING_TOPIC;
+    static const int BROKER_PORT;
+
+    static const std::string MESSAGE;
+    static const std::string TIMESTAMP;
+    static const std::string THREADNAME;
+    static const std::string FILENAME;
+    static const std::string CLASSNAME;
+    static const std::string METHODNAME;
+    static const std::string LINENUMBER;
+    static const std::string LOCATION;
+
 
     LogEvent();
     LogEvent(const log4cxx::spi::LoggingEventPtr& event, log4cxx::helpers::Pool& p);

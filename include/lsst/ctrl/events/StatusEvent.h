@@ -20,7 +20,6 @@
 
 #include "lsst/ctrl/events/LocationID.h"
 #include "lsst/ctrl/events/Event.h"
-#include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 

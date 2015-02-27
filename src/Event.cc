@@ -91,6 +91,12 @@ const std::string Event::UNINITIALIZED = "uninitialized";
 
 Event::Event() {
     _init();
+
+    const std::string empty;
+    PropertySet::Ptr psp(new PropertySet);
+    PropertySet::Ptr p (new PropertySet);
+
+    _constructor(empty, *psp, *p);
 }
 
 void Event::_init() {
@@ -103,7 +109,7 @@ void Event::_init() {
 }
 
 Event::Event(cms::TextMessage *msg) {
-    // _init();
+    _init();
 
     vector<std::string>names = msg->getPropertyNames();
     unsigned int i;

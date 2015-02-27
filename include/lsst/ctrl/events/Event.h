@@ -41,15 +41,12 @@
 #include <iostream>
 #include <set>
 
-#include "lsst/pex/logging/LogRecord.h"
-#include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "boost/property_tree/ptree.hpp"
 
 using lsst::daf::base::PropertySet;
 
-namespace pexLogging = lsst::pex::logging;
 
 using namespace std;
 

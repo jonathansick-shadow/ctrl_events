@@ -40,7 +40,6 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/ctrl/events/Event.h"

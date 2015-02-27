@@ -29,39 +29,23 @@ This tests the logging system in a variety of ways.
 
 import lsst.log as log
 import os
+import platform
 import shutil
 import sys
 import tempfile
 import unittest
+import lsst.ctrl.events as events
 
 class TestLog(unittest.TestCase):
-
-    class StdoutCapture(object):
-        """
-        Context manager to redirect stdout to a file.
-        """
-
-        def __init__(self, filename):
-            self.stdout = None
-            self.outputFilename = filename
-
-        def __enter__(self):
-            self.stdout = os.dup(1)
-            os.close(1)
-            os.open(self.outputFilename, os.O_WRONLY | os.O_CREAT | os.O_TRUNC)
-
-        def __exit__(self, type, value, traceback):
-            if self.stdout is not None:
-                os.close(1)
-                os.dup(self.stdout)
-                os.close(self.stdout)
-                self.stdout = None
 
     def setUp(self):
         """Make a temporary directory and a log file in it."""
         self.tempDir = tempfile.mkdtemp()
         self.outputFilename = os.path.join(self.tempDir, "log.out")
         self.stdout = None
+        host = platform.node()
+        pid = os.getpid()
+        self.host_pid = "%s_%d" % (host,pid)
 
     def tearDown(self):
         """Remove the temporary directory."""
@@ -74,30 +58,87 @@ class TestLog(unittest.TestCase):
         """
         log.configure_prop(configuration.format(self.outputFilename))
 
-    def check(self, reference):
-        """Compare the log file with the provided reference text."""
-        with open(self.outputFilename, 'r') as f:
-            lines = [l.split(']')[-1] for l in f.readlines()]
-            reflines = [l + "\n" for l in reference.split("\n") if l != ""]
-            map(self.assertEqual, lines, reflines)
-
-
 ###############################################################################
 
-    def testFileAppender(self):
+    def testEventAppender(self):
         """Test configuring logging to go to a file."""
+
+        topic = events.LogEvent.LOGGING_TOPIC+"_"+self.host_pid
+        recv = events.EventReceiver("lsst8.ncsa.illinois.edu", topic)
+
         self.configure("""
 log4j.rootLogger=TRACE, EA
 log4j.appender.EA=EventAppender
+log4j.appender.EA.broker_host=lsst8.ncsa.illinois.edu
+log4j.appender.EA.logging_topic="""+events.LogEvent.LOGGING_TOPIC+"""_"""+self.host_pid+"""
 """)
+
         log.MDC("x", 3)
         with log.LogContext("component"):
             log.trace("This is TRACE")
             log.info("This is INFO")
             log.debug("This is DEBUG")
         log.MDCRemove("x")
+        print "here"
+
+        filename = os.path.basename(__file__)
+
+        ev1 = recv.receiveEvent()
+        props = ev1.getPropertySet()
+        print props.toString()
+        self.assertEqual(props.get(events.LogEvent.LOGGER), "component")
+        self.assertEqual(props.get(events.LogEvent.LEVEL), log.TRACE)
+        self.assertEqual(props.get(events.LogEvent.MESSAGE), "This is TRACE")
+        loc = props.get(events.LogEvent.LOCATION)
+        self.assertEqual(loc.get(events.LogEvent.FILENAME), filename)
+
+        ev2 = recv.receiveEvent()
+        props = ev2.getPropertySet()
+        self.assertEqual(props.get(events.LogEvent.LOGGER), "component")
+        self.assertEqual(props.get(events.LogEvent.LEVEL), log.INFO)
+        self.assertEqual(props.get(events.LogEvent.MESSAGE), "This is INFO")
+
+        ev3 = recv.receiveEvent()
+        props = ev3.getPropertySet()
+        self.assertEqual(props.get(events.LogEvent.LOGGER), "component")
+        self.assertEqual(props.get(events.LogEvent.LEVEL), log.DEBUG)
+        self.assertEqual(props.get(events.LogEvent.MESSAGE), "This is DEBUG")
 
 ####################################################################################
+
+    def testEventAppenderOptions(self):
+        """Test configuring logging to go to a file."""
+
+
+        topic = events.LogEvent.LOGGING_TOPIC+"_"+self.host_pid
+        recv = events.EventReceiver("lsst8.ncsa.illinois.edu", topic)
+
+        self.configure("""
+log4j.rootLogger=TRACE, EA
+log4j.appender.EA=EventAppender
+log4j.appender.EA.broker_host=lsst8.ncsa.illinois.edu
+log4j.appender.EA.broker_port=61616
+log4j.appender.EA.logging_topic="""+events.LogEvent.LOGGING_TOPIC+"""_"""+self.host_pid+"""
+""")
+        log.MDC("x", 3)
+        with log.LogContext("component"):
+            log.trace("This is TRACE")
+        log.MDCRemove("x")
+        print "here"
+
+        filename = os.path.basename(__file__)
+
+        ev1 = recv.receiveEvent()
+        props = ev1.getPropertySet()
+        print props.toString()
+        self.assertEqual(props.get(events.LogEvent.LOGGER), "component")
+        self.assertEqual(props.get(events.LogEvent.LEVEL), log.TRACE)
+        self.assertEqual(props.get(events.LogEvent.MESSAGE), "This is TRACE")
+        loc = props.get(events.LogEvent.LOCATION)
+        self.assertEqual(loc.get(events.LogEvent.FILENAME), filename)
+
+####################################################################################
+
 def main():
     unittest.main()
 

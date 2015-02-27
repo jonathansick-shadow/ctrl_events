@@ -25,7 +25,7 @@ import time
 
 if __name__ == "__main__":
     print "starting...\n"
-    x = events.EventReceiver("lsst8.ncsa.illinois.edu", "test_logging")
+    x = events.EventReceiver("lsst8.ncsa.illinois.edu", "test")
     print "waiting on receive...\n"
     val = x.receive()
     print "finished!\n"

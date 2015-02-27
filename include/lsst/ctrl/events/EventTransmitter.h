@@ -43,15 +43,11 @@
 #include <iostream>
 
 #include "lsst/ctrl/events/Event.h"
-#include "lsst/pex/logging/LogRecord.h"
-#include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/ctrl/events/EventBroker.h"
 
 using lsst::daf::base::PropertySet;
-
-namespace pexLogging = lsst::pex::logging;
 
 namespace lsst {
 namespace ctrl {

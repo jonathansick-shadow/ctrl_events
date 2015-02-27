@@ -51,47 +51,40 @@ IMPLEMENT_LOG4CXX_OBJECT(EventAppender)
 
 
 EventAppender::EventAppender() {
-    _transmitter = new ctrlEvents::EventTransmitter("lsst8.ncsa.uiuc.edu", "logging");
+    std::cout << "event appender object created" << std::endl;
+    _transmitterInitialized = 0;
+    broker_port = ctrlEvents::LogEvent::BROKER_PORT;
+    logging_topic = ctrlEvents::LogEvent::LOGGING_TOPIC;
 }
 
-
-/** \brief destructor
-  */
-EventAppender::~EventAppender() {
-    delete _transmitter;
-}
 
 void EventAppender::setOption(const LogString& option, const LogString& value) {
-    if (StringHelper::equalsIgnoreCase(option, LOG4CXX_STR("BROKER"), LOG4CXX_STR("broker"))) {
-        broker = value;
+    std::cout << "attempting to set options!" << std::endl;
+    if (StringHelper::equalsIgnoreCase(option, LOG4CXX_STR("BROKER_HOST"), LOG4CXX_STR("broker_host"))) {
+        broker_host = value;
+        std::cout << "broker set! [" << value << "]" << std::endl;
     } else if (StringHelper::equalsIgnoreCase(option, LOG4CXX_STR("BROKER_PORT"), LOG4CXX_STR("broker_port"))) {
-        port = atoi(value.c_str());
+        std::cout << "setting port..." << std::endl;
+        broker_port = atoi(value.c_str());
+        std::cout << "port set: " << broker_port << std::endl;
+    } else if (StringHelper::equalsIgnoreCase(option, LOG4CXX_STR("LOGGING_TOPIC"), LOG4CXX_STR("logging_topic"))) {
+        logging_topic = value;
+        std::cout << "logging_topic set! [" << value << "]" << std::endl;
     } else {
         AppenderSkeleton::setOption(option, value);
     }
+    std::cout << "done attempting to set options!" << std::endl;
 }
 
 
 void EventAppender::append(const spi::LoggingEventPtr& event, log4cxx::helpers::Pool& p) {
-    PropertySet::Ptr psp(new PropertySet);
-
-    psp->set("logger", event->getLoggerName());
-    psp->set("message", event->getMessage());
-    psp->set("timestamp", event->getTimeStamp());
-    psp->set("threadname", event->getThreadName());
-    psp->set("level", event->getLevel()->toInt());
-
-    spi::LocationInfo location = event->getLocationInformation();
-
-    PropertySet::Ptr loc(new PropertySet);
-    loc->set("filename", location.getFileName());
-    loc->set("classname", location.getClassName());
-    loc->set("methodname", location.getMethodName());
-    loc->set("linenumber", location.getLineNumber());
-
-    psp->set("location", loc);
-
-    ctrlEvents::Event e = ctrlEvents::Event(*psp);
+    ctrlEvents::LogEvent e = ctrlEvents::LogEvent(event, p);
+    if (_transmitterInitialized == 0)  {
+        _transmitter = new ctrlEvents::EventTransmitter(broker_host, logging_topic, broker_port);
+        std::cout << "created!" << std::endl;
+        _transmitterInitialized = 1;
+    }
+    std::cout << "publishing!" << std::endl;
     _transmitter->publishEvent(e);
 }
 
@@ -99,4 +92,10 @@ void EventAppender::close() {
     if (this->closed)
         return;
     this->closed = true;
+}
+
+/** \brief destructor
+  */
+EventAppender::~EventAppender() {
+    delete _transmitter;
 }

@@ -51,6 +51,7 @@ class CommandTestCase(unittest.TestCase):
         props = list(names)
         props.append('myname')
         ps = val.getPropertySet()
+        print ps.toString()
         self.assertEqual(ps.nameCount(), len(props))
         for x in names:
             self.assertTrue(ps.exists(x))

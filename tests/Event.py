@@ -36,7 +36,8 @@ class EventTestCase(unittest.TestCase):
         status = "my special status"
         event = events.Event()
         props = event.getPropertySet() 
-        self.assertEqual(props.nameCount(), 0)
+        self.assertEqual(props.nameCount(), 5)
+
 
     def testEventProperties(self):
         status = "my special status"

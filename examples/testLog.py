@@ -29,13 +29,12 @@ Run with:
 """
 
 #   import lsst.tests as tests
-import lsst.pex.logging as log
 import lsst.ctrl.events as events
 
 if __name__ == "__main__":
 
     system = events.EventSystem().getDefaultEventSystem()
-    system.createTransmitter("lsst8.ncsa.illinois.edu", events.EventLog.LOGGING_TOPIC)
+    system.createTransmitter("lsst8.ncsa.illinois.edu", events.LogEvent.LOGGING_TOPIC)
 
 # test a simple message to the default log
     dlog = log.Log_getDefaultLog()

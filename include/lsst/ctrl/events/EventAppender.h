@@ -76,8 +76,11 @@ public:
 protected:
     lsst::ctrl::events::EventTransmitter *_transmitter;
 
-    LogString broker;
-    int port;
+    int _transmitterInitialized;
+
+    LogString logging_topic;
+    LogString broker_host;
+    int broker_port;
 
 };
     LOG4CXX_PTR_DEF(EventAppender);

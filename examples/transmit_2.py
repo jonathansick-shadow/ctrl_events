@@ -24,7 +24,7 @@ import lsst.ctrl.events as events
 import lsst.daf.base as base
 
 if __name__ == "__main__":
-    x = events.EventTransmitter("lsst8.ncsa.illinois.edu", "test_logging")
+    x = events.EventTransmitter("lsst8.ncsa.illinois.edu", "test")
 
     root = base.PropertySet()
     root.add("DATE","2007-07-01T14:28:32.546012")
