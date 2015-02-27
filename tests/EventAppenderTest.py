@@ -33,7 +33,6 @@ import shutil
 import sys
 import tempfile
 import unittest
-import lsst.ctrl.events
 
 class TestLog(unittest.TestCase):
 
