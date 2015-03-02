@@ -38,10 +38,6 @@ Access to the lsst::ctrl::events classes
 %{
 #include "lsst/daf/base.h"
 /* swig pulls in references to ScreenLog.h and DualLog.h for some reason, so that's why these are here */
-#include "lsst/pex/logging.h"
-#include "lsst/pex/logging/BlockTimingLog.h"
-#include "lsst/pex/logging/ScreenLog.h"
-#include "lsst/pex/logging/DualLog.h"
 #include "lsst/ctrl/events/Host.h"
 #include "lsst/ctrl/events/LocationID.h"
 #include "lsst/ctrl/events/Event.h"
@@ -58,7 +54,6 @@ Access to the lsst::ctrl::events classes
 %include "lsst/p_lsstSwig.i"
 
 %import "lsst/daf/base/baseLib.i"
-%import "lsst/pex/logging/loggingLib.i"
 
 %typemap(out) std::vector<std::string > {
     int len = ($1).size();
