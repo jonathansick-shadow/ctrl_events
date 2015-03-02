@@ -15,9 +15,6 @@ setupOptional("doxygen")
 envPrepend(LD_LIBRARY_PATH, ${PRODUCT_DIR}/lib)
 envPrepend(DYLD_LIBRARY_PATH, ${PRODUCT_DIR}/lib)
 
-envPrepend(LD_PRELOAD, ${PRODUCT_DIR}/lib/libctrl_events.so)
-envPrepend(DYLD_INSERT_LIBRARIES, ${PRODUCT_DIR}/lib/libctrl_events.dylib)
-
 envPrepend(PYTHONPATH, ${PRODUCT_DIR}/python)
 envPrepend(PATH, ${PRODUCT_DIR}/bin)
 

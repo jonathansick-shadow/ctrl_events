@@ -60,7 +60,7 @@ namespace events {
 
 const std::string LogEvent::LEVEL = "LEVEL";
 const std::string LogEvent::LOGGER = "LOG";
-const std::string LogEvent::LOGGING_TOPIC = "logging";
+const std::string LogEvent::LOGGING_TOPIC = "DM_LOGGING";
 const int LogEvent::BROKER_PORT = 61616;
 
 const std::string LogEvent::MESSAGE = "message";

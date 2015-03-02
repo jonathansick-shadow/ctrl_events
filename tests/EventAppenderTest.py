@@ -45,7 +45,10 @@ class TestLog(unittest.TestCase):
         self.stdout = None
         host = platform.node()
         pid = os.getpid()
-        self.host_pid = "%s_%d" % (host,pid)
+        host_pid = "%s_%d" % (host,pid)
+        self.broker_host = "lsst8.ncsa.illinois.edu"
+        self.broker_port = 61616
+        self.topic = events.LogEvent.LOGGING_TOPIC+"_"+host_pid
 
     def tearDown(self):
         """Remove the temporary directory."""
@@ -58,51 +61,50 @@ class TestLog(unittest.TestCase):
         """
         log.configure_prop(configuration.format(self.outputFilename))
 
+    def verify(self, ev, level, message):
+        props = ev.getPropertySet()
+        filename = os.path.basename(__file__)
+        self.assertEqual(props.get(events.LogEvent.LOGGER), "component")
+        self.assertEqual(props.get(events.LogEvent.LEVEL), level)
+        self.assertEqual(props.get(events.LogEvent.MESSAGE), message)
+        loc = props.get(events.LogEvent.LOCATION)
+        self.assertEqual(loc.get(events.LogEvent.FILENAME), filename)
+
+
 ###############################################################################
 
     def testEventAppender(self):
         """Test configuring logging to go to a file."""
 
-        topic = events.LogEvent.LOGGING_TOPIC+"_"+self.host_pid
-        recv = events.EventReceiver("lsst8.ncsa.illinois.edu", topic)
+        recv = events.EventReceiver("lsst8.ncsa.illinois.edu", self.topic)
 
         self.configure("""
 log4j.rootLogger=TRACE, EA
 log4j.appender.EA=EventAppender
-log4j.appender.EA.broker_host=lsst8.ncsa.illinois.edu
-log4j.appender.EA.logging_topic="""+events.LogEvent.LOGGING_TOPIC+"""_"""+self.host_pid+"""
+log4j.appender.EA.broker_host="""+self.broker_host+"""
+log4j.appender.EA.logging_topic="""+self.topic+"""
 """)
 
+        msg1 = "This is TRACE"
+        msg2 = "This is INFO"
+        msg3 = "This is DEBUG"
         log.MDC("x", 3)
         with log.LogContext("component"):
-            log.trace("This is TRACE")
-            log.info("This is INFO")
-            log.debug("This is DEBUG")
+            log.trace(msg1)
+            log.info(msg2)
+            log.debug(msg3)
         log.MDCRemove("x")
-        print "here"
 
         filename = os.path.basename(__file__)
 
         ev1 = recv.receiveEvent()
-        props = ev1.getPropertySet()
-        print props.toString()
-        self.assertEqual(props.get(events.LogEvent.LOGGER), "component")
-        self.assertEqual(props.get(events.LogEvent.LEVEL), log.TRACE)
-        self.assertEqual(props.get(events.LogEvent.MESSAGE), "This is TRACE")
-        loc = props.get(events.LogEvent.LOCATION)
-        self.assertEqual(loc.get(events.LogEvent.FILENAME), filename)
+        self.verify(ev1, log.TRACE, msg1)
 
         ev2 = recv.receiveEvent()
-        props = ev2.getPropertySet()
-        self.assertEqual(props.get(events.LogEvent.LOGGER), "component")
-        self.assertEqual(props.get(events.LogEvent.LEVEL), log.INFO)
-        self.assertEqual(props.get(events.LogEvent.MESSAGE), "This is INFO")
+        self.verify(ev2, log.INFO, msg2)
 
         ev3 = recv.receiveEvent()
-        props = ev3.getPropertySet()
-        self.assertEqual(props.get(events.LogEvent.LOGGER), "component")
-        self.assertEqual(props.get(events.LogEvent.LEVEL), log.DEBUG)
-        self.assertEqual(props.get(events.LogEvent.MESSAGE), "This is DEBUG")
+        self.verify(ev3, log.DEBUG, msg3)
 
 ####################################################################################
 
@@ -110,32 +112,25 @@ log4j.appender.EA.logging_topic="""+events.LogEvent.LOGGING_TOPIC+"""_"""+self.h
         """Test configuring logging to go to a file."""
 
 
-        topic = events.LogEvent.LOGGING_TOPIC+"_"+self.host_pid
-        recv = events.EventReceiver("lsst8.ncsa.illinois.edu", topic)
+        recv = events.EventReceiver("lsst8.ncsa.illinois.edu", self.topic)
 
         self.configure("""
 log4j.rootLogger=TRACE, EA
 log4j.appender.EA=EventAppender
-log4j.appender.EA.broker_host=lsst8.ncsa.illinois.edu
-log4j.appender.EA.broker_port=61616
-log4j.appender.EA.logging_topic="""+events.LogEvent.LOGGING_TOPIC+"""_"""+self.host_pid+"""
+log4j.appender.EA.broker_host="""+self.broker_host+"""
+log4j.appender.EA.broker_port="""+str(self.broker_port)+"""
+log4j.appender.EA.logging_topic="""+self.topic+"""
 """)
+        msg = "This is TRACE"
         log.MDC("x", 3)
         with log.LogContext("component"):
-            log.trace("This is TRACE")
+            log.trace(msg)
         log.MDCRemove("x")
-        print "here"
 
         filename = os.path.basename(__file__)
 
         ev1 = recv.receiveEvent()
-        props = ev1.getPropertySet()
-        print props.toString()
-        self.assertEqual(props.get(events.LogEvent.LOGGER), "component")
-        self.assertEqual(props.get(events.LogEvent.LEVEL), log.TRACE)
-        self.assertEqual(props.get(events.LogEvent.MESSAGE), "This is TRACE")
-        loc = props.get(events.LogEvent.LOCATION)
-        self.assertEqual(loc.get(events.LogEvent.FILENAME), filename)
+        self.verify(ev1, log.TRACE, msg)
 
 ####################################################################################
 

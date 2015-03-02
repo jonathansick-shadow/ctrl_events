@@ -42,7 +42,6 @@
 #include "lsst/daf/base/DateTime.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
-#include "lsst/pex/logging/Component.h"
 #include <sys/socket.h>
 #include <sys/un.h>
 #include "lsst/ctrl/events/EventLibrary.h"
