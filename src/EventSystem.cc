@@ -181,8 +181,8 @@ Event* EventSystem::receiveEvent(const std::string& topicName, const long timeou
     return receiver->receiveEvent(timeout);
 }
 
-LocationID *EventSystem::createOriginatorId() {
-    return new LocationID();
+LocationID::Ptr EventSystem::createOriginatorId() const {
+    return LocationID::Ptr(new LocationID());
 }
 
 /** private method used to retrieve the named EventReceiver object

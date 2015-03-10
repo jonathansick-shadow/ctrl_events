@@ -77,7 +77,7 @@ public:
     Event* receiveEvent(const std::string& topicName);
     Event* receiveEvent(const std::string& topicName, const long timeout);
 
-    LocationID *createOriginatorId();
+    LocationID::Ptr createOriginatorId() const;
 
     StatusEvent* castToStatusEvent(Event* event);
     CommandEvent* castToCommandEvent(Event* event);
