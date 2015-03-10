@@ -208,21 +208,21 @@ void CommandEvent::populateHeader(cms::TextMessage* msg) const {
 /**
   * \brief retrieve an object containing the OriginatoDesination LocationID
   */
-LocationID *CommandEvent::getOriginator() { 
+LocationID::Ptr CommandEvent::getOriginator() const { 
     std::string hostname =  _psp->get<std::string>(ORIG_HOSTNAME);
     int pid =  _psp->get<int>(ORIG_PROCESSID);
     int local =  _psp->get<int>(ORIG_LOCALID);
-    return new LocationID(hostname, pid, local);
+    return LocationID::Ptr(new LocationID(hostname, pid, local));
 }
 
 /**
   * \brief retrieve an object containing the Desination LocationID
   */
-LocationID *CommandEvent::getDestination() { 
+LocationID::Ptr CommandEvent::getDestination() const { 
     std::string hostname = _psp->get<std::string>(DEST_HOSTNAME); 
     int pid = _psp->get<int>(DEST_PROCESSID); 
     int local = _psp->get<int>(DEST_LOCALID);
-    return new LocationID(hostname, pid, local);
+    return LocationID::Ptr(new LocationID(hostname, pid, local));
 }
 
 /** \brief destructor

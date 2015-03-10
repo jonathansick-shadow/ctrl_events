@@ -60,6 +60,7 @@ Access to the lsst::ctrl::events classes
 %include "lsst/p_lsstSwig.i"
 
 %shared_ptr(lsst::ctrl::events::EventFormatter)
+%shared_ptr(lsst::ctrl::events::LocationID)
 
 
 %import "lsst/daf/base/baseLib.i"

@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-using namespace std;
+#include "boost/shared_ptr.hpp"
 
 namespace lsst {
 namespace ctrl {
@@ -47,11 +47,16 @@ namespace events {
  */
 class LocationID {
 public:
+
+    typedef boost::shared_ptr<LocationID> Ptr;
+    typedef boost::shared_ptr<LocationID const> ConstPtr;
+
     LocationID();
     LocationID(const LocationID& id);
     LocationID(const std::string& hostname, int pid, int localID);
 
-    ~LocationID();
+    virtual ~LocationID();
+
 
     std::string getHostName() const;
     int getProcessID() const;

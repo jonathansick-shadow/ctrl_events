@@ -88,9 +88,9 @@ public:
 
     virtual ~CommandEvent();
 
-    LocationID *getOriginator();
+    LocationID::Ptr getOriginator() const;
 
-    LocationID *getDestination();
+    LocationID::Ptr getDestination() const;
 
 private:
     void _constructor(LocationID const& originator, LocationID const& destination);

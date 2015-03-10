@@ -181,32 +181,32 @@ vector<std::string> Event::getCustomPropertyNames() {
     return names;
 }
 
-Event::Event(const PropertySet& ps) {
+Event::Event(PropertySet const& ps) {
     const std::string empty;
     PropertySet::Ptr p (new PropertySet);
     _constructor(empty, ps, *p);
 }
 
-Event::Event(const PropertySet& ps, const PropertySet& filterable) {
+Event::Event(PropertySet const& ps, PropertySet const& filterable) {
     const std::string empty;
     _constructor(empty, ps, filterable);
 }
 
-Event::Event( const std::string& runId, const PropertySet::Ptr psp) {
+Event::Event(std::string const& runId, PropertySet::Ptr const psp) {
     PropertySet::Ptr p (new PropertySet);
     _constructor(runId, *psp, *p);
 }
 
-Event::Event( const std::string& runId, const PropertySet& ps) {
+Event::Event( std::string const& runId, PropertySet const& ps) {
     PropertySet::Ptr p (new PropertySet);
     _constructor(runId, ps, *p);
 }
 
-Event::Event( const std::string& runId, const PropertySet& ps, const PropertySet& filterable) {
+Event::Event(std::string const& runId, PropertySet const& ps, PropertySet const& filterable) {
     _constructor(runId, ps, filterable);
 }
 
-void Event::_constructor( const std::string& runId, const PropertySet& ps, const PropertySet& filterable) {
+void Event::_constructor(std::string const& runId, PropertySet const& ps, PropertySet const& filterable) {
     long int host_len = sysconf(_SC_HOST_NAME_MAX);
 
     boost::scoped_array<char> hostname(new char[host_len]);
@@ -383,7 +383,7 @@ void Event::marshall(cms::TextMessage *msg) {
     msg->setText(payload);
 }
 
-template<typename T>void Event::add(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child) {
+template<typename T>void Event::add(std::string const& name, std::string const& tag, PropertySet const& ps, boost::property_tree::ptree& child) {
 
     std::vector<T> vec = ps.getArray<T>(name);
 
@@ -395,7 +395,7 @@ template<typename T>void Event::add(const std::string& name, const std::string& 
     }
 }
 
-std::string Event::marshall(const PropertySet& ps) {
+std::string Event::marshall(PropertySet const& ps) {
     std::vector<std::string> v = ps.paramNames(false);
 
     boost::property_tree::ptree child;
@@ -455,7 +455,7 @@ PropertySet::Ptr Event::processTextMessage(cms::TextMessage* textMessage) {
  * \param ps a PropertySet to store the name and data into.
  * \return true if data was added to the PropertySet
   */
-bool Event::addDataItem(std::string typeInfo, boost::property_tree::ptree& item, std::string key, PropertySet& ps) {
+bool Event::addDataItem(std::string const& typeInfo, boost::property_tree::ptree& item, std::string const&  key, PropertySet& ps) {
     if (typeInfo == "string") {
         std::string value = item.get_value<std::string>();
         ps.add(key, value);
@@ -512,7 +512,7 @@ PropertySet::Ptr Event::parsePropertySet(boost::property_tree::ptree child) {
   * \param text a JSON text string
   * \return a PropertySet::Ptr containing the data that was stored in text
   */
-PropertySet::Ptr Event::unmarshall(const std::string& text) {
+PropertySet::Ptr Event::unmarshall(std::string const& text) {
 
     boost::property_tree::ptree pt;
     std::istringstream is (text);
@@ -545,19 +545,19 @@ PropertySet::Ptr Event::unmarshall(const std::string& text) {
 Event::~Event() {
 }
 
-template void Event::add<bool>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+template void Event::add<bool>(std::string const& name, std::string const& tag, PropertySet const& ps, boost::property_tree::ptree& child);
 
-template void Event::add<int>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+template void Event::add<int>(std::string const& name, std::string const& tag, PropertySet const& ps, boost::property_tree::ptree& child);
 
-template void Event::add<float>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+template void Event::add<float>(std::string const& name, std::string const& tag, PropertySet const& ps, boost::property_tree::ptree& child);
 
-template void Event::add<double>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+template void Event::add<double>(std::string const& name, std::string const& tag, PropertySet const& ps, boost::property_tree::ptree& child);
 
-template void Event::add<long>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+template void Event::add<long>(std::string const& name, std::string const& tag,PropertySet const& ps, boost::property_tree::ptree& child);
 
-template void Event::add<long long>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+template void Event::add<long long>(std::string const& name, std::string const& tag, PropertySet const& ps, boost::property_tree::ptree& child);
 
-template void Event::add<std::string>(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+template void Event::add<std::string>(std::string const& name, std::string const& tag, PropertySet const& ps, boost::property_tree::ptree& child);
 }
 }
 }

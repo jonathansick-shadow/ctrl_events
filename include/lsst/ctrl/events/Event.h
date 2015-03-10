@@ -74,12 +74,12 @@ public:
     static const std::string UNINITIALIZED;
 
     Event();
-    Event(const PropertySet& ps);
-    Event(const PropertySet& ps, const PropertySet& filterable);
+    Event(PropertySet const& properties);
+    Event(PropertySet const& properties, PropertySet const& filterable);
 
-    Event(const std::string& runid, const PropertySet::Ptr ps);
-    Event(const std::string& runid, const PropertySet& ps);
-    Event(const std::string& runid, const PropertySet& ps, const PropertySet& filterable);
+    Event(std::string const& runid, PropertySet::Ptr const properties);
+    Event(std::string const& runid, PropertySet const& properties);
+    Event(std::string const& runid, PropertySet const& properties, PropertySet const& filterable);
     Event(cms::TextMessage *msg);
 
     virtual ~Event();
@@ -117,17 +117,17 @@ protected:
     PropertySet::Ptr _filterable;
     set<std::string> _keywords;
     void _init();
-    void _constructor(const std::string& runid, const PropertySet& ps, const PropertySet& filterable);
+    void _constructor(std::string const& runid, PropertySet const& properties, PropertySet const& filterable);
 
-    template<typename T>void add(const std::string& name, const std::string& tag, const PropertySet& ps, boost::property_tree::ptree& child);
+    template<typename T>void add(std::string const& name, std::string const& tag, PropertySet const& properties, boost::property_tree::ptree& child);
 
 
 private:
-    std::string marshall(const PropertySet& ps);
+    std::string marshall(PropertySet const& properties);
     PropertySet::Ptr processTextMessage(cms::TextMessage *textMessage);
-    PropertySet::Ptr unmarshall(const std::string& text);
+    PropertySet::Ptr unmarshall(std::string const& text);
     PropertySet::Ptr parsePropertySet(boost::property_tree::ptree child);
-    bool addDataItem(std::string typeInfo, boost::property_tree::ptree& item, std::string key, PropertySet& ps);
+    bool addDataItem(std::string const& typeInfo, boost::property_tree::ptree& item, std::string const& key, PropertySet& properties);
 };
 
 }
