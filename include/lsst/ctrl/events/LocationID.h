@@ -54,8 +54,6 @@ public:
     LocationID(const LocationID& id);
     LocationID(const std::string& hostname, int pid, int localID);
 
-    virtual ~LocationID();
-
 
     std::string getHostName() const;
     int getProcessID() const;
@@ -64,9 +62,9 @@ public:
 protected:
     void _constructor(const std::string& hostname, int pid, int localID);
     static int _localCounter;
-    int _localID;
     std::string _hostname;
     int _pid;
+    int _localID;
 
 };
 }

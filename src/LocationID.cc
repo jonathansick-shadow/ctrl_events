@@ -45,7 +45,7 @@ namespace events {
   *        for this process. When created, this represents a unique location ID.
   */
 LocationID::LocationID() {
-    Host host = Host().getHost();
+    Host host = Host::getHost();
     _hostname = host.getHostName();
     _pid = getpid();
     _localID = _localCounter++;
@@ -54,26 +54,22 @@ LocationID::LocationID() {
 /** \brief LocationID object. This object represents the originating process
   *        of an event.  When created, this represents a reconstituted ID.
   */
-LocationID::LocationID(const std::string& hostname, int pid, int localID) {
-    _constructor(hostname, pid, localID);
-}
+LocationID::LocationID(const std::string& hostname, int pid, int localID) : 
+    _hostname(hostname),
+    _pid(pid),
+    _localID(localID) 
+    {}
 
 /** \brief LocationID object. This object represents the originating process
   *        of an event.  When created, this represents a duplicated ID.
   */
 LocationID::LocationID(const LocationID& id) {
-    _constructor(id.getHostName(), id.getProcessID(), id.getLocalID());
+    _hostname = id.getHostName();
+    _pid = id.getProcessID();
+    _localID = id.getLocalID();
 }
 
-/** private helper method to initialize the object
-  */
-void LocationID::_constructor(const std::string& hostname, int pid, int localID) {
-    _hostname = hostname;
-    _pid = pid;
-    _localID = localID;
-}
-
-int LocationID::_localCounter=0;
+int LocationID::_localCounter = 0;
 
 /** \brief Retrieve the host name
   * \return a string containing the name of a host
@@ -94,11 +90,6 @@ int LocationID::getProcessID() const {
   */
 int LocationID::getLocalID() const {
     return _localID;
-}
-
-/** \brief destructor
-  */
-LocationID::~LocationID() {
 }
 
 }

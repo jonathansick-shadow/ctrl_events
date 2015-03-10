@@ -29,23 +29,12 @@
   * \ingroup events
   *
   */
-#include <iomanip>
-#include <sstream>
-#include <stdexcept>
+#include <limits.h>
+#include <string>
 #include <string.h>
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <netdb.h>
 
 #include "lsst/ctrl/events/Host.h"
-#include "lsst/pex/exceptions.h"
-
-namespace pexExceptions =lsst::pex::exceptions;
-
-using namespace std;
 
 namespace lsst {
 namespace ctrl {
@@ -62,11 +51,11 @@ Host const& Host::getHost() {
         // reconstructing it every time we create an
         // identificationId
 
-        char buf [255];
+        char buf [HOST_NAME_MAX];
         struct hostent *ent;
         unsigned char a,b,c,d;
 
-        gethostname(buf, 255) ;
+        gethostname(buf, HOST_NAME_MAX);
         _hostname.assign(buf,strlen(buf));
         ent = (struct hostent *)gethostbyname(buf) ;
 
