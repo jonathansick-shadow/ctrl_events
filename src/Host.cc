@@ -55,7 +55,7 @@ namespace events {
   *              and ip address.
   * \return The EventSystem object
   */
-Host& Host::getHost() {
+Host const& Host::getHost() {
     if (thisHost == 0) {
 
         // create the _IPAddr here, rather than
@@ -88,11 +88,11 @@ Host* Host::thisHost = 0;
 unsigned int Host::_IPAddr = 0;
 std::string Host::_hostname;
 
-unsigned int Host::getIPAddress() {
+unsigned int const Host::getIPAddress() {
     return _IPAddr;
 }
 
-std::string Host::getHostName() {
+std::string const& Host::getHostName() {
     return _hostname;
 }
 

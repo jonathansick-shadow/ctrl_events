@@ -34,12 +34,6 @@
 #define LSST_CTRL_EVENTS_HOST_H
 
 #include <stdlib.h>
-#include <iostream>
-#include <vector>
-#include <list>
-#include <boost/shared_ptr.hpp>
-
-using namespace std;
 
 namespace lsst {
 namespace ctrl {
@@ -51,14 +45,10 @@ namespace events {
  */
 class Host {
 public:
-    Host() {}
+    static Host const& getHost();
 
-    ~Host() {}
-
-    static Host& getHost();
-
-    unsigned int getIPAddress();
-    std::string getHostName();
+    unsigned int const getIPAddress();
+    std::string const& getHostName();
 
 protected:
     static Host* thisHost;

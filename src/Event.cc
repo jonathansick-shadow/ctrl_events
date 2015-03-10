@@ -97,7 +97,6 @@ Event::Event() {
 void Event::_init() {
     _keywords.insert(TYPE);
     _keywords.insert(EVENTTIME);
-//    _keywords.insert(RUNID);
     _keywords.insert(STATUS);
     _keywords.insert(TOPIC);
     _keywords.insert(PUBTIME);
@@ -107,18 +106,18 @@ Event::Event(cms::TextMessage *msg) {
     // _init();
 
     vector<std::string>names = msg->getPropertyNames();
-    unsigned int i;
 
     _psp = processTextMessage(msg);
 
-    for (i = 0; i < names.size(); i++)
-            _keywords.insert(names[i]);
+    for (vector<std::string>::iterator name = names.begin(); name != names.end(); ++name) {
+        _keywords.insert(*name);
+    }
 
     _psp->set(EVENTTIME, msg->getCMSTimestamp());
 
-    for (i = 0; i < names.size(); i++) {
-        std::string name = names[i];
-        cms::Message::ValueType vType = msg->getPropertyValueType(names[i]);
+    for (vector<std::string>::iterator n = names.begin(); n != names.end(); ++n) {
+        std::string const& name = *n;
+        cms::Message::ValueType vType = msg->getPropertyValueType(name);
         switch(vType) {
             case cms::Message::NULL_TYPE:
                 _psp->set(name, NULL);
@@ -150,6 +149,9 @@ Event::Event(cms::TextMessage *msg) {
                 break;
             case cms::Message::BYTE_ARRAY_TYPE:
             case cms::Message::UNKNOWN_TYPE:
+            default:
+                std::string msg("Data type represented by "+name+" is not permitted supported");
+                throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
                 break;
         }
     }
@@ -183,8 +185,8 @@ vector<std::string> Event::getCustomPropertyNames() {
 
 Event::Event(PropertySet const& ps) {
     const std::string empty;
-    PropertySet::Ptr p (new PropertySet);
-    _constructor(empty, ps, *p);
+    PropertySet p;
+    _constructor(empty, ps, p);
 }
 
 Event::Event(PropertySet const& ps, PropertySet const& filterable) {
@@ -193,13 +195,13 @@ Event::Event(PropertySet const& ps, PropertySet const& filterable) {
 }
 
 Event::Event(std::string const& runId, PropertySet::Ptr const psp) {
-    PropertySet::Ptr p (new PropertySet);
-    _constructor(runId, *psp, *p);
+    PropertySet p;
+    _constructor(runId, *psp, p);
 }
 
-Event::Event( std::string const& runId, PropertySet const& ps) {
-    PropertySet::Ptr p (new PropertySet);
-    _constructor(runId, ps, *p);
+Event::Event(std::string const& runId, PropertySet const& ps) {
+    PropertySet p;
+    _constructor(runId, ps, p);
 }
 
 Event::Event(std::string const& runId, PropertySet const& ps, PropertySet const& filterable) {
@@ -244,9 +246,9 @@ void Event::_constructor(std::string const& runId, PropertySet const& ps, Proper
 
     if (filterable.nameCount() > 0) {
         vector<std::string> names = filterable.names();
-        unsigned int i;
-        for (i = 0; i < names.size(); i++) {
-            _keywords.insert(names[i]);
+
+        for (vector<std::string>::iterator name = names.begin(); name != names.end(); ++name) {
+            _keywords.insert(*name);
         }
 
         _psp->combine(filterable.PropertySet::deepCopy());
@@ -256,26 +258,26 @@ void Event::_constructor(std::string const& runId, PropertySet const& ps, Proper
 void Event::populateHeader(cms::TextMessage* msg)  const {
     set<std::string>::iterator keyIterator;
     for (keyIterator = _keywords.begin(); keyIterator != _keywords.end(); keyIterator++) {
-        std::string name = *keyIterator;
-        const std::type_info &t = _psp->typeOf(name);
-        if (t == typeid(bool))
+        std::string const& name = *keyIterator;
+        std::type_info const& t = _psp->typeOf(name);
+        if (t == typeid(bool)) {
             msg->setBooleanProperty(name, _psp->get<bool>(name));
-        else if (t == typeid(short))
+        } else if (t == typeid(short)) {
             msg->setShortProperty(name, _psp->get<short>(name));
-        else if (t == typeid(int))
+        } else if (t == typeid(int)) {
             msg->setIntProperty(name, _psp->get<int>(name));
-        else if (t == typeid(long))
+        } else if (t == typeid(long)) {
             msg->setLongProperty(name, _psp->get<long>(name));
-        else if (t == typeid(long long))
+        } else if (t == typeid(long long)) {
             msg->setLongProperty(name, _psp->get<long long>(name));
-        else if (t == typeid(double))
+        } else if (t == typeid(double)) {
             msg->setDoubleProperty(name, _psp->get<double>(name));
-        else if (t == typeid(float))
+        } else if (t == typeid(float)) {
             msg->setFloatProperty(name, _psp->get<float>(name));
-        else if (t == typeid(std::string))
+        } else if (t == typeid(std::string)) {
             msg->setStringProperty(name, _psp->get<std::string>(name));
-        else {
-            std::string msg("Data type represented in "+name+" is not permitted in event header");
+        } else {
+            std::string msg("Data type represented in "+ name +" is not permitted in event header");
             throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
         }
     }
@@ -396,13 +398,12 @@ template<typename T>void Event::add(std::string const& name, std::string const& 
 }
 
 std::string Event::marshall(PropertySet const& ps) {
-    std::vector<std::string> v = ps.paramNames(false);
+    std::vector<std::string> names = ps.paramNames(false);
 
     boost::property_tree::ptree child;
  
-    unsigned int i;
-    for (i = 0; i < v.size(); i++) {
-        std::string name = v[i];
+    for (vector<std::string>::iterator n = names.begin(); n != names.end(); ++n) {
+        std::string name = *n;
 
         if (ps.typeOf(name) == typeid(bool)) {
             add<bool>(name, "bool", ps, child);

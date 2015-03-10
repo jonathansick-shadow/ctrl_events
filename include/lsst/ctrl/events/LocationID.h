@@ -34,7 +34,6 @@
 #define LSST_CTRL_EVENTS_LOCATIONID_H
 
 #include <stdlib.h>
-#include <iostream>
 
 #include "boost/shared_ptr.hpp"
 
