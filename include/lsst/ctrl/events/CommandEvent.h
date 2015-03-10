@@ -40,6 +40,7 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include "lsst/base.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/LocationID.h"
 #include "lsst/pex/logging/Component.h"
@@ -71,13 +72,17 @@ public:
 
     CommandEvent();
 
-    CommandEvent(const LocationID& originator, const LocationID& destination, const PropertySet::Ptr psp);
-    CommandEvent(const LocationID& originator, const LocationID& destination, const PropertySet& ps);
-    CommandEvent(const LocationID& originator, const LocationID& destination, const PropertySet& ps, const PropertySet& filterable);
+    CommandEvent(LocationID const& originator, LocationID const& destination, CONST_PTR(PropertySet) const& psp);
+    CommandEvent(LocationID const& originator, LocationID const& destination, PropertySet const& ps);
+    CommandEvent(LocationID const& originator, LocationID const& destination, PropertySet const& ps, 
+                    PropertySet const& filterable);
 
-    CommandEvent(const std::string& runid, const LocationID& originator, const LocationID& destination, const PropertySet::Ptr psp);
-    CommandEvent(const std::string& runid, const LocationID& originator, const LocationID& destination, const PropertySet& ps);
-    CommandEvent(const std::string& runid, const LocationID& originator, const LocationID& destination, const PropertySet& ps, const PropertySet& filterable);
+    CommandEvent(std::string const& runid, LocationID const& originator, LocationID const& destination, 
+                    CONST_PTR(PropertySet) const& psp);
+    CommandEvent(std::string const& runid, LocationID const& originator, LocationID const& destination, 
+                    PropertySet const& ps);
+    CommandEvent(std::string const& runid, LocationID const& originator, LocationID const& destination, 
+                    PropertySet const& ps, PropertySet const& filterable);
 
     CommandEvent(cms::TextMessage *msg);
 
@@ -85,12 +90,10 @@ public:
 
     LocationID *getOriginator();
 
-    LocationID * getDestination();
-
-// protected:
+    LocationID *getDestination();
 
 private:
-    void _constructor(const LocationID& originator, const LocationID& destination);
+    void _constructor(LocationID const& originator, LocationID const& destination);
     virtual void populateHeader(cms::TextMessage *msg) const;
 
     void _init();

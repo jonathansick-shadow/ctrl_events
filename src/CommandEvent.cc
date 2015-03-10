@@ -111,7 +111,8 @@ CommandEvent::CommandEvent(cms::TextMessage *msg) : Event(msg) {
   * \param destination destination location for this event
   * \param psp PropertySet to pass in this event
   */
-CommandEvent::CommandEvent(const LocationID&  originator, const LocationID& destination, const PropertySet::Ptr psp) : Event(*psp) {
+//CommandEvent::CommandEvent(const LocationID&  originator, const LocationID& destination, const PropertySet::Ptr psp) : Event(*psp) {
+CommandEvent::CommandEvent(LocationID const&  originator, LocationID const& destination, CONST_PTR(PropertySet) const& psp) : Event(*psp) {
     _constructor(originator, destination);
 }
 
@@ -121,7 +122,7 @@ CommandEvent::CommandEvent(const LocationID&  originator, const LocationID& dest
   * \param destination destination location for this event
   * \param ps PropertySet to pass in this event
   */
-CommandEvent::CommandEvent(const LocationID&  originator, const LocationID&  destination, const PropertySet& ps) : Event(ps) {
+CommandEvent::CommandEvent(LocationID const& originator, LocationID const&  destination, PropertySet const& ps) : Event(ps) {
     _constructor(originator, destination);
 }
 
@@ -132,7 +133,7 @@ CommandEvent::CommandEvent(const LocationID&  originator, const LocationID&  des
   * \param ps PropertySet to pass in this event
   * \param filterable additional, broker-filterable, PropertySet parameters
   */
-CommandEvent::CommandEvent(const LocationID&  originator, const LocationID&  destination, const PropertySet& ps, const PropertySet& filterable) : Event(ps, filterable) {
+CommandEvent::CommandEvent(LocationID const&  originator, LocationID const&  destination, PropertySet const& ps, PropertySet const& filterable) : Event(ps, filterable) {
     _constructor(originator, destination);
 }
 
@@ -143,7 +144,7 @@ CommandEvent::CommandEvent(const LocationID&  originator, const LocationID&  des
   * \param destination destination location for this event
   * \param psp PropertySet to pass in this event
   */
-CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originator, const LocationID& destination, const PropertySet::Ptr psp) : Event(runId, *psp) {
+CommandEvent::CommandEvent(std::string const& runId, LocationID const&  originator, LocationID const& destination, CONST_PTR(PropertySet) const& psp) : Event(runId, *psp) {
     _constructor(originator, destination);
 }
 
@@ -154,7 +155,7 @@ CommandEvent::CommandEvent( const std::string& runId, const LocationID&  origina
   * \param destination destination location for this event
   * \param ps PropertySet to pass in this event
   */
-CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originator, const LocationID&  destination, const PropertySet& ps) : Event(runId, ps) {
+CommandEvent::CommandEvent( std::string const& runId, LocationID const&  originator, LocationID const&  destination, PropertySet const& ps) : Event(runId, ps) {
     _constructor(originator, destination);
 }
 
@@ -166,7 +167,7 @@ CommandEvent::CommandEvent( const std::string& runId, const LocationID&  origina
   * \param ps PropertySet to pass in this event
   * \param filterable additional, broker-filterable, PropertySet parameters
   */
-CommandEvent::CommandEvent( const std::string& runId, const LocationID&  originator, const LocationID&  destination, const PropertySet& ps, const PropertySet& filterable) : Event(runId, ps, filterable) {
+CommandEvent::CommandEvent(std::string const& runId, LocationID const&  originator, LocationID const&  destination, PropertySet const& ps, PropertySet const& filterable) : Event(runId, ps, filterable) {
     _constructor(originator, destination);
 }
 
@@ -174,7 +175,7 @@ CommandEvent::CommandEvent( const std::string& runId, const LocationID&  origina
   * originating location of this event, and destination, the destination
   * location for this event.
   */
-void CommandEvent::_constructor(const LocationID&  originator, const LocationID&  destination) {
+void CommandEvent::_constructor(LocationID const&  originator, LocationID const&  destination) {
     _init();
 
     _psp->set(ORIG_HOSTNAME, originator.getHostName());

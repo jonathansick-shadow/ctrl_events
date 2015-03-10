@@ -72,8 +72,6 @@ EventFactory::~EventFactory() {
 Event* EventFactory::createEvent(cms::TextMessage* msg) {
     vector<std::string> names = msg->getPropertyNames();
 
-    unsigned int i;
-
     std::string _type = msg->getStringProperty("TYPE");
 
     if (_type == EventTypes::LOG) {

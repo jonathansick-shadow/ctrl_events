@@ -1,6 +1,7 @@
 setupRequired(boost)
 setupRequired(activemqcpp)
 setupRequired(utils)
+setupRequired(base)
 setupRequired(daf_base)
 setupRequired(pex_logging)
 setupRequired(pex_exceptions)
