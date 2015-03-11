@@ -74,8 +74,7 @@ class CombinedReceiveEventTestCase(unittest.TestCase):
         self.sendEvent(broker, topicA)
         self.sendEvent(broker, topicB)
 
-        # receive event on topicA, and check to see it's the
-        # right one
+        # receive event on topicA, and check to see it's the right one
         val = recvA.receiveEvent()
         self.assertNotEqual(val, None)
         ps = val.getPropertySet()
@@ -86,8 +85,7 @@ class CombinedReceiveEventTestCase(unittest.TestCase):
         val = recvA.receiveEvent(1)
         self.assertEqual(val, None)
 
-        # receive event on topicB, and check to see it's the
-        # right one
+        # receive event on topicB, and check to see it's the right one
         val = recvB.receiveEvent()
         self.assertNotEqual(val, None)
         ps = val.getPropertySet()
@@ -98,16 +96,14 @@ class CombinedReceiveEventTestCase(unittest.TestCase):
         val = recvB.receiveEvent(1)
         self.assertEqual(val, None)
     
-        # receive event on topicC, and check to see it's
-        # the one sent to topicA
+        # receive event on topicC, and check to see it's the one sent to topicA
         val = recvC.receiveEvent()
         self.assertNotEqual(val, None)
         ps = val.getPropertySet()
         name = ps.get("TOPIC")
         self.assertEqual(name, topicA)
     
-        # receive event on topicC, and check to see it's
-        # the one sent to topicB
+        # receive event on topicC, and check to see it's the one sent to topicB
         val = recvC.receiveEvent()
         self.assertNotEqual(val, None)
         ps = val.getPropertySet()
