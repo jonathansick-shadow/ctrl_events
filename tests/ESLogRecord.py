@@ -23,14 +23,12 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
-#3
+import os, platform
 import unittest
 
 import lsst.ctrl.events as events
 import lsst.daf.base as base
-import lsst.pex.exceptions
 import lsst.pex.logging as logging
-import os, platform
 import lsst.utils.tests as tests
 
 class ESLogRecordTestCase(unittest.TestCase):

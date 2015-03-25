@@ -28,7 +28,6 @@ import unittest
 import os, socket, struct, platform
 import lsst.ctrl.events as events
 import lsst.daf.base as base
-import lsst.pex.exceptions
 import lsst.pex.logging as logging
 
 from lsst.daf.base import PropertySet

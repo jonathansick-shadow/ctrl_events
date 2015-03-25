@@ -36,10 +36,8 @@ import lsst.utils.tests as tests
 #
 class CommandTestCase(unittest.TestCase):
 
-    #
-    # do a validity check on the values we received.
-    #
-    def checkValidity(self, val, names, origNum, destNum):
+    def assertValid(self, val, names, origNum, destNum):
+        """do a validity check on the values we received."""
         # get only the filterable properties and make sure we only get the names we expect
         fnames = val.getFilterablePropertyNames()
         self.assertTrue(len(fnames), len(names))
@@ -109,7 +107,7 @@ class CommandTestCase(unittest.TestCase):
         names = ['DEST_HOSTNAME', 'DEST_LOCALID', 'DEST_PROCESSID', 'EVENTTIME', 'ORIG_HOSTNAME', 
                     'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE']
         print dir(val)
-        self.checkValidity(val, names, commandOriginatorID.getLocalID(), destinationID.getLocalID())
+        self.assertValid(val, names, commandOriginatorID.getLocalID(), destinationID.getLocalID())
 
 
         # send a command event with additional filterable properties
@@ -141,7 +139,7 @@ class CommandTestCase(unittest.TestCase):
         # these are the filterable names we expect to see
         names = ['DEST_HOSTNAME', 'DEST_LOCALID', 'DEST_PROCESSID', 'EVENTTIME', 'ORIG_HOSTNAME', 
                 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE', 'FOO', 'BAR']
-        self.checkValidity(val, names, commandOriginatorID.getLocalID(), destinationID.getLocalID())
+        self.assertValid(val, names, commandOriginatorID.getLocalID(), destinationID.getLocalID())
 
 def suite():
     """Returns a suite containing all the tests cases in this module."""

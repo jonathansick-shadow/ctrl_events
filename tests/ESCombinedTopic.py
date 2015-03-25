@@ -41,13 +41,13 @@ class CombinedEventTestCase(unittest.TestCase):
     def sendEvent(self, topicName):
         
         root = base.PropertySet()
-        root.set("DATE","2007-07-01T14:28:32.546012")
-        root.setInt("PID",200)
-        root.set("HOST","lsst8.ncsa.illinois.edu")
-        root.set("IP","141.142.220.44")
-        root.set("EVNT","test")
-        root.set("misc1","data 1")
-        root.set("misc2","data 2")
+        root.set("DATE", "2007-07-01T14:28:32.546012")
+        root.setInt("PID", 200)
+        root.set("HOST", "lsst8.ncsa.illinois.edu")
+        root.set("IP", "141.142.220.44")
+        root.set("EVNT", "test")
+        root.set("misc1", "data 1")
+        root.set("misc2", "data 2")
         root.set("value", 3.14)
         
         eventSystem = events.EventSystem.getDefaultEventSystem()
@@ -58,7 +58,7 @@ class CombinedEventTestCase(unittest.TestCase):
         host = "lsst8.ncsa.illinois.edu"
         topic1 = "test_events_3_%s_%d" % (platform.node(), os.getpid())
         topic2 = "test_events_3a_%s_%d" % (platform.node(), os.getpid())
-        combinedTopic = topic1+","+topic2
+        combinedTopic = topic1 + "," + topic2
         eventSystem = events.EventSystem.getDefaultEventSystem()
         eventSystem.createReceiver(host, topic1)
         eventSystem.createReceiver(host, topic2)

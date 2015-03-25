@@ -150,14 +150,7 @@ class ComplexDataTestCase(unittest.TestCase):
         locationID = eventSystem.createOriginatorId()
         event = events.StatusEvent(locationID, root, filter)
 
-        # ok...now publish it
-        try: 
-            trans.publishEvent(event)
-            # should never reach here
-            self.assertTrue(1 == 0) 
-        except ex.Exception as e:
-            print "exception thrown, as expected"
-            pass
+        self.assertRaises(ex.Exception, trans.publishEvent, event)
 
     def checkValidity(self, val, values):
         # get custom property names

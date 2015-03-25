@@ -33,15 +33,12 @@ import lsst.utils.tests as tests
 
 class UnknownBrokerTestCase(unittest.TestCase):
     def testUnknownBroker(self):
+        """Test to be sure that a bad broker name throws a runtime event"""
+
         broker = "unknown_broker.ncsa.illinois.edu"
         topic = "test_events_7_%s_%d" % (platform.node(), os.getpid())
     
-        # Test to be sure that a bad broker name throws a runtime event
-        try:
-            trans = events.EventTransmitter(broker, topic)
-            self.assertEqual(0, 1)
-        except ex.Exception as e:
-            pass
+        self.assertRaises(ex.Exception, events.EventTransmitter, broker, topic)
     
 
 def suite():
