@@ -353,7 +353,7 @@ std::string Event::getPubDate() {
 std::string Event::getRunId() {
     if (_psp->exists(RUNID))
         return _psp->get<std::string>(RUNID);
-    return std::string();
+    throw LSST_EXCEPT(pexExceptions::RuntimeError, std::string("property RUNID not found"));
 }
 
 std::string Event::getType() {
@@ -498,8 +498,8 @@ PropertySet::Ptr Event::parsePropertySet(boost::property_tree::ptree child) {
     BOOST_FOREACH(boost::property_tree::ptree::value_type const &v, child.get_child("")) {
         std::string label = v.first;
         BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, child.get_child(label)) {
-            bool b = addDataItem(v2.first, v2.second, label, *psp);
-            if (b == false) {
+            const bool b = addDataItem(v2.first, v2.second, label, *psp);
+            if (!b) {
                 PropertySet::Ptr p2 = parsePropertySet(child.get_child(label));
                 psp->add(label, p2);
                 break;
@@ -528,8 +528,8 @@ PropertySet::Ptr Event::unmarshall(std::string const& text) {
         BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, child) {
             std::string key2 = v2.first;
 
-            bool b = addDataItem(key2, v2.second, key, *psp);
-            if (b == false) {
+            const bool b = addDataItem(key2, v2.second, key, *psp);
+            if (!b) {
                 std::string value = v2.second.get_value<std::string>();
                 PropertySet::Ptr p = parsePropertySet(child);
                 psp->add(key, p);
