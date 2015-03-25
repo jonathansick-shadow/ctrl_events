@@ -60,7 +60,6 @@ public:
     int getLocalID() const;
 
 protected:
-    void _constructor(const std::string& hostname, int pid, int localID);
     static int _localCounter;
     std::string _hostname;
     int _pid;
