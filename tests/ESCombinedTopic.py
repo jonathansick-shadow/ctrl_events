@@ -31,6 +31,7 @@ import lsst.ctrl.events as events
 import lsst.daf.base as base
 import time
 import os, platform
+import lsst.utils.tests as tests
 
 #
 # Send an event
@@ -79,5 +80,17 @@ class CombinedEventTestCase(unittest.TestCase):
         ps = val.getPropertySet()
         print ps.toString()
 
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(CombinedEventTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)

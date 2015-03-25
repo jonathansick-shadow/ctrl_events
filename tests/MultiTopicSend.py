@@ -30,11 +30,10 @@ import platform
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 
+import lsst.utils.tests as tests
 
-#
-# Send an event
-#
 class MultiTopicSendTestCase(unittest.TestCase):
+    """Send a multitopic event"""
 
     def sendEvent(self, broker, topic):
         trans = events.EventTransmitter(broker, topic)
@@ -81,5 +80,17 @@ class MultiTopicSendTestCase(unittest.TestCase):
         self.assertNotEqual(val, None)
         ps = val.getPropertySet()
 
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(MultiTopicSendTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)

@@ -31,8 +31,9 @@ import lsst.daf.base as base
 import lsst.pex.exceptions
 import lsst.pex.logging as logging
 import os, platform
+import lsst.utils.tests as tests
 
-class EventSystemTestCase(unittest.TestCase):
+class ESLogRecordTestCase(unittest.TestCase):
 
     def testEventSystem(self):
         host = "lsst8.ncsa.illinois.edu"
@@ -64,5 +65,17 @@ class EventSystemTestCase(unittest.TestCase):
         for x in names:
             self.assertTrue(ps.exists(x))
 
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(ESLogRecordTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)

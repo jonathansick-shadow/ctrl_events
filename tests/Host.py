@@ -31,6 +31,8 @@ import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 from socket import gethostname
 
+import lsst.utils.tests as tests
+
 class HostTestCase(unittest.TestCase):
     """A test case for Event."""
 
@@ -48,6 +50,17 @@ class HostTestCase(unittest.TestCase):
         self.assertEqual(socket.gethostname(), host.getHostName())
         pass
         
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(HostTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
-    
+    run(True)

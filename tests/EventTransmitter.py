@@ -30,6 +30,7 @@ import platform
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 
+import lsst.utils.tests as tests
 
 #
 #
@@ -75,5 +76,17 @@ class EventTransmitterTestCase(unittest.TestCase):
         val = recv.receiveEvent(1)
         self.assertEqual(val, None)
 
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(EventTransmitterTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)

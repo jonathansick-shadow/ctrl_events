@@ -31,11 +31,11 @@ import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 from socket import gethostname
 
-#
-# Send an event
-#
+import lsst.utils.tests as tests
+
 class SendEventTestCase(unittest.TestCase):
     def testSendEvent(self):
+        """Send an Event"""
         broker = "lsst8.ncsa.illinois.edu"
         topic = "test_events_3_%s_%d" % (platform.node(), os.getpid())
     
@@ -121,6 +121,17 @@ class SendEventTestCase(unittest.TestCase):
         val = recv.receiveEvent(1000)
         self.assertEqual(val, None)
 
-if __name__ == "__main__":
-    unittest.main()
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(SendEventTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
 
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
+if __name__ == "__main__":
+    run(True)

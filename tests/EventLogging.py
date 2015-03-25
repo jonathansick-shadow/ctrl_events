@@ -36,6 +36,9 @@ import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 from socket import gethostname
 
+#
+# THIS TEST IS GOING AWAY SHORTLY BECAUSE OF THE MOVE TO lsst.log
+#
 class EventLogTestCase(unittest.TestCase):
 
     def testEventLog(self):

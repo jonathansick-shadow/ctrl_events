@@ -29,6 +29,7 @@ import lsst.ctrl.events as events
 import lsst.daf.base as datap
 import lsst.pex.exceptions as ex
 import os, platform
+import lsst.utils.tests as tests
 
 class UnknownBrokerTestCase(unittest.TestCase):
     def testUnknownBroker(self):
@@ -42,5 +43,18 @@ class UnknownBrokerTestCase(unittest.TestCase):
         except ex.Exception as e:
             pass
     
+
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(UnknownBrokerTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)

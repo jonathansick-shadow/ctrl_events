@@ -31,6 +31,7 @@ import os, platform
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import time
+import lsst.utils.tests as tests
 
 #
 # Send an event
@@ -93,5 +94,18 @@ class EventSystemReceiveTestCase(unittest.TestCase):
         #
         val = eventSystem.receiveEvent(topic, 1000)
         self.assertEqual(val, None)
+
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(EventSystemReceiveTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)

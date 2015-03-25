@@ -35,6 +35,7 @@ import unittest
 import time
 from threading import Thread, Condition
 from lsst.ctrl.events import EventSystem
+import lsst.utils.tests as tests
 
 eventBrokerHost = "lsst8.ncsa.illinois.edu"
 testtopic = "testmthread_%s_%d" % (platform.node(), os.getpid())
@@ -97,5 +98,18 @@ class MultiThreadTestCase(unittest.TestCase):
     
 __all__ = "MultiThreadTestCase".split()
 
+
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(MultiThreadTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)

@@ -32,6 +32,7 @@ import lsst.pex.exceptions
 import lsst.pex.logging as logging
 
 from lsst.daf.base import PropertySet
+import lsst.utils.tests as tests
 
 class LocationIDTestCase(unittest.TestCase):
         
@@ -103,8 +104,17 @@ class LocationIDTestCase(unittest.TestCase):
         returnedEvent2 = receiver.receiveEvent(1)
         self.assertEqual(returnedEvent2, None)
         
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(LocationIDTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
 
-        print "done"
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
 
 if __name__ == "__main__":
-    unittest.main()
+    run(True)

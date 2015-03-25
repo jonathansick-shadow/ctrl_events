@@ -29,6 +29,7 @@ import os
 import platform
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
+import lsst.utils.tests as tests
 
 #
 # Command Event test
@@ -142,6 +143,17 @@ class CommandTestCase(unittest.TestCase):
                 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE', 'FOO', 'BAR']
         self.checkValidity(val, names, commandOriginatorID.getLocalID(), destinationID.getLocalID())
 
-if __name__ == "__main__":
-    unittest.main()
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(CommandTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
 
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
+if __name__ == "__main__":
+    run(True)

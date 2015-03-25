@@ -30,6 +30,7 @@ import platform
 import time
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
+import lsst.utils.tests as tests
 
 class StatusEventTestCase(unittest.TestCase):
     def init(self):
@@ -205,5 +206,17 @@ class StatusEventTestCase(unittest.TestCase):
         for x in allValues:
             self.assertTrue(ps.exists(x))
 
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(StatusEventTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)

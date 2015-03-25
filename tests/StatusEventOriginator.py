@@ -29,12 +29,11 @@ import os
 import platform
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
+import lsst.utils.tests as tests
 
-#
-# Send an event
-#
 class StatusEventOriginatorTestCase(unittest.TestCase):
     def sendEvent(self, brokerName, topic):
+        """Send an Event."""
         trans = events.EventTransmitter(brokerName, topic)
         
         root = PropertySet()
@@ -77,5 +76,17 @@ class StatusEventOriginatorTestCase(unittest.TestCase):
         self.assertEqual(originatorID.getProcessID(), os.getpid())
         self.assertEqual(platform.node(), originatorID.getHostName())
 
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(StatusEventOriginatorTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)

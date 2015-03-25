@@ -31,7 +31,9 @@ import os, platform
 from lsst.daf.base import PropertySet
 from socket import gethostname
 
-class EventFilteresTestCase(unittest.TestCase):
+import lsst.utils.tests as tests
+
+class EventFiltersTestCase(unittest.TestCase):
     """A test case for Event."""
 
     def testEventFilters(self):
@@ -198,5 +200,17 @@ class EventFilteresTestCase(unittest.TestCase):
         val = recv.receiveEvent(1000)
         self.assertEqual(val, None)
 
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(EventFiltersTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)

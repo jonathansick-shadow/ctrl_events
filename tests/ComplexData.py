@@ -31,6 +31,7 @@ import time
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.pex.exceptions as ex
+import lsst.utils.tests as tests
 
 class ComplexDataTestCase(unittest.TestCase):
     def init(self):
@@ -203,5 +204,17 @@ class ComplexDataTestCase(unittest.TestCase):
         for x in allValues:
             self.assertTrue(ps.exists(x))
 
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(ComplexDataTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)

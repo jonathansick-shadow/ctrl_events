@@ -30,6 +30,8 @@ import platform
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 
+import lsst.utils.tests as tests
+
 #
 # Send an event
 #
@@ -78,5 +80,17 @@ class EventSelectorTestCase(unittest.TestCase):
         val2 = rec.receiveEvent(1)
         self.assertEqual(val2, None)
 
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(EventSelectorTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)
