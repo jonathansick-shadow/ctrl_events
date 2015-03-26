@@ -23,20 +23,16 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
-#6
-
+import os
+import platform
+import time
 import unittest
-
 import lsst.ctrl.events as events
 import lsst.daf.base as base
-import time
-import os, platform
 import lsst.utils.tests as tests
 
-#
-# Send an event
-#
 class CombinedEventTestCase(unittest.TestCase):
+    """test sending one message two multiple topics with one publish"""
 
     def sendEvent(self, topicName):
         

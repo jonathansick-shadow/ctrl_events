@@ -23,20 +23,16 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
-#4
-
+import os
+import platform
+import time
 import unittest
-
-import os, platform
 import lsst.ctrl.events as events
 import lsst.daf.base as base
-import time
 import lsst.utils.tests as tests
 
-#
-# Send an event
-#
 class EventSystemReceiveTestCase(unittest.TestCase):
+    """Test receiving via EventSystem"""
 
     def sendEvent(self, topicName):
         root = base.PropertySet()

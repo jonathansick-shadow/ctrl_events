@@ -23,17 +23,18 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
+import os
+import platform
+import socket
 import unittest
-
-import os, socket, struct, platform
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import lsst.pex.logging as logging
-
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
 
 class LocationIDTestCase(unittest.TestCase):
+    """Test LocationID"""
         
     def testLocationID(self):
         eventSystem = events.EventSystem.getDefaultEventSystem()

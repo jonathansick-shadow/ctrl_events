@@ -28,13 +28,12 @@
 # The events that are  sent are retrieved.
 #
 
-import unittest
-
 import os
+import unittest
+from socket import gethostname
 import lsst.pex.logging as log
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
-from socket import gethostname
 
 #
 # THIS TEST IS GOING AWAY SHORTLY BECAUSE OF THE MOVE TO lsst.log

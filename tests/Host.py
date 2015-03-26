@@ -23,18 +23,16 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
+import platform
+import socket
+import struct
 import unittest
-
-import platform, socket, struct
-
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
-from socket import gethostname
-
 import lsst.utils.tests as tests
 
 class HostTestCase(unittest.TestCase):
-    """A test case for Event."""
+    """A test for Host"""
 
     def testHostIPAddress(self):
         host = events.Host.getHost()

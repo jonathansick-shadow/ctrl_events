@@ -23,18 +23,15 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
-import unittest
-
 import os
 import platform
+import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
 
-#
-# Command Event test
-#
 class CommandTestCase(unittest.TestCase):
+    """test CommandEvent"""
 
     def assertValid(self, val, names, origNum, destNum):
         """do a validity check on the values we received."""

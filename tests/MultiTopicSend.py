@@ -23,13 +23,11 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
-import unittest
-
 import os
 import platform
+import unittest
 import lsst.ctrl.events as events
 import lsst.daf.base as base
-
 import lsst.utils.tests as tests
 
 class MultiTopicSendTestCase(unittest.TestCase):

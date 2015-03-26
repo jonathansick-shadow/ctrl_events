@@ -23,19 +23,16 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
-import unittest
-
 import os
 import platform
 import time
+import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
 
-#
-# Send an event
-#
 class CombinedReceiveEventTestCase(unittest.TestCase):
+    """Test receiving on one topic, when it is sent to two"""
 
     def sendEvent(self, broker, topic):
         trans = events.EventTransmitter(broker, topic)

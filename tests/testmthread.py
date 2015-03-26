@@ -67,6 +67,7 @@ class EventThread(Thread):
         
 
 class MultiThreadTestCase(unittest.TestCase):
+    """Test multitreaded sends"""
     def setUp(self):
         pass
 

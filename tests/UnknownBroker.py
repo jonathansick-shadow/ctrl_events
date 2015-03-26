@@ -23,15 +23,17 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
+import os
+import platform
 import unittest
-
 import lsst.ctrl.events as events
 import lsst.daf.base as datap
 import lsst.pex.exceptions as ex
-import os, platform
 import lsst.utils.tests as tests
 
 class UnknownBrokerTestCase(unittest.TestCase):
+    """Test to check unknown host case"""
+
     def testUnknownBroker(self):
         """Test to be sure that a bad broker name throws a runtime event"""
 

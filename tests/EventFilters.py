@@ -23,18 +23,16 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
+import os
+import platform
 import unittest
-
-import lsst.ctrl.events as events
-import os, platform
-
-from lsst.daf.base import PropertySet
 from socket import gethostname
-
+import lsst.ctrl.events as events
+from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
 
 class EventFiltersTestCase(unittest.TestCase):
-    """A test case for Event."""
+    """A test case user specified filterable events"""
 
     def testEventFilters(self):
         runid = "testrunid"

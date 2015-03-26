@@ -24,11 +24,9 @@
 #
 
 import unittest
-
+from socket import gethostname
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
-from socket import gethostname
-
 import lsst.utils.tests as tests
 
 class EventTestCase(unittest.TestCase):

@@ -23,15 +23,16 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
-import os, platform
+import os
+import platform
 import unittest
-
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import lsst.pex.logging as logging
 import lsst.utils.tests as tests
 
 class ESLogRecordTestCase(unittest.TestCase):
+    """test sending a log record via EventSystem"""
 
     def testEventSystem(self):
         host = "lsst8.ncsa.illinois.edu"

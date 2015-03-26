@@ -23,19 +23,16 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
-import unittest
-
 import os
 import platform
+import unittest
 import lsst.ctrl.events as events
 import lsst.daf.base as base
-
 import lsst.utils.tests as tests
 
-#
-#
-#
 class EventTransmitterTestCase(unittest.TestCase):
+    """Test the EventTransmitter"""
+
     def sendEvent(self, broker, topicName, value):
         root = base.PropertySet()
         root.addInt("FOO", value)

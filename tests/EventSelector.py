@@ -23,19 +23,16 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
-import unittest
-
 import os
 import platform
+import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
-
 import lsst.utils.tests as tests
 
-#
-# Send an event
-#
 class EventSelectorTestCase(unittest.TestCase):
+    """Test receiving events using the selector mechanism"""
+
     def sendEvent(self, runid, brokerName, topic):
         trans = events.EventTransmitter(brokerName, topic)
         

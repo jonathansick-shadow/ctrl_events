@@ -23,16 +23,17 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
-import unittest
-
 import os
 import platform
 import time
+import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
 
 class StatusEventTestCase(unittest.TestCase):
+    """Test StatusEvent"""
+
     def init(self):
         self.broker = "lsst8.ncsa.illinois.edu"
 

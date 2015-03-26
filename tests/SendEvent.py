@@ -23,17 +23,17 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
-import unittest
-
 import os
 import platform
+import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 from socket import gethostname
-
 import lsst.utils.tests as tests
 
 class SendEventTestCase(unittest.TestCase):
+    """Test sending events"""
+
     def testSendEvent(self):
         """Send an Event"""
         broker = "lsst8.ncsa.illinois.edu"

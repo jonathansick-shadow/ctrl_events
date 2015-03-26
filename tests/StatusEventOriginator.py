@@ -23,15 +23,16 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
-import unittest
-
 import os
 import platform
+import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
 
 class StatusEventOriginatorTestCase(unittest.TestCase):
+    """Test StatusEvent Originator"""
+
     def sendEvent(self, brokerName, topic):
         """Send an Event."""
         trans = events.EventTransmitter(brokerName, topic)
