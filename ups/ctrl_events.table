@@ -5,8 +5,6 @@ setupRequired(base)
 setupRequired(daf_base)
 setupRequired(pex_logging)
 setupRequired(pex_exceptions)
-setupRequired(cat)
-setupRequired(daf_persistence)
 
 setupOptional("swig")
 setupOptional("doxygen")

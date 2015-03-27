@@ -36,9 +36,7 @@ import time
 from threading import Thread, Condition
 from lsst.ctrl.events import EventSystem
 import lsst.utils.tests as tests
-
-eventBrokerHost = "lsst8.ncsa.illinois.edu"
-testtopic = "testmthread_%s_%d" % (platform.node(), os.getpid())
+from testEnvironment import TestEnvironment
 
 class Flag(object):
     def __init__(self):
@@ -46,15 +44,17 @@ class Flag(object):
         self.markers = []
 
 class EventThread(Thread):
-    def __init__(self, flag):
+    def __init__(self, broker, flag):
         Thread.__init__(self, name="event")
         # self.setDaemon(True)
+        self.broker = broker
         self.flag = flag
 
     def run(self):
+        testtopic = "testmthread_%s_%d" % (platform.node(), os.getpid())
         with self.flag.lock:
             esys = EventSystem.getDefaultEventSystem()
-            esys.createReceiver(eventBrokerHost, testtopic)
+            esys.createReceiver(self.broker, testtopic)
             # print "listening for", testtopic, "events"
             self.flag.markers.append("thread ready")
             self.flag.lock.notifyAll()
@@ -74,9 +74,14 @@ class MultiThreadTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testLockRelease(self):
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
         flag = Flag()
-        t = EventThread(flag)
+        t = EventThread(broker, flag)
 
         # wait until the thread has started up
         with flag.lock:

@@ -29,6 +29,7 @@ import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
+from testEnvironment import TestEnvironment
 
 class StatusEventOriginatorTestCase(unittest.TestCase):
     """Test StatusEvent Originator"""
@@ -50,12 +51,13 @@ class StatusEventOriginatorTestCase(unittest.TestCase):
         # ok...now publish it
         trans.publishEvent(event)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testStatusEventOriginator(self):
-        broker = "lsst8.ncsa.illinois.edu"
-    
-        host = platform.node()
-        pid = os.getpid()
-        topic = "test_events_12_%s_%d" % (host, pid)
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
+        topic = "test_events_12_%s_%d" % (thisHost, os.getpid())
     
         recv = events.EventReceiver(broker, topic)
     

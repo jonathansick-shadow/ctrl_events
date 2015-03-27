@@ -30,6 +30,7 @@ from socket import gethostname
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
+from testEnvironment import TestEnvironment
 
 class EventFiltersTestCase(unittest.TestCase):
     """A test case user specified filterable events"""
@@ -97,9 +98,13 @@ class EventFiltersTestCase(unittest.TestCase):
         self.assertEqual(event.getEventTime(), eventTime)
 
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testFilterableSendEvent(self):
-        broker = "lsst8.ncsa.illinois.edu"
-        topic = "test_events_filters_%s_%d" % (platform.node(), os.getpid())
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
+        topic = "test_events_filters_%s_%d" % (thisHost, os.getpid())
     
         runId = "test_filters_runid"
         recv = events.EventReceiver(broker, topic)
@@ -121,11 +126,11 @@ class EventFiltersTestCase(unittest.TestCase):
         root.setInt(PID, PID_VAL)
     
         HOST = "host"
-        HOST_VAL = "lsst8.ncsa.illinois.edu"
+        HOST_VAL = "lsstcorp.org"
         root.set(HOST, HOST_VAL)
     
         IP = "ip"
-        IP_VAL = "141.142.220.44"
+        IP_VAL = "1.2.3.4"
         root.set(IP, IP_VAL)
     
         EVNT = "evnt"

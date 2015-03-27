@@ -30,6 +30,7 @@ import unittest
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import lsst.utils.tests as tests
+from testEnvironment import TestEnvironment
 
 class EventSystemReceiveTestCase(unittest.TestCase):
     """Test receiving via EventSystem"""
@@ -38,8 +39,8 @@ class EventSystemReceiveTestCase(unittest.TestCase):
         root = base.PropertySet()
         root.set("DATE","2007-07-01T14:28:32.546012")
         root.setInt("PID",200)
-        root.set("HOST","lsst8.ncsa.illinois.edu")
-        root.set("IP","141.142.220.44")
+        root.set("HOST","lsstcorp.org")
+        root.set("IP","1.2.3.4")
         root.set("EVNT","test")
         root.set("misc1","data 1")
         root.set("misc2","data 2")
@@ -49,13 +50,17 @@ class EventSystemReceiveTestCase(unittest.TestCase):
         event = events.Event("runid_es4", root)
         eventSystem.publishEvent(topicName, event)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testEventSystemReceive(self):
-        host = "lsst8.ncsa.illinois.edu"
-        topic = "test_events_%s_%d" % (platform.node(), os.getpid())
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
+        topic = "test_events_%s_%d" % (thisHost, os.getpid())
     
         eventSystem = events.EventSystem.getDefaultEventSystem()
-        eventSystem.createTransmitter(host, topic)
-        eventSystem.createReceiver(host, topic)
+        eventSystem.createTransmitter(broker, topic)
+        eventSystem.createReceiver(broker, topic)
 
         #
         # send a test event, and wait to receive it
@@ -77,8 +82,8 @@ class EventSystemReceiveTestCase(unittest.TestCase):
         self.assertEqual(ps.nameCount(), len(names))
         self.assertEqual(ps.get("DATE"), "2007-07-01T14:28:32.546012")
         self.assertEqual(ps.get("PID"), 200)
-        self.assertEqual(ps.get("HOST"), "lsst8.ncsa.illinois.edu")
-        self.assertEqual(ps.get("IP"), "141.142.220.44")
+        self.assertEqual(ps.get("HOST"), "lsstcorp.org")
+        self.assertEqual(ps.get("IP"), "1.2.3.4")
         self.assertEqual(ps.get("EVNT"), "test")
         self.assertEqual(ps.get("misc1"), "data 1")
         self.assertEqual(ps.get("misc2"), "data 2")

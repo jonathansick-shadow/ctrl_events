@@ -31,11 +31,10 @@ import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.pex.exceptions as ex
 import lsst.utils.tests as tests
+from testEnvironment import TestEnvironment
 
 class ComplexDataTestCase(unittest.TestCase):
     """Test complex PropertySet sending"""
-    def init(self):
-        self.broker = "lsst8.ncsa.illinois.edu"
 
     def createTopicName(self, template):
         host = platform.node()
@@ -44,13 +43,12 @@ class ComplexDataTestCase(unittest.TestCase):
         host_pid = "%s_%d" % (host, pid)
         return template % host_pid
 
-    def createReceiver(self, topic):
-        broker = "lsst8.ncsa.illinois.edu"
+    def createReceiver(self, broker, topic):
         receiver = events.EventReceiver(broker, topic)
         return receiver
 
-    def sendPlainStatusEvent(self, topic, runID=None):
-        trans = events.EventTransmitter(self.broker, topic)
+    def sendPlainStatusEvent(self, broker, topic, runID=None):
+        trans = events.EventTransmitter(broker, topic)
         
         root = PropertySet()
         root.set("TOPIC",topic)
@@ -74,8 +72,8 @@ class ComplexDataTestCase(unittest.TestCase):
         # ok...now publish it
         trans.publishEvent(event)
 
-    def sendFilterableStatusEvent(self, topic):
-        trans = events.EventTransmitter(self.broker, topic)
+    def sendFilterableStatusEvent(self, broker, topic):
+        trans = events.EventTransmitter(broker, topic)
 
         root = PropertySet()
         root.set("TOPIC",topic)
@@ -93,26 +91,34 @@ class ComplexDataTestCase(unittest.TestCase):
         # ok...now publish it
         trans.publishEvent(event)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testFilterableStatusEvent(self):
-        self.init()
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
         topic = self.createTopicName("test_events_10_%s.B")
-        receiver = self.createReceiver(topic)
+        receiver = self.createReceiver(broker, topic)
         #
         # send a test event, and wait to receive it
         #
-        self.sendFilterableStatusEvent(topic)
+        self.sendFilterableStatusEvent(broker, topic)
         val = receiver.receiveEvent()
 
         self.assertNotEqual(val, None)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testPlainStatusEvent(self):
-        self.init()
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
         topic = self.createTopicName("test_events_10_%s.A")
-        receiver = self.createReceiver(topic)
+        receiver = self.createReceiver(broker, topic)
         #
         # send a test event, and wait to receive it
         #
-        self.sendPlainStatusEvent(topic)
+        self.sendPlainStatusEvent(broker, topic)
 
         val = receiver.receiveEvent()
 
@@ -124,16 +130,19 @@ class ComplexDataTestCase(unittest.TestCase):
         self.assertNotEqual(val.getPubTime(), 0)
         self.assertGreater(val.getPubTime(), val.getEventTime())
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testIllegalFilterableStatusEvent(self):
-        self.init()
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
         topic = self.createTopicName("test_events_10_%s.A")
 
-        broker = "lsst8.ncsa.illinois.edu"
         receiver = events.EventReceiver(broker, topic)
         #
         # send a test event, and wait to receive it
         #
-        trans = events.EventTransmitter(self.broker, topic)
+        trans = events.EventTransmitter(broker, topic)
 
         root = PropertySet()
         root.set("TOPIC",topic)

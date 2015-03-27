@@ -30,18 +30,23 @@ import lsst.ctrl.events as events
 import lsst.daf.base as base
 import lsst.pex.logging as logging
 import lsst.utils.tests as tests
+from testEnvironment import TestEnvironment
 
 class ESLogRecordTestCase(unittest.TestCase):
     """test sending a log record via EventSystem"""
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testEventSystem(self):
-        host = "lsst8.ncsa.illinois.edu"
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
         eventSystem = events.EventSystem.getDefaultEventSystem()
     
-        topic = "EventSystem_test_%s_%d" % (platform.node(), os.getpid())
+        topic = "EventSystem_test_%s_%d" % (thisHost, os.getpid())
     
     
-        eventSystem.createTransmitter(host, topic)
+        eventSystem.createTransmitter(broker, topic)
     
         root = base.PropertySet()
         root.addInt("test", 12)
@@ -49,7 +54,7 @@ class ESLogRecordTestCase(unittest.TestCase):
         event = events.Event("runid_es3", root)
         eventSystem.publishEvent(topic, event)
     
-        eventSystem.createReceiver(host, topic)
+        eventSystem.createReceiver(broker, topic)
 
         rec = logging.LogRecord(-1,10)
         rec.addComment("a comment")

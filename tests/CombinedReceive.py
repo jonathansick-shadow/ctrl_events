@@ -30,6 +30,7 @@ import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
+from testEnvironment import TestEnvironment
 
 class CombinedReceiveEventTestCase(unittest.TestCase):
     """Test receiving on one topic, when it is sent to two"""
@@ -52,13 +53,16 @@ class CombinedReceiveEventTestCase(unittest.TestCase):
         # ok...now publish it
         trans.publishEvent(event)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testCombinedReceive(self):
         # Test sending on two topics, and receiving bother on a third.
         #
-        broker = "lsst8.ncsa.illinois.edu"
-        host = platform.node()
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
         pid = os.getpid()
-        host_pid = "%s_%d" % (host,pid)
+        host_pid = "%s_%d" % (thisHost,pid)
     
         topicA = "test_events_9_%s.A" % host_pid
         topicB = "test_events_9_%s.B" % host_pid

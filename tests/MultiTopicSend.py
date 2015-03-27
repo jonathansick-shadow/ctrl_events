@@ -29,6 +29,7 @@ import unittest
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import lsst.utils.tests as tests
+from testEnvironment import TestEnvironment
 
 class MultiTopicSendTestCase(unittest.TestCase):
     """Send a multitopic event"""
@@ -39,8 +40,8 @@ class MultiTopicSendTestCase(unittest.TestCase):
         root = base.PropertySet()
         root.set("DATE","2007-07-01T14:28:32.546012")
         root.setInt("PID",200)
-        root.set("HOST","lsst8.ncsa.illinois.edu")
-        root.set("IP","141.142.220.44")
+        root.set("HOST","lsstcorp.org")
+        root.set("IP","1.2.3.4")
         root.set("EVNT","test")
         root.set("misc1","data 1")
         root.set("misc2","data 2")
@@ -50,12 +51,13 @@ class MultiTopicSendTestCase(unittest.TestCase):
         trans.publishEvent(event)
 
     def testMultiTopicSend(self):
-        broker = "lsst8.ncsa.illinois.edu"
-    
-        host = platform.node()
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
         pid = os.getpid()
     
-        host_pid = "%s_%d" % (host, pid)
+        host_pid = "%s_%d" % (thisHost, pid)
     
         topic1 = "test_events_6_%s" % host_pid
         topic2 = "test_events_6a_%s" % host_pid

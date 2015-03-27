@@ -30,12 +30,10 @@ import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
+from testEnvironment import TestEnvironment
 
 class StatusEventTestCase(unittest.TestCase):
     """Test StatusEvent"""
-
-    def init(self):
-        self.broker = "lsst8.ncsa.illinois.edu"
 
     def createTopicName(self, template):
         host = platform.node()
@@ -44,13 +42,12 @@ class StatusEventTestCase(unittest.TestCase):
         host_pid = "%s_%d" % (host, pid)
         return template % host_pid
 
-    def createReceiver(self, topic):
-        broker = "lsst8.ncsa.illinois.edu"
+    def createReceiver(self, broker, topic):
         receiver = events.EventReceiver(broker, topic)
         return receiver
 
-    def sendPlainStatusEvent(self, topic, runID=None):
-        trans = events.EventTransmitter(self.broker, topic)
+    def sendPlainStatusEvent(self, broker, topic, runID=None):
+        trans = events.EventTransmitter(broker, topic)
         
         root = PropertySet()
         root.set("TOPIC",topic)
@@ -71,8 +68,8 @@ class StatusEventTestCase(unittest.TestCase):
         # ok...now publish it
         trans.publishEvent(event)
 
-    def sendFilterableStatusEvent(self, topic, runID=None):
-        trans = events.EventTransmitter(self.broker, topic)
+    def sendFilterableStatusEvent(self, broker, topic, runID=None):
+        trans = events.EventTransmitter(broker, topic)
         
         root = PropertySet()
         root.set("TOPIC",topic)
@@ -94,53 +91,65 @@ class StatusEventTestCase(unittest.TestCase):
         # ok...now publish it
         trans.publishEvent(event)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testPlainStatusEvent(self):
-        self.init()
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
         topic = self.createTopicName("test_events_10_%s.A")
-        receiver = self.createReceiver(topic)
+        receiver = self.createReceiver(broker, topic)
         #
         # send a test event, and wait to receive it
         #
-        self.sendPlainStatusEvent(topic)
+        self.sendPlainStatusEvent(broker, topic)
 
         val = receiver.receiveEvent()
 
         self.assertNotEqual(val, None)
         values = ['EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
-        self.checkValidity(val, values, 2)
+        self.assertValid(val, values, 2)
 
         self.assertNotEqual(val.getEventTime(), 0)
         self.assertNotEqual(val.getPubTime(), 0)
         self.assertGreater(val.getPubTime(), val.getEventTime())
 
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testStatusEventWithRunID(self):
-        self.init()
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
         topicA = self.createTopicName("test_events_10_%s.B")
-        receiverA = self.createReceiver(topicA)
+        receiverA = self.createReceiver(broker, topicA)
 
         #
         # send a test event, and wait to receive it
         #
-        self.sendPlainStatusEvent(topicA, "test_runID_10")
+        self.sendPlainStatusEvent(broker, topicA, "test_runID_10")
 
 
         val = receiverA.receiveEvent()
         self.assertNotEqual(val, None)
         values = ['EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE', 'RUNID']
-        self.checkValidity(val, values, 2)
+        self.assertValid(val, values, 2)
 
         self.assertNotEqual(val.getEventTime(), 0)
         self.assertNotEqual(val.getPubTime(), 0)
         self.assertGreater(val.getPubTime(), val.getEventTime())
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testFilterableStatusEvent(self):
-        self.init()
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
         topic = self.createTopicName("test_events_10_%s.C")
 
-        receiver = self.createReceiver(topic)
+        receiver = self.createReceiver(broker, topic)
 
-        self.sendFilterableStatusEvent(topic)
+        self.sendFilterableStatusEvent(broker, topic)
 
         val = receiver.receiveEvent()
 
@@ -149,25 +158,29 @@ class StatusEventTestCase(unittest.TestCase):
         # should only be ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
         # in some order
         values = ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
-        self.checkValidity(val, values, 1)
+        self.assertValid(val, values, 1)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testFilterableStatusEventWithRunID(self):
-        self.init()
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
         topic = self.createTopicName("test_events_10_%s.D")
 
-        receiver = self.createReceiver(topic)
+        receiver = self.createReceiver(broker, topic)
 
-        self.sendFilterableStatusEvent(topic, "test_runID_10")
+        self.sendFilterableStatusEvent(broker, topic, "test_runID_10")
 
         val = receiver.receiveEvent()
 
         # should receive an event
         self.assertNotEqual(val, None)
         values = ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE']
-        self.checkValidity(val, values, 1)
+        self.assertValid(val, values, 1)
 
 
-    def checkValidity(self, val, values, customCount):
+    def assertValid(self, val, values, customCount):
         # get custom property names
         names = val.getCustomPropertyNames()
 

@@ -37,7 +37,7 @@ class UnknownBrokerTestCase(unittest.TestCase):
     def testUnknownBroker(self):
         """Test to be sure that a bad broker name throws a runtime event"""
 
-        broker = "unknown_broker.ncsa.illinois.edu"
+        broker = "unknown_broker.lsstcorp.org"
         topic = "test_events_7_%s_%d" % (platform.node(), os.getpid())
     
         self.assertRaises(ex.Exception, events.EventTransmitter, broker, topic)

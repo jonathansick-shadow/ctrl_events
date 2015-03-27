@@ -32,11 +32,16 @@ import lsst.daf.base as base
 import lsst.pex.logging as logging
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
+from testEnvironment import TestEnvironment
 
 class LocationIDTestCase(unittest.TestCase):
     """Test LocationID"""
         
     def testLocationID(self):
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
         eventSystem = events.EventSystem.getDefaultEventSystem()
 
         locationID = events.LocationID()
@@ -78,15 +83,15 @@ class LocationIDTestCase(unittest.TestCase):
         statusEvent = events.StatusEvent("my runid", locationID, root)
         statusEvent2 = events.StatusEvent("my runid", locationID2, root)
 
-        topic = "mytopic_%s_%d" % (platform.node(), os.getpid())
-        transmitter = events.EventTransmitter("lsst8.ncsa.illinois.edu", topic)
+        topic = "mytopic_%s_%d" % (thisHost, os.getpid())
+        transmitter = events.EventTransmitter(broker, topic)
 
         hostname = locationID2.getHostName()
 
         # create a receiver selector with the hostname, process id and local id
         sel = "%s = '%s' and %s = %d and %s = %d" % (events.StatusEvent.ORIG_HOSTNAME, hostname, events.StatusEvent.ORIG_PROCESSID, os.getpid(), events.StatusEvent.ORIG_LOCALID, 1)
 
-        receiver = events.EventReceiver("lsst8.ncsa.illinois.edu", topic, sel)
+        receiver = events.EventReceiver(broker, topic, sel)
 
         # transmit the events
         transmitter.publishEvent(statusEvent)

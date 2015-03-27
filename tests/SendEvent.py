@@ -25,24 +25,30 @@
 
 import os
 import platform
+import sys
 import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 from socket import gethostname
 import lsst.utils.tests as tests
+from testEnvironment import TestEnvironment
 
 class SendEventTestCase(unittest.TestCase):
     """Test sending events"""
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testSendEvent(self):
         """Send an Event"""
-        broker = "lsst8.ncsa.illinois.edu"
-        topic = "test_events_3_%s_%d" % (platform.node(), os.getpid())
+        testEnv = TestEnvironment()
+        self.thisHost = platform.node()
+        self.broker = testEnv.getBroker()
+
+        topic = "test_events_3_%s_%d" % (self.thisHost, os.getpid())
     
         runID = "test3_runid"
-        recv = events.EventReceiver(broker, topic)
+        recv = events.EventReceiver(self.broker, topic)
     
-        trans = events.EventTransmitter(broker, topic)
+        trans = events.EventTransmitter(self.broker, topic)
         
     
         DATE = "date"
@@ -55,10 +61,10 @@ class SendEventTestCase(unittest.TestCase):
         PID_VAL = os.getpid()
 
         HOST = "host"
-        HOST_VAL = "lsst8.ncsa.illinois.edu"
+        HOST_VAL = "lsstcorp.org"
 
         IP = "ip"
-        IP_VAL = "141.142.220.44"
+        IP_VAL = "1.2.3.4"
 
         EVNT = "evnt"
         EVNT_VAL = "test"

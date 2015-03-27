@@ -29,6 +29,7 @@ import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
+from testEnvironment import TestEnvironment
 
 class EventSelectorTestCase(unittest.TestCase):
     """Test receiving events using the selector mechanism"""
@@ -47,13 +48,14 @@ class EventSelectorTestCase(unittest.TestCase):
         # ok...now publish it
         trans.publishEvent(event)
     
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testEventSelector(self):
-        host = platform.node()
-        pid = os.getpid()
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
+        host_pid = "%s_%d" % (thisHost, os.getpid())
     
-        host_pid = "%s_%d" % (host, pid)
-    
-        broker = "lsst8.ncsa.illinois.edu"
         topic = "test_events_11_%s" % host_pid
     
         runid = 'test_runid_11_%d' % os.getpid()

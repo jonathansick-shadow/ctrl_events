@@ -29,20 +29,24 @@
 #
 
 import os
+import platform
 import unittest
-from socket import gethostname
 import lsst.pex.logging as log
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
+from testEnvironment import TestEnvironment
 
 #
 # THIS TEST IS GOING AWAY SHORTLY BECAUSE OF THE MOVE TO lsst.log
 #
 class EventLogTestCase(unittest.TestCase):
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testEventLog(self):
 
-        host = "lsst8.ncsa.illinois.edu"
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
 
         # note that in this test, while the topic is globally named, the 
         # selector for the receiver is not.  The value for RUNID is included
@@ -54,10 +58,10 @@ class EventLogTestCase(unittest.TestCase):
         # selector is specified, it will only get the messages with that RUNID.
 
         topic = events.EventLog.LOGGING_TOPIC
-        runid = "%s_%d" % (gethostname(), os.getpid())
+        runid = "%s_%d" % (thisHost, os.getpid())
         eventSystem = events.EventSystem.getDefaultEventSystem()
-        eventSystem.createTransmitter(host,topic)
-        eventSystem.createReceiver(host,topic, "RUNID = '%s'" % runid)
+        eventSystem.createTransmitter(broker, topic)
+        eventSystem.createReceiver(broker, topic, "RUNID = '%s'" % runid)
 
     # test a simple message to the default log
     #    dlog = log.Log_getDefaultLog()

@@ -29,6 +29,7 @@ import unittest
 import lsst.ctrl.events as events
 import lsst.daf.base as base
 import lsst.utils.tests as tests
+from testEnvironment import TestEnvironment
 
 class EventTransmitterTestCase(unittest.TestCase):
     """Test the EventTransmitter"""
@@ -40,10 +41,13 @@ class EventTransmitterTestCase(unittest.TestCase):
         event = events.Event("myrunid", root)
         trans.publishEvent(event)
     
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testEventTransmitter(self):
-        broker = "lsst8.ncsa.illinois.edu"
-    
-        topic = "test_events_5_%s_%d" % (platform.node(), os.getpid())
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
+        topic = "test_events_5_%s_%d" % (thisHost, os.getpid())
         recv = events.EventReceiver(broker, topic)
     
     
