@@ -2,7 +2,8 @@
 
 # 
 # LSST Data Management System
-# Copyright 2008, 2009, 2010 LSST Corporation.
+#
+# Copyright 2008-2014  AURA/LSST.
 # 
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
@@ -19,7 +20,7 @@
 # 
 # You should have received a copy of the LSST License Statement and 
 # the GNU General Public License along with this program.  If not, 
-# see <http://www.lsstcorp.org/LegalNotices/>.
+# see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
 """
@@ -34,9 +35,8 @@ import unittest
 import time
 from threading import Thread, Condition
 from lsst.ctrl.events import EventSystem
-
-eventBrokerHost = "lsst8.ncsa.illinois.edu"
-testtopic = "testmthread_%s_%d" % (platform.node(), os.getpid())
+import lsst.utils.tests as tests
+from testEnvironment import TestEnvironment
 
 class Flag(object):
     def __init__(self):
@@ -44,15 +44,17 @@ class Flag(object):
         self.markers = []
 
 class EventThread(Thread):
-    def __init__(self, flag):
+    def __init__(self, broker, flag):
         Thread.__init__(self, name="event")
         # self.setDaemon(True)
+        self.broker = broker
         self.flag = flag
 
     def run(self):
+        testtopic = "testmthread_%s_%d" % (platform.node(), os.getpid())
         with self.flag.lock:
             esys = EventSystem.getDefaultEventSystem()
-            esys.createReceiver(eventBrokerHost, testtopic)
+            esys.createReceiver(self.broker, testtopic)
             # print "listening for", testtopic, "events"
             self.flag.markers.append("thread ready")
             self.flag.lock.notifyAll()
@@ -65,15 +67,21 @@ class EventThread(Thread):
         
 
 class MultiThreadTestCase(unittest.TestCase):
+    """Test multitreaded sends"""
     def setUp(self):
         pass
 
     def tearDown(self):
         pass
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testLockRelease(self):
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        thisHost = platform.node()
+
         flag = Flag()
-        t = EventThread(flag)
+        t = EventThread(broker, flag)
 
         # wait until the thread has started up
         with flag.lock:
@@ -96,5 +104,18 @@ class MultiThreadTestCase(unittest.TestCase):
     
 __all__ = "MultiThreadTestCase".split()
 
+
+def suite():
+    """Returns a suite containing all the tests cases in this module."""
+    tests.init()
+    suites = []
+    suites += unittest.makeSuite(MultiThreadTestCase)
+    suites += unittest.makeSuite(tests.MemoryTestCase)
+    return unittest.TestSuite(suites)
+
+def run(shouldExit=False):
+    """Run the tests."""
+    tests.run(suite(), shouldExit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)

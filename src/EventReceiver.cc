@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,18 +19,17 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
-/** \file EventReceiver.cc
-  *
-  * \brief Object to receive Events from the specified event bus
-  *
-  * \ingroup events
-  *
-  * \author Stephen R. Pietrowicz, NCSA
-  *
-  */
+
+/** 
+ * @file EventReceiver.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief Object to receive Events from the specified event bus
+ *
+ */
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -43,7 +42,6 @@
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/logging/Component.h"
-#include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -53,7 +51,6 @@
 #include <activemq/core/ActiveMQConnectionFactory.h>
 #include <activemq/exceptions/ActiveMQException.h>
 
-namespace pexPolicy = lsst::pex::policy;
 namespace pexExceptions = lsst::pex::exceptions;
 
 namespace activemqCore = activemq::core;
@@ -62,84 +59,15 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-/** \brief Receives events based on Policy file contents
-  *
-  * \param policy the policy object to use when building the receiver
-  * \throw throws lsst::pex::exceptions::NotFoundError if topicName isn't specified
-  * \throw throws lsst::pex::exceptions::NotFoundError if hostName isn't specified
-  * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
-  */
-
-EventReceiver::EventReceiver(const pexPolicy::Policy& policy) {
-    //EventLibrary().initializeLibrary();
-    int hostPort;
-
-    try {
-        _turnEventsOff = policy.getBool("turnEventsOff");
-    } catch (pexPolicy::NameNotFound& e) {
-        _turnEventsOff = false;
-    }
-    if (_turnEventsOff == true)
-        return;
-
-    if (!policy.exists("topicName")) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundError, "topicName not found in policy");
-    }
-
-    std::string topicName = policy.getString("topicName");
-    try {
-        _turnEventsOff = policy.getBool("turnEventsOff");
-    } catch (pexPolicy::NameNotFound& e) {
-        _turnEventsOff = false;
-    }
-
-    if (!policy.exists("hostName")) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundError, "hostName not found in policy");
-    }
-
-    std::string hostName = policy.getString("hostName");
-
-    try {
-        hostPort = policy.getInt("hostPort");
-    } catch (pexPolicy::NameNotFound& e) {
-        hostPort = EventBroker::DEFAULTHOSTPORT;
-    }
-
-    try {
-        _selector = policy.getString("selector");
-    } catch (pexPolicy::NameNotFound& e) {
-        _selector = "";
-    }
-    init(hostName, topicName, _selector, hostPort);
-}
-
-/** \brief Receives events from the specified host and topic
-  *
-  * \param hostName the machine hosting the message broker
-  * \param topicName the topic to receive events from
-  * \param hostPort the port the message broker is listening on 
-  * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
-  */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, int hostPort) {
-    _turnEventsOff = false;
     init(hostName, topicName, "", hostPort);
 }
 
-/** \brief Receives events from the specified host and topic
-  *
-  * \param hostName the machine hosting the message broker
-  * \param topicName the topic to receive events from
-  * \param selector the message selector expression to use.  A selector value of "" is equivalent to no selector.
-  * \param hostPort the port the message broker is listening on 
-  * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
-  */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort) {
-    _turnEventsOff = false;
     init(hostName, topicName, selector, hostPort);
 }
 
-/** private method for initialization of EventReceiver.  Sets up use of local
-  * sockets or activemq, depending on how the policy file was configured.  
+/** private method for initialization of EventReceiver.
   */
 void EventReceiver::init(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort) {
 
@@ -150,9 +78,6 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
     _consumer = NULL;
     _topic = topicName;
     _selector = selector;
-
-    if (_turnEventsOff == true)
-        return;
 
     try {
         std::stringstream ss;
@@ -192,26 +117,13 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
     }
 }
 
-/** Wait until an Event is received
-  * Note: Caller is responsible for deleting received Event.
-  * \brief wait until an event is received.
-  */
 Event* EventReceiver::receiveEvent() {
     return receiveEvent(infiniteTimeout);
 }
 
-/** Wait to receive an event for a length of time.
-  * Note: Caller is responsible for deleting received Event.
-  * \brief wait for a length of time for an event to be received.
-  * \param timeout the length of time to waitm in milliseconds
-  */
 Event* EventReceiver::receiveEvent(long timeout) {
     PropertySet::Ptr psp;
 
-    if (_turnEventsOff == true)
-        return NULL;
-
-    
     cms::TextMessage* textMessage;
     try {
         cms::Message* msg = _consumer->receive(timeout);
@@ -230,14 +142,10 @@ Event* EventReceiver::receiveEvent(long timeout) {
     return event;
 }
 
-/** \brief returns the topic for this EventReceiver
-  */
 std::string EventReceiver::getTopicName() {
     return _topic;
 }
 
-/** \brief destructor method
-  */
 EventReceiver::~EventReceiver() {
 
     // Destroy resources.

@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,17 +19,16 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
-/** \file EventTypes.h
-  *
-  * \ingroup events
-  *
-  * \brief defines EventTypes
-  *
-  * \author Stephen Pietrowicz, NCSA
-  */
+
+/** 
+ * @file EventTypes.h
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief defines EventTypes
+ */
 
 #ifndef LSST_CTRL_EVENTS_EVENTTYPES_H
 #define LSST_CTRL_EVENTS_EVENTTYPES_H
@@ -39,7 +38,8 @@ namespace ctrl {
 namespace events {
 
 /**
- * @brief Coordinate publishing and receiving events
+ * @class EventTypes
+ * @brief strings defining event types;
  */
 class EventTypes {
 public:
@@ -47,7 +47,6 @@ public:
     static const std::string LOG;
     static const std::string STATUS;
     static const std::string COMMAND;
-    static const std::string PIPELINELOG;
 };
 }
 }

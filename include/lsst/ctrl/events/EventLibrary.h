@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,17 +19,17 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
-/** \file EventLibrary.h
-  *
-  * \ingroup events
-  *
-  * \brief defines the EventLibrary class
-  *
-  * \author Stephen Pietrowicz, NCSA
-  */
+
+/** 
+ * @file EventLibrary.h
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief defines the EventLibrary class
+ *
+ */
 
 #ifndef LSST_CTRL_EVENTS_EVENTLIBRARY_H
 #define LSST_CTRL_EVENTS_EVENTLIBRARY_H
@@ -40,7 +40,6 @@
 #include <list>
 #include <boost/shared_ptr.hpp>
 
-#include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/ctrl/events.h"
@@ -51,14 +50,14 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 /**
+ * @class EventLibrary
  * @brief Singleton use to make sure the events library is initialized.
  */
 class EventLibrary {
 public:
-    EventLibrary();
-
-    ~EventLibrary();
-
+   /** 
+    * @brief initialize the ActiveMQ library, but only do it once.
+    */
     static void initializeLibrary();
 
 protected:

@@ -42,12 +42,12 @@ Access to the lsst::ctrl::events classes
 #include "lsst/pex/logging/BlockTimingLog.h"
 #include "lsst/pex/logging/ScreenLog.h"
 #include "lsst/pex/logging/DualLog.h"
-#include "lsst/pex/policy.h"
+#include "lsst/ctrl/events/Host.h"
+#include "lsst/ctrl/events/LocationID.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
 #include "lsst/ctrl/events/LogEvent.h"
-#include "lsst/ctrl/events/PipelineLogEvent.h"
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/ctrl/events/EventReceiver.h"
@@ -60,16 +60,26 @@ Access to the lsst::ctrl::events classes
 %include "lsst/p_lsstSwig.i"
 
 %shared_ptr(lsst::ctrl::events::EventFormatter)
+%shared_ptr(lsst::ctrl::events::LocationID)
+
 
 %import "lsst/daf/base/baseLib.i"
 %import "lsst/pex/logging/loggingLib.i"
-%import "lsst/pex/policy/policyLib.i"
 
+%typemap(out) std::vector<std::string > {
+    int len = ($1).size();
+    $result = PyList_New(len);
+    for (int i = 0; i < len; i++) {
+        PyList_SetItem($result,i,PyString_FromString(($1)[i].c_str()));
+    }
+}
+
+%include "lsst/ctrl/events/Host.h"
+%include "lsst/ctrl/events/LocationID.h"
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"
 %include "lsst/ctrl/events/CommandEvent.h"
 %include "lsst/ctrl/events/LogEvent.h"
-%include "lsst/ctrl/events/PipelineLogEvent.h"
 %include "lsst/ctrl/events/EventTypes.h"
 %include "lsst/ctrl/events/EventTransmitter.h"
 

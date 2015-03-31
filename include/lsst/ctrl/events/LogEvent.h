@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,18 +19,17 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
-/** \file LogEvent.h
-  *
-  * \ingroup events
-  *
-  * \brief defines the LogEvent class
-  *
-  * \author Stephen Pietrowicz, NCSA
-  *
-  */
+
+/** 
+ * @file LogEvent.h
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief defines the LogEvent class
+ *
+ */
 
 #ifndef LSST_CTRL_EVENTS_LOGEVENT_H
 #define LSST_CTRL_EVENTS_LOGEVENT_H
@@ -44,14 +43,12 @@
 
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/pex/logging/LogRecord.h"
-#include "lsst/pex/policy.h"
 #include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 
 using lsst::daf::base::PropertySet;
 
-namespace pexPolicy = lsst::pex::policy;
 namespace pexLogging = lsst::pex::logging;
 
 using namespace std;

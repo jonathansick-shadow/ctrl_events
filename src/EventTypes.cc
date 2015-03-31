@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,18 +19,17 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
-/** \file EventTypes.cc
-  *
-  * \brief Names used in events
-  *
-  * \ingroup events
-  *
-  * \author Stephen R. Pietrowicz, NCSA
-  *
-  */
+
+/** 
+ * @file EventTypes.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief Names used in events
+ *
+ */
 
 #include <iomanip>
 #include "lsst/ctrl/events/EventTypes.h"
@@ -42,7 +41,6 @@ namespace events {
     const std::string EventTypes::LOG = "_L";
     const std::string EventTypes::STATUS = "_S";
     const std::string EventTypes::COMMAND = "_C";
-    const std::string EventTypes::PIPELINELOG = "_P";
 }
 }
 }

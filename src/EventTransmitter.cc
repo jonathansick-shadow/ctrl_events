@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,18 +19,17 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
-/** \file EventTransmitter.cc
-  *
-  * \brief Objects to send Events to the specified event bus
-  *
-  * \ingroup ctrl/events
-  *
-  * \author Stephen R. Pietrowicz, NCSA
-  *
-  */
+
+/** 
+ * @file EventTransmitter.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief Objects to send Events to the specified event bus
+ *
+ */
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -45,7 +44,6 @@
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/logging/Component.h"
-#include "lsst/pex/policy/Policy.h"
 #include "lsst/pex/logging/LogRecord.h"
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -66,73 +64,6 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-/** \brief Configures an EventTransmitter based on Policy contents.
-  *
-  * The Policy object is checked for four keywords:
-  *
-  * topicName - the name of the topic to send to       
-  * hostName - the name of the host hosting the event broker
-  * hostPort - the port the event broker is listening on 
-  * turnEventsOff - turn off event transmission
-  *
-  * Defaults are:
-  *
-  * turnEventsOff = false
-  * hostPort = EventSystem::DEFAULTHOSTPORT
-  * 
-  * The dependencies for these keywords are as follows:
-  *
-  * 1) If turnEventsOff is specified as true, no further checking is done, and 
-  * no events will be transmitted.
-  *
-  * 2) If no topicName is specified, a NotFound exception is thrown
-  *
-  * \param policy the policy object to use when building the receiver
-  * \throw throws NotFoundError if expected keywords are missing in Policy object
-  * \throw throws RuntimeError if connection to transport mechanism fails
-  */
-EventTransmitter::EventTransmitter( const pexPolicy::Policy& policy) {
-    int hostPort;
-
-    EventLibrary().initializeLibrary();
-
-    try {
-        _turnEventsOff = policy.getBool("turnEventsoff");
-    } catch (pexPolicy::NameNotFound& e) {
-        _turnEventsOff = false;
-    }
-    if (_turnEventsOff == true)
-        return;
-
-    if (!policy.exists("topicName")) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundError, "topicName not found in policy");
-    }
-    _topicName = policy.getString("topicName");
-
-    std::string hostName;
-    try {
-        hostName = policy.getString("hostName");
-    } catch (pexPolicy::NameNotFound& e) {
-        throw LSST_EXCEPT(pexExceptions::NotFoundError, "hostName not found in policy");
-    }
-
-    try {
-        hostPort = policy.getInt("hostPort");
-    } catch (pexPolicy::NameNotFound& e) {
-        hostPort = EventBroker::DEFAULTHOSTPORT;
-    }
-    init(hostName, _topicName, hostPort);
-}
-
-/** \brief Transmits events to the specified host and topic
-  *
-  * \param hostName the machine hosting the message broker
-  * \param topicName the topic to transmit events to
-  * \param hostPort the port number which the message broker is listening to
-  * \throw throws RuntimeError if local socket can't be created
-  * \throw throws RuntimeError if connect to local socket fails
-  * \throw throws RuntimeError if connect to remote ActiveMQ host fails
-  */
 EventTransmitter::EventTransmitter( const std::string& hostName, const std::string& topicName, int hostPort) {
     EventLibrary().initializeLibrary();
 
@@ -140,8 +71,9 @@ EventTransmitter::EventTransmitter( const std::string& hostName, const std::stri
     init(hostName, topicName, hostPort);
 }
 
-/** private initialization method for configuring EventTransmitter
-  */
+/*
+ * private initialization method for configuring EventTransmitter
+ */
 void EventTransmitter::init( const std::string& hostName, const std::string& topicName, int hostPort) {
     _connection = NULL;
     _session = NULL;
@@ -215,26 +147,12 @@ void EventTransmitter::publishEvent(Event& event) {
     delete message;
 }
 
-/** \brief get the topic name of this EventTransmitter
-  */
 std::string EventTransmitter::getTopicName() {
     return _topicName;
 }
 
-/** \brief Destructor for EventTransmitter
-  */
 EventTransmitter::~EventTransmitter() {
 
-/*
-    // Destroy resources.
-    try {
-        if( _destination != NULL )
-            delete _destination;
-    } catch ( cms::CMSException& e ) {
-        e.printStackTrace();
-    }
-    _destination = NULL;
-*/
     if (_topic != NULL)
         delete _topic;
 

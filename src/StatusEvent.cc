@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,24 +19,24 @@
  * 
  * You should have received a copy of the LSST License Statement and 
  * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ * see <https://www.lsstcorp.org/LegalNotices/>.
  */
- 
-/** \file StatusEvent.cc
-  *
-  * \brief Status Event implementation
-  *
-  * \ingroup ctrl/events
-  *
-  * \author Stephen R. Pietrowicz, NCSA
-  *
-  */
+
+/** 
+ * @file StatusEvent.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief Status Event implementation
+ *
+ */
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
 #include <limits>
 #include <cstring>
 
+#include "lsst/ctrl/events/LocationID.h"
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
@@ -62,14 +62,9 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-const std::string StatusEvent::ORIGINATORID = "ORIGINATORID";
-const std::string StatusEvent::LOCALID = "LOCALID";
-const std::string StatusEvent::PROCESSID = "PROCESSID";
-const std::string StatusEvent::IPID = "IPID";
-
-/** \brief Creates StatusEvent which contains a PropertySet
-  *
-  */
+std::string const StatusEvent::ORIG_HOSTNAME = "ORIG_HOSTNAME";
+std::string const StatusEvent::ORIG_PROCESSID = "ORIG_PROCESSID";
+std::string const StatusEvent::ORIG_LOCALID = "ORIG_LOCALID";
 
 StatusEvent::StatusEvent() : Event() {
     _init();
@@ -77,41 +72,62 @@ StatusEvent::StatusEvent() : Event() {
 
 
 void StatusEvent::_init() {
-    _keywords.insert(ORIGINATORID);
-    _keywords.insert(LOCALID);
-    _keywords.insert(PROCESSID);
-    _keywords.insert(IPID);
+    _keywords.insert(ORIG_HOSTNAME);
+    _keywords.insert(ORIG_PROCESSID);
+    _keywords.insert(ORIG_LOCALID);
 }
 
 StatusEvent::StatusEvent(cms::TextMessage *msg) : Event(msg) {
     _init();
 
-    _psp->set(ORIGINATORID, (int64_t)msg->getLongProperty(ORIGINATORID));
-    _psp->set(LOCALID, (short)msg->getShortProperty(LOCALID));
-    _psp->set(PROCESSID, (int)msg->getIntProperty(PROCESSID));
-    _psp->set(IPID, (signed int)msg->getIntProperty(IPID));
-
+    _psp->set(ORIG_HOSTNAME, (std::string)msg->getStringProperty(ORIG_HOSTNAME));
+    _psp->set(ORIG_PROCESSID, (int)msg->getIntProperty(ORIG_PROCESSID));
+    _psp->set(ORIG_LOCALID, (int)msg->getIntProperty(ORIG_LOCALID));
 }
 
-StatusEvent::StatusEvent( const std::string& runId, const int64_t originatorId, const PropertySet::Ptr psp) : Event(runId, *psp) {
-    _constructor(runId, originatorId, *psp);
+StatusEvent::StatusEvent(LocationID const& originatorID, 
+                         PropertySet const& ps) : Event(ps) {
+    _constructor(originatorID);
 }
 
-StatusEvent::StatusEvent( const std::string& runId, const int64_t originatorId, const PropertySet& ps) : Event(runId, ps) {
-    _constructor(runId, originatorId, ps);
+StatusEvent::StatusEvent(LocationID const& originatorID,
+                         PropertySet const& ps, 
+                         PropertySet const& filterable) : Event(ps, filterable) {
+    _constructor(originatorID);
 }
 
-void StatusEvent::_constructor(const std::string& runId, const int64_t originatorId, const PropertySet& ps) {
+StatusEvent::StatusEvent(std::string const& runID, 
+                         LocationID const& originatorID, 
+                         PropertySet::Ptr const psp) : Event(runID, *psp) {
+    _constructor(originatorID);
+}
+
+StatusEvent::StatusEvent(std::string const& runID, 
+                         LocationID const& originatorID, 
+                         PropertySet::Ptr const psp, 
+                         PropertySet const& filterable) : Event(runID, *psp, filterable) {
+    _constructor(originatorID);
+}
+
+StatusEvent::StatusEvent(std::string const& runID, 
+                         LocationID const& originatorID, 
+                         PropertySet const& ps) : Event(runID, ps) {
+    _constructor(originatorID);
+}
+
+StatusEvent::StatusEvent(std::string const& runID, 
+                         LocationID const& originatorID,
+                         PropertySet const& ps,
+                         PropertySet const& filterable) : Event(runID, ps, filterable) {
+    _constructor(originatorID);
+}
+
+void StatusEvent::_constructor(LocationID const& originatorID) {
     _init();
 
-
-    EventSystem eventSystem = EventSystem().getDefaultEventSystem();
-
-    _psp->set(ORIGINATORID, originatorId);
-
-    _psp->set(LOCALID, eventSystem.extractLocalId(originatorId));
-    _psp->set(PROCESSID, eventSystem.extractProcessId(originatorId));
-    _psp->set(IPID, eventSystem.extractIPId(originatorId));
+    _psp->set(ORIG_HOSTNAME, originatorID.getHostName());
+    _psp->set(ORIG_PROCESSID, originatorID.getProcessID());
+    _psp->set(ORIG_LOCALID, originatorID.getLocalID());
     _psp->set(TYPE, EventTypes::STATUS);
 
 }
@@ -119,35 +135,18 @@ void StatusEvent::_constructor(const std::string& runId, const int64_t originato
 void StatusEvent::populateHeader(cms::TextMessage* msg) const {
     Event::populateHeader(msg);
 
-    msg->setLongProperty(ORIGINATORID, _psp->get<int64_t>(ORIGINATORID));
-    msg->setShortProperty(LOCALID, _psp->get<short>(LOCALID));
-    msg->setIntProperty(PROCESSID, _psp->get<int>(PROCESSID));
-    msg->setIntProperty(IPID, _psp->get<int>(IPID));
+    msg->setStringProperty(ORIG_HOSTNAME, _psp->get<std::string>(ORIG_HOSTNAME));
+    msg->setIntProperty(ORIG_PROCESSID, _psp->get<int>(ORIG_PROCESSID));
+    msg->setIntProperty(ORIG_LOCALID, _psp->get<int>(ORIG_LOCALID));
 }
 
-int64_t StatusEvent::getOriginatorId() {
-    return _psp->get<int64_t>(ORIGINATORID);
+LocationID *StatusEvent::getOriginator() {
+    std::string hostname = _psp->get<std::string>(ORIG_HOSTNAME);
+    int pid = _psp->get<int>(ORIG_PROCESSID);
+    int local = _psp->get<int>(ORIG_LOCALID);
+    return new LocationID(hostname, pid, local);
 }
 
-void StatusEvent::setOriginatorId(int64_t id) {
-    return _psp->set(ORIGINATORID, id);
-}
-
-
-short StatusEvent::getLocalId() {
-    return _psp->get<short>(LOCALID);
-}
-
-int StatusEvent::getProcessId() {
-    return _psp->get<int>(PROCESSID);
-}
-
-int StatusEvent::getIPId() {
-    return _psp->get<int>(IPID);
-}
-
-/** \brief destructor
-  */
 StatusEvent::~StatusEvent() {
 }
 
