@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file Event.cc
-  *
-  * \brief Object to transmit information through the event framework.
-  *
-  * \ingroup ctrl/events
-  *
-  */
+/** 
+ * @file Event.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief Object to transmit information through the event framework.
+ *
+ */
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -69,18 +70,6 @@ namespace ctrl {
 namespace events {
 
 
-/** \brief Creates Event which contains a PropertySet
-  *
-  * \throw throws NotFoundError if expected keywords are missing a property set
-  */
-
-// NOTE:  While it would be nice to implement this as a wrapper for a TextMessage,
-//        the JMS/ActiveMQ API doesn't have straight constructors Message objects.
-//        They are all created through a JMS/ActiveMQ Session object.  This
-//        makes implementation of some methods (like getFilterablePropertyNames)
-//        more than just a straight call to a JMS method, since there is no
-//        underlying Message wrapped.
-
 const std::string Event::TYPE = "TYPE";
 const std::string Event::EVENTTIME = "EVENTTIME";
 const std::string Event::RUNID = "RUNID";
@@ -103,7 +92,6 @@ void Event::_init() {
 }
 
 Event::Event(cms::TextMessage *msg) {
-    // _init();
 
     vector<std::string>names = msg->getPropertyNames();
 
@@ -297,10 +285,6 @@ void Event::updateEventTime() {
 }
 
 
-/** \brief Get the creation date of this event
-  * \return A formatted date string representing the event creation time
-  */
-
 std::string Event::getEventDate() {
     long long eventTime = _psp->get<long long>(EVENTTIME);
     dafBase::DateTime dateTime(eventTime);
@@ -336,9 +320,6 @@ long long Event::getPubTime() {
     return _psp->get<long long>(PUBTIME);
 }
 
-/** \brief Get the publication date of this event
-  * \return A formatted date string represeting the publication time
-  */
 std::string Event::getPubDate() {
     long long _pubTime = _psp->get<long long>(PUBTIME);
     if (_pubTime == 0)
@@ -541,8 +522,6 @@ PropertySet::Ptr Event::unmarshall(std::string const& text) {
     return psp;
 }
 
-/** \brief destructor
-  */
 Event::~Event() {
 }
 

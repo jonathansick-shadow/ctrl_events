@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file Event.h
-  *
-  * \ingroup events
-  *
-  * \brief defines the Event class
-  *
-  */
+/** 
+ * @file Event.h
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief defines the Event class
+ *
+ */
 
 #ifndef LSST_CTRL_EVENTS_EVENT_H
 #define LSST_CTRL_EVENTS_EVENT_H
@@ -58,6 +59,7 @@ namespace ctrl {
 namespace events { 
 
 /**
+ * @class Event
  * @brief Representation of an LSST Event
  */
 
@@ -73,43 +75,165 @@ public:
     static const std::string PUBTIME;
     static const std::string UNINITIALIZED;
 
+    /**
+     * @brief Constructor for Event with no properties
+     */
     Event();
+
+    /**
+     * @brief Constructor for Event
+     * @param[in] properties the PropertySet to use to populate the event
+     */
     Event(PropertySet const& properties);
+
+    /**
+     * @brief Constructor for Event
+     * @param[in] properties the PropertySet to use to populate the event
+     * @param[in] filterable PropertySet of types to be added to the header 
+     *          so they can be filtered.
+     */
     Event(PropertySet const& properties, PropertySet const& filterable);
 
+    /**
+     * @brief Constructor for Event
+     * @param[in] runid A "run id" to place in the header of this event
+     * @param[in] properties the PropertySet::Ptr to use to populate the event
+     */
     Event(std::string const& runid, PropertySet::Ptr const properties);
+
+    /**
+     * @brief Constructor for Event
+     * @param[in] runid A "run id" to place in the header of this event
+     * @param[in] properties the PropertySet to use to populate the event
+     */
     Event(std::string const& runid, PropertySet const& properties);
+
+    /**
+     * @brief Constructor for Event
+     * @param[in] runid A "run id" to place in the header of this event
+     * @param[in] properties the PropertySet to use to populate the event
+     * @param[in] filterable PropertySet of types to be added to the header 
+     *          so they can be filtered.
+     */
     Event(std::string const& runid, PropertySet const& properties, PropertySet const& filterable);
+    /**
+     * @brief Constructor for Event
+     * @param[in] msg A cms::TextMessage to convert into an Event object
+     */
     Event(cms::TextMessage *msg);
 
+    /**
+     * @brief destructor
+     */
     virtual ~Event();
 
+    /**
+     * @brief retrieve the PropertySet for this Event
+     * @return PropertySet::Ptr to this PropertySet
+     */
     PropertySet::Ptr getPropertySet() const;
 
+    /**
+     * @brief get the publication date of this Event, in ASCII
+     */
     std::string getPubDate();
 
+    /**
+     * @brief get the publication time of this Event
+     * @return time in nanoseconds
+     */
     long long getPubTime();
+
+    /**
+     * @brief set the publication time of this Event
+     */
     void setPubTime(long long t);
 
+    /**
+     * @brief get the event creation time
+     * @return time in nanoseconds
+     */
     long long getEventTime();
+
+    /**
+     * @brief set the event creation time
+     */
     void setEventTime(long long nsecs);
 
+    /**
+     * @brief update the Event time to the current time
+     */
     void updateEventTime();
 
+    /**
+     * @brief get the Event Date
+     * @return a formatted date string representing the Event creation time
+     */
     std::string getEventDate();
 
+    /**
+     * @brief get the RunId for this Event
+     * @return string representation of the run id
+     */
     std::string getRunId();
+
+    /**
+     * @brief get the Event type
+     * @return string representation of the Event type
+     */
     std::string getType();
+
+    /**
+     * @brief get the Event status
+     * @return string representation of the Event status
+     */
     std::string getStatus();
+
+    /**
+     * @brief set the Event status
+     * @param[in] status string representation of the Event status
+     */
     void setStatus(std::string status);
 
+    /**
+     * @brief set the Event topic
+     * @param[in] topic string representation of the Event topic
+     */
     void setTopic(std::string topic);
+
+    /**
+     * @brief get the Event topic
+     * @return string representation of the Event topic
+     */
     std::string getTopic();
 
+    /**
+     * @brief return all filterable property names
+     * @return a vector of filterable property names
+     */
     vector<std::string> getFilterablePropertyNames();
+
+    /**
+     * @brief return all custom property names
+     * @return a vector of custom property names
+     */
     vector<std::string> getCustomPropertyNames();
+
+    /**
+     * @brief return all custom property set
+     * @return a PropertySet::Ptr of custom properties
+     */
     PropertySet::Ptr getCustomPropertySet() const;
+
+    /**
+     * @brief populate a cms::TextMessage header with properties
+     * @param[in] msg a cms::TextMessage
+     */
     virtual void populateHeader(cms::TextMessage* msg) const;
+
+    /**
+     * @brief marshall values in this event into a cms::TextMessage
+     */
     void marshall(cms::TextMessage *msg);
 
 protected:

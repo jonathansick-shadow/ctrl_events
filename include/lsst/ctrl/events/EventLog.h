@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file EventLog.h
-  *
-  * \ingroup events
-  *
-  * \brief defines the EventLog class
-  *
-  */
+/** 
+ * @file EventLog.h
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief defines the EventLog class
+ *
+ */
 
 #ifndef LSST_CTRL_EVENTS_EVENTLOG_H
 #define LSST_CTRL_EVENTS_EVENTLOG_H

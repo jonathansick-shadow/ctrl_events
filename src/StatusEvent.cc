@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file StatusEvent.cc
-  *
-  * \brief Status Event implementation
-  *
-  * \ingroup ctrl/events
-  *
-  */
+/** 
+ * @file StatusEvent.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief Status Event implementation
+ *
+ */
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -61,12 +62,10 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-const std::string StatusEvent::ORIG_HOSTNAME = "ORIG_HOSTNAME";
-const std::string StatusEvent::ORIG_PROCESSID = "ORIG_PROCESSID";
-const std::string StatusEvent::ORIG_LOCALID = "ORIG_LOCALID";
+std::string const StatusEvent::ORIG_HOSTNAME = "ORIG_HOSTNAME";
+std::string const StatusEvent::ORIG_PROCESSID = "ORIG_PROCESSID";
+std::string const StatusEvent::ORIG_LOCALID = "ORIG_LOCALID";
 
-/** \brief Constructor to create a StatusEvent
-  */
 StatusEvent::StatusEvent() : Event() {
     _init();
 }
@@ -78,8 +77,6 @@ void StatusEvent::_init() {
     _keywords.insert(ORIG_LOCALID);
 }
 
-/** \brief Constructor to convert a TextMessage into a StatusEvent
- */
 StatusEvent::StatusEvent(cms::TextMessage *msg) : Event(msg) {
     _init();
 
@@ -88,67 +85,44 @@ StatusEvent::StatusEvent(cms::TextMessage *msg) : Event(msg) {
     _psp->set(ORIG_LOCALID, (int)msg->getIntProperty(ORIG_LOCALID));
 }
 
-/** \brief Constructor to create a StatusEvent
- *  \param originatorID the LocationID of where this StatusEvent was created
- *  \param ps a PropertySet
- */
-StatusEvent::StatusEvent(const LocationID& originatorID, const PropertySet& ps) : Event(ps) {
+StatusEvent::StatusEvent(LocationID const& originatorID, 
+                         PropertySet const& ps) : Event(ps) {
     _constructor(originatorID);
 }
 
-/** \brief Constructor to create a StatusEvent
- *  \param originatorID the LocationID of where this StatusEvent was created
- *  \param ps a PropertySet
- *  \param filterable a PropertySet that will be added to Event headers so
- *         they can be filtered using selectors.
- */
-StatusEvent::StatusEvent(const LocationID& originatorID, const PropertySet& ps, const PropertySet& filterable) : Event(ps, filterable) {
+StatusEvent::StatusEvent(LocationID const& originatorID,
+                         PropertySet const& ps, 
+                         PropertySet const& filterable) : Event(ps, filterable) {
     _constructor(originatorID);
 }
 
-/** \brief Constructor to create a StatusEvent
- *  \param runID a string identify for this Event
- *  \param originatorID the LocationID of where this StatusEvent was created
- *  \param psp a PropertySet::Ptr
- */
-StatusEvent::StatusEvent( const std::string& runID, const LocationID& originatorID, const PropertySet::Ptr psp) : Event(runID, *psp) {
+StatusEvent::StatusEvent(std::string const& runID, 
+                         LocationID const& originatorID, 
+                         PropertySet::Ptr const psp) : Event(runID, *psp) {
     _constructor(originatorID);
 }
 
-/** \brief Constructor to create a StatusEvent
- *  \param runID a string identify for this Event
- *  \param originatorID the LocationID of where this StatusEvent was created
- *  \param psp a PropertySet::Ptr
- *  \param filterable a PropertySet that will be added to Event headers so
- *         they can be filtered using selectors.
- */
-StatusEvent::StatusEvent( const std::string& runID, const LocationID& originatorID, const PropertySet::Ptr psp, const PropertySet& filterable) : Event(runID, *psp, filterable) {
+StatusEvent::StatusEvent(std::string const& runID, 
+                         LocationID const& originatorID, 
+                         PropertySet::Ptr const psp, 
+                         PropertySet const& filterable) : Event(runID, *psp, filterable) {
     _constructor(originatorID);
 }
 
-/** \brief Constructor to create a StatusEvent
- *  \param runID a string identify for this Event
- *  \param originatorID the LocationID of where this StatusEvent was created
- *  \param ps a PropertySet
- */
-StatusEvent::StatusEvent( const std::string& runID, const LocationID& originatorID, const PropertySet& ps) : Event(runID, ps) {
+StatusEvent::StatusEvent(std::string const& runID, 
+                         LocationID const& originatorID, 
+                         PropertySet const& ps) : Event(runID, ps) {
     _constructor(originatorID);
 }
 
-/** \brief Constructor to create a StatusEvent
- *  \param runID a string identify for this Event
- *  \param originatorID the LocationID of where this StatusEvent was created
- *  \param ps a PropertySet
- *  \param filterable a PropertySet that will be added to Event headers so
- *         they can be filtered using selectors.
- */
-StatusEvent::StatusEvent( const std::string& runID, const LocationID& originatorID, const PropertySet& ps, const PropertySet& filterable) : Event(runID, ps, filterable) {
+StatusEvent::StatusEvent(std::string const& runID, 
+                         LocationID const& originatorID,
+                         PropertySet const& ps,
+                         PropertySet const& filterable) : Event(runID, ps, filterable) {
     _constructor(originatorID);
 }
 
-/** private method used to add originator information to a StatusEvent
- */
-void StatusEvent::_constructor(const LocationID& originatorID) {
+void StatusEvent::_constructor(LocationID const& originatorID) {
     _init();
 
     _psp->set(ORIG_HOSTNAME, originatorID.getHostName());
@@ -158,9 +132,6 @@ void StatusEvent::_constructor(const LocationID& originatorID) {
 
 }
 
-/** private method used to take originator from the TextMessage to set in
- * the StatusEvent
- */
 void StatusEvent::populateHeader(cms::TextMessage* msg) const {
     Event::populateHeader(msg);
 
@@ -169,9 +140,6 @@ void StatusEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setIntProperty(ORIG_LOCALID, _psp->get<int>(ORIG_LOCALID));
 }
 
-/** \brief accessor to get originator information
- *  \return a LocationID containing the Originator information
- */
 LocationID *StatusEvent::getOriginator() {
     std::string hostname = _psp->get<std::string>(ORIG_HOSTNAME);
     int pid = _psp->get<int>(ORIG_PROCESSID);
@@ -179,8 +147,6 @@ LocationID *StatusEvent::getOriginator() {
     return new LocationID(hostname, pid, local);
 }
 
-/** \brief destructor
-  */
 StatusEvent::~StatusEvent() {
 }
 

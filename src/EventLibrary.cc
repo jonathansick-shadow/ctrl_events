@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file EventLibrary.cc
-  *
-  * \brief Singleton used to be sure ActiveMQ is initialized.
-  *
-  * \ingroup events
-  *
-  */
+/** 
+ * @file EventLibrary.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief Singleton used to be sure ActiveMQ is initialized.
+ *
+ */
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -48,21 +49,6 @@ using namespace std;
 namespace lsst {
 namespace ctrl {
 namespace events {
-/** \brief EventLibrary makes sure that the ActiveMQ event
-  *        library is initialized.  This can happen only once 
-  *        per process, so this singleton is used to make sure
-  *        that happens.
-  */
-EventLibrary::EventLibrary() {
-}
-
-/** \brief destructor
-  */
-EventLibrary::~EventLibrary() {
-}
-
-/** \brief initialize the ActiveMQ library, but only do it once.
-  */
 void EventLibrary::initializeLibrary() {
     if (libraryInitialized == 0) {
         activemq::library::ActiveMQCPP::initializeLibrary();

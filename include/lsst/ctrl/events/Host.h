@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file Host.h
-  *
-  * \ingroup events
-  *
-  * \brief defines the Host class
-  *
-  */
+/** 
+ * @file Host.h
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief defines the Host class
+ *
+ */
 
 #ifndef LSST_CTRL_EVENTS_HOST_H
 #define LSST_CTRL_EVENTS_HOST_H
@@ -40,14 +41,29 @@ namespace ctrl {
 namespace events {
 
 /**
+ * @class Host
  * @brief This object represents the host that is being used to transmit events,
  *        giving quick access to often-used host information.
  */
 class Host {
 public:
+    /** 
+     * @brief get the Host object, which can access the host
+     *         and ip address.
+     * @return The EventSystem object
+     */
     static Host const& getHost();
 
+    /** 
+     * @brief get the IP address
+     * @return an integer representing the IP address
+     */
     unsigned int const getIPAddress();
+
+    /** 
+     * @brief get the host name
+     * @return a std::string containing the name of the hsot
+     */
     std::string const& getHostName();
 
 protected:

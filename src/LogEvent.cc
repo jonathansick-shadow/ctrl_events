@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file LogEvent.cc
-  *
-  * \brief Log Event implementation
-  *
-  * \ingroup ctrl/events
-  *
-  */
+/** 
+ * @file LogEvent.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief Log Event implementation
+ *
+ */
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>

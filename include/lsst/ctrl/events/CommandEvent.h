@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file CommandEvent.h
-  *
-  * \ingroup events
-  *
-  * \brief defines the CommandEvent class
-  *
-  */
+/** 
+ * @file CommandEvent.h
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief defines the CommandEvent class
+ *
+ */
 
 #ifndef LSST_CTRL_EVENTS_COMMANDEVENT_H
 #define LSST_CTRL_EVENTS_COMMANDEVENT_H
@@ -56,7 +57,8 @@ namespace ctrl {
 namespace events { 
 
 /**
- * @brief Representation of an LSST Event
+ * @class CommandEvent
+ * @brief Representation of an LSST CommandEvent
  */
 
 class CommandEvent : public Event
@@ -70,27 +72,92 @@ public:
     static const std::string DEST_PROCESSID;
     static const std::string DEST_LOCALID;
 
+    /** @brief Creates CommandEvent which contains a PropertySet
+     *        consisting of an origination location ID and 
+     *        a destination location ID, plus additional
+     *        properties.
+     */
     CommandEvent();
 
+    /**
+     * @brief Constructor for CommandEvent
+     * @param originator originating location of this event
+     * @param destination destination location for this event
+     * @param psp PropertySet to pass in this event
+     */
     CommandEvent(LocationID const& originator, LocationID const& destination, CONST_PTR(PropertySet) const& psp);
+
+
+    /**
+     * @brief Constructor for CommandEvent
+     * @param originator originating location of this event
+     * @param destination destination location for this event
+     * @param ps PropertySet to pass in this event
+     */
     CommandEvent(LocationID const& originator, LocationID const& destination, PropertySet const& ps);
+
+    /**
+     * @brief Constructor for CommandEvent
+     * @param originator originating location of this event
+     * @param destination destination location for this event
+     * @param ps PropertySet to pass in this event
+     * @param filterable additional, broker-filterable, PropertySet parameters
+     */
     CommandEvent(LocationID const& originator, LocationID const& destination, PropertySet const& ps, 
                     PropertySet const& filterable);
 
+    /**
+     * @brief Constructor for CommandEvent
+     * @param runid name of the run which this event is used in
+     * @param originator originating location of this event
+     * @param destination destination location for this event
+     * @param psp PropertySet to pass in this event
+     */
     CommandEvent(std::string const& runid, LocationID const& originator, LocationID const& destination, 
                     CONST_PTR(PropertySet) const& psp);
+
+    /**
+     * @brief Constructor for CommandEvent
+     * @param runid name of the run which this event is used in
+     * @param originator originating location of this event
+     * @param destination destination location for this event
+     * @param ps PropertySet to pass in this event
+     */
     CommandEvent(std::string const& runid, LocationID const& originator, LocationID const& destination, 
                     PropertySet const& ps);
+
+    /**
+     * @brief Constructor for CommandEvent
+     * @param runid name of the run which this event is used in
+     * @param originator originating location of this event
+     * @param destination destination location for this event
+     * @param ps PropertySet to pass in this event
+     * @param filterable additional, broker-filterable, PropertySet parameters
+     */
     CommandEvent(std::string const& runid, LocationID const& originator, LocationID const& destination, 
                     PropertySet const& ps, PropertySet const& filterable);
 
+    /**
+     * @brief Constructor for CommandEvent
+     * @param msg a cms::TextMessage to convert into a CommandEvent
+     */
     CommandEvent(cms::TextMessage *msg);
 
+    /** 
+     * @brief destructor
+     */
     virtual ~CommandEvent();
 
+    /**
+     * @brief retrieve an object containing the OriginatoDesination LocationID
+     */
     LocationID::Ptr getOriginator() const;
 
+    /**
+     * @brief retrieve an object containing the OriginatoDesination LocationID
+     */
     LocationID::Ptr getDestination() const;
+
 
 private:
     void _constructor(LocationID const& originator, LocationID const& destination);

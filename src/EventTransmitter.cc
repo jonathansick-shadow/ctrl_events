@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file EventTransmitter.cc
-  *
-  * \brief Objects to send Events to the specified event bus
-  *
-  * \ingroup ctrl/events
-  *
-  */
+/** 
+ * @file EventTransmitter.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief Objects to send Events to the specified event bus
+ *
+ */
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -63,15 +64,6 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-/** \brief Transmits events to the specified host and topic
-  *
-  * \param hostName the machine hosting the message broker
-  * \param topicName the topic to transmit events to
-  * \param hostPort the port number which the message broker is listening to
-  * \throw throws RuntimeError if local socket can't be created
-  * \throw throws RuntimeError if connect to local socket fails
-  * \throw throws RuntimeError if connect to remote ActiveMQ host fails
-  */
 EventTransmitter::EventTransmitter( const std::string& hostName, const std::string& topicName, int hostPort) {
     EventLibrary().initializeLibrary();
 
@@ -79,8 +71,9 @@ EventTransmitter::EventTransmitter( const std::string& hostName, const std::stri
     init(hostName, topicName, hostPort);
 }
 
-/** private initialization method for configuring EventTransmitter
-  */
+/*
+ * private initialization method for configuring EventTransmitter
+ */
 void EventTransmitter::init( const std::string& hostName, const std::string& topicName, int hostPort) {
     _connection = NULL;
     _session = NULL;
@@ -138,9 +131,6 @@ void EventTransmitter::init( const std::string& hostName, const std::string& top
     }
 }
 
-/* \brief Publish an Event to this object's topic.
- * \param event an Event to publish
- */
 void EventTransmitter::publishEvent(Event& event) {
     long long pubtime;
     cms::TextMessage* message = _session->createTextMessage();
@@ -157,14 +147,10 @@ void EventTransmitter::publishEvent(Event& event) {
     delete message;
 }
 
-/** \brief get the topic name of this EventTransmitter
-  */
 std::string EventTransmitter::getTopicName() {
     return _topicName;
 }
 
-/** \brief Destructor for EventTransmitter
-  */
 EventTransmitter::~EventTransmitter() {
 
     if (_topic != NULL)

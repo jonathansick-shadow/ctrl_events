@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file EventFactory.cc
-  *
-  * \brief Coordinate EventTransmitters and EventReceiver objects
-  *
-  * \ingroup events
-  *
-  */
+/** 
+ * @file EventFactory.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief Coordinate EventTransmitters and EventReceiver objects
+ *
+ */
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -55,20 +56,13 @@ using namespace std;
 namespace lsst {
 namespace ctrl {
 namespace events {
-/** \brief EventFactory object.  This object creates Event objects
-  *        from TextMessages.
-  */
+
 EventFactory::EventFactory() {
 }
 
-/** \brief destructor
-  */
 EventFactory::~EventFactory() {
 }
 
-/** \brief return an Event object, based on the type received in the TextMessage.
-  * \return An Event object
-  */
 Event* EventFactory::createEvent(cms::TextMessage* msg) {
     vector<std::string> names = msg->getPropertyNames();
 

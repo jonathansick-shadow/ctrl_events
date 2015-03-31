@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file EventTypes.cc
-  *
-  * \brief Names used in events
-  *
-  * \ingroup events
-  *
-  */
+/** 
+ * @file EventTypes.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief Names used in events
+ *
+ */
 
 #include <iomanip>
 #include "lsst/ctrl/events/EventTypes.h"

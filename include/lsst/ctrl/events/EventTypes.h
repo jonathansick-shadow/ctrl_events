@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,13 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file EventTypes.h
-  *
-  * \ingroup events
-  *
-  * \brief defines EventTypes
-  *
-  */
+/** 
+ * @file EventTypes.h
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief defines EventTypes
+ */
 
 #ifndef LSST_CTRL_EVENTS_EVENTTYPES_H
 #define LSST_CTRL_EVENTS_EVENTTYPES_H
@@ -38,7 +38,8 @@ namespace ctrl {
 namespace events {
 
 /**
- * @brief Coordinate publishing and receiving events
+ * @class EventTypes
+ * @brief strings defining event types;
  */
 class EventTypes {
 public:

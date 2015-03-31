@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,14 +22,13 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file EventTransmitter.h
-  *
-  * \ingroup events
-  *
-  * \brief defines the EventTransmitter class
-  *
-  *
-  */
+/** 
+ * @file EventTransmitter.h
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief defines the EventTransmitter class
+ */
 
 #ifndef LSST_CTRL_EVENTS_EVENTTRANSMITTER_H
 #define LSST_CTRL_EVENTS_EVENTTRANSMITTER_H
@@ -58,17 +57,40 @@ namespace ctrl {
 namespace events { 
 
 /**
+ * @class EventTransmitter
  * @brief Transmit events to the event bus
  */
 
 class EventTransmitter
 {
 public:
+    /** 
+     * @brief Transmits events to the specified host and topic
+     *
+     * @param hostName the machine hosting the message broker
+     * @param topicName the topic to transmit events to
+     * @param hostPort the port number which the message broker is listening to
+     * @throws RuntimeError if local socket can't be created
+     * @throws RuntimeError if connect to local socket fails
+     * @throws RuntimeError if connect to remote ActiveMQ host fails
+     */
     EventTransmitter(const std::string& hostName, const std::string& topicName, int hostPort = EventBroker::DEFAULTHOSTPORT);
+
+    /**
+     * @brief destructor
+     */
     ~EventTransmitter();
 
+    /** 
+     * @brief get the topic name of this EventTransmitter
+     * @return a std::string containing the topic name
+     */
     std::string getTopicName();
 
+    /** 
+     * @brief Publish an Event to this object's topic
+     * @param event an Event to publish
+     */
     void publishEvent(Event& event);
 
 private:

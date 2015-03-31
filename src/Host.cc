@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file Host.cc
-  *
-  * \brief quickly return the host ip address
-  *
-  * \ingroup events
-  *
-  */
+/** 
+ * @file Host.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief quickly return the host ip address
+ *
+ */
 #include <limits.h>
 #include <string>
 #include <string.h>
@@ -40,10 +41,6 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-/** \brief return the default Host object, which can access the host
-  *              and ip address.
-  * \return The EventSystem object
-  */
 Host const& Host::getHost() {
     if (thisHost == 0) {
 

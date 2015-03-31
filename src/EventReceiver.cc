@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file EventReceiver.cc
-  *
-  * \brief Object to receive Events from the specified event bus
-  *
-  * \ingroup events
-  *
-  */
+/** 
+ * @file EventReceiver.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief Object to receive Events from the specified event bus
+ *
+ */
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -58,25 +59,10 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-/** \brief Receives events from the specified host and topic
-  *
-  * \param hostName the machine hosting the message broker
-  * \param topicName the topic to receive events from
-  * \param hostPort the port the message broker is listening on 
-  * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
-  */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, int hostPort) {
     init(hostName, topicName, "", hostPort);
 }
 
-/** \brief Receives events from the specified host and topic
-  *
-  * \param hostName the machine hosting the message broker
-  * \param topicName the topic to receive events from
-  * \param selector the message selector expression to use.  A selector value of "" is equivalent to no selector.
-  * \param hostPort the port the message broker is listening on 
-  * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
-  */
 EventReceiver::EventReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort) {
     init(hostName, topicName, selector, hostPort);
 }
@@ -131,19 +117,10 @@ void EventReceiver::init(const std::string& hostName, const std::string& topicNa
     }
 }
 
-/** Wait until an Event is received
-  * Note: Caller is responsible for deleting received Event.
-  * \brief wait until an event is received.
-  */
 Event* EventReceiver::receiveEvent() {
     return receiveEvent(infiniteTimeout);
 }
 
-/** Wait to receive an event for a length of time.
-  * Note: Caller is responsible for deleting received Event.
-  * \brief wait for a length of time for an event to be received.
-  * \param timeout the length of time to waitm in milliseconds
-  */
 Event* EventReceiver::receiveEvent(long timeout) {
     PropertySet::Ptr psp;
 
@@ -165,14 +142,10 @@ Event* EventReceiver::receiveEvent(long timeout) {
     return event;
 }
 
-/** \brief returns the topic for this EventReceiver
-  */
 std::string EventReceiver::getTopicName() {
     return _topic;
 }
 
-/** \brief destructor method
-  */
 EventReceiver::~EventReceiver() {
 
     // Destroy resources.

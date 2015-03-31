@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file LocationID.h
-  *
-  * \ingroup events
-  *
-  * \brief defines the LocationID class
-  *
-  */
+/** 
+ * @file LocationID.h
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief defines the LocationID class
+ *
+ */
 
 #ifndef LSST_CTRL_EVENTS_LOCATIONID_H
 #define LSST_CTRL_EVENTS_LOCATIONID_H
@@ -42,6 +43,7 @@ namespace ctrl {
 namespace events {
 
 /**
+ * @class LocationID
  * @brief Represent process that created an event
  */
 class LocationID {
@@ -50,13 +52,44 @@ public:
     typedef boost::shared_ptr<LocationID> Ptr;
     typedef boost::shared_ptr<LocationID const> ConstPtr;
 
+    /** 
+     * @brief LocationID object. This object represents the originating process
+     *        process of an event. This consists of the host name, the process 
+     *        id of the process that created this LocationID and a local id 
+     *        which is unique for this process. When created, this represents 
+     *        a unique location ID.
+     */
     LocationID();
-    LocationID(const LocationID& id);
-    LocationID(const std::string& hostname, int pid, int localID);
+
+    /** 
+     * @brief LocationID object. This object represents the originating process
+     *        of an event.  When created, this represents a duplicated ID.
+     */
+    LocationID(LocationID const& id);
+
+    /** 
+     * @brief LocationID object. This object represents the originating process
+     *        of an event.  When created, this represents a reconstituted ID.
+     */
+    LocationID(std::string const& hostname, int pid, int localID);
 
 
+    /** 
+     * @brief Retrieve the host name
+     * @return a string containing the name of a host
+     */
     std::string getHostName() const;
+
+    /** 
+     * @brief Retrieve the process id
+     * @return an int of the process id
+     */
     int getProcessID() const;
+
+    /** 
+     * @brief Retrieve the local id
+     * @return an int of local id
+     */
     int getLocalID() const;
 
 protected:

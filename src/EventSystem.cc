@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file EventSystem.cc
-  *
-  * \brief Coordinate EventTransmitters and EventReceiver objects
-  *
-  * \ingroup events
-  *
-  */
+/** 
+ * @file EventSystem.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief Coordinate EventTransmitters and EventReceiver objects
+ *
+ */
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -58,24 +59,14 @@ using namespace std;
 namespace lsst {
 namespace ctrl {
 namespace events {
-/** \brief EventSystem object.  This object allows creation of the
-  *        system's event transmitters and receivers, which can be
-  *        specified at the beginning, and later used by specifying
-  *        the topic to receive from or send on.
-  */
+
 EventSystem::EventSystem() {
     EventLibrary().initializeLibrary();
 }
 
-/** \brief destructor
-  */
 EventSystem::~EventSystem() {
 }
 
-/** \brief return the default EventSystem object, which can access all 
-  *               previously created Transmitters and receivers
-  * \return The EventSystem object
-  */
 EventSystem& EventSystem::getDefaultEventSystem() {
     static EventSystem eventSystem;
     return eventSystem;
@@ -86,12 +77,7 @@ EventSystem *EventSystem::defaultEventSystem = 0;
 list<boost::shared_ptr<EventTransmitter> >EventSystem::_transmitters;
 list<boost::shared_ptr<EventReceiver> >EventSystem::_receivers;
 
-/** \brief create an EventTransmitter to send messages to the message broker
-  * \param hostName the location of the message broker to use
-  * \param topicName the topic to transmit events to
-  * \param hostPort the port where the broker can be reached
-  */ 
-void EventSystem::createTransmitter(const std::string& hostName, const std::string& topicName, int hostPort) {
+void EventSystem::createTransmitter(std::string const& hostName, std::string const& topicName, int hostPort) {
     boost::shared_ptr<EventTransmitter> transmitter;
     if ((transmitter = getTransmitter(topicName)) == 0) {
         boost::shared_ptr<EventTransmitter> transmitter(new EventTransmitter(hostName, topicName, hostPort));
@@ -101,12 +87,7 @@ void EventSystem::createTransmitter(const std::string& hostName, const std::stri
     throw LSST_EXCEPT(pexExceptions::RuntimeError, "topic "+ topicName + " is already registered with EventSystem");
 }
 
-/** \brief create an EventReceiver which will receive message
-  * \param hostName the location of the message broker to use
-  * \param topicName the topic to receive messages from
-  * \param hostPort the port where the broker can be reached
-  */
-void EventSystem::createReceiver(const std::string& hostName, const std::string& topicName, int hostPort) {
+void EventSystem::createReceiver(std::string const& hostName, std::string const& topicName, int hostPort) {
     boost::shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
         boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, topicName, hostPort));
@@ -116,25 +97,13 @@ void EventSystem::createReceiver(const std::string& hostName, const std::string&
     throw LSST_EXCEPT(pexExceptions::RuntimeError, "topic "+ topicName + " is already registered with EventSystem");
 }
 
-/** \brief create an EventReceiver which will receive message
-  * \param hostName the location of the message broker to use
-  * \param topicName the topic to receive messages from
-  * \param selector the message selector to specify which messages to receive
-  * \param hostPort the port where the broker can be reached
-  */
-void EventSystem::createReceiver(const std::string& hostName, const std::string& topicName, const std::string& selector, int hostPort) {
+void EventSystem::createReceiver(std::string const& hostName, std::string const& topicName, std::string const& selector, int hostPort) {
     boost::shared_ptr<EventReceiver> receiver(new EventReceiver(hostName, topicName, selector, hostPort));
     _receivers.push_back(receiver);
 }
 
 
-/** \brief send an event on a topic
-  * \param topicName the topic to send messages to
-  * \param event the Event to send
-  * \throw Runtime exception if the topic wasn't already registered using 
-  *        the createTransmitter method
-  */
-void EventSystem::publishEvent(const std::string& topicName, Event& event) {
+void EventSystem::publishEvent(std::string const& topicName, Event& event) {
     boost::shared_ptr<EventTransmitter> transmitter;
     if ((transmitter = getTransmitter(topicName)) == 0) {
         throw LSST_EXCEPT(pexExceptions::RuntimeError, "topic "+ topicName + " is not registered with EventSystem");
@@ -144,7 +113,7 @@ void EventSystem::publishEvent(const std::string& topicName, Event& event) {
 
 /** private method to retrieve a transmitter from the internal list
   */
-boost::shared_ptr<EventTransmitter> EventSystem::getTransmitter(const std::string& name) {
+boost::shared_ptr<EventTransmitter> EventSystem::getTransmitter(std::string const& name) {
     list<boost::shared_ptr<EventTransmitter> >::iterator i;
     for (i = _transmitters.begin(); i != _transmitters.end(); i++) {
         if ((*i)->getTopicName() == name) {
@@ -155,24 +124,11 @@ boost::shared_ptr<EventTransmitter> EventSystem::getTransmitter(const std::strin
 }
 
 
-/** \brief blocking receive for events.  Waits until an event
-  *        is received for the topic specified in the constructor
-  * \param topicName the topic to listen on
-  * \return a PropertySet::Ptr object
-  */
-Event* EventSystem::receiveEvent(const std::string& topicName) {
+Event* EventSystem::receiveEvent(std::string const& topicName) {
     return receiveEvent(topicName, EventReceiver::infiniteTimeout);
 }
 
-/** \brief blocking receive for events, with timeout (in milliseconds).  
-  *        Waits until an event is received for the topic specified
-  *        in the constructor, or until the timeout expires.      
-  * \param topicName the topic to listen on
-  * \param timeout the time in milliseconds to wait before returning
-  * \return a Property::Ptr object on success, 0 on failure  see note
-  *         in receive()
-  */
-Event* EventSystem::receiveEvent(const std::string& topicName, const long timeout) {
+Event* EventSystem::receiveEvent(std::string const& topicName, const long timeout) {
     boost::shared_ptr<EventReceiver> receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
         throw LSST_EXCEPT(pexExceptions::RuntimeError, "Topic "+ topicName +" is not registered with EventSystem");
@@ -187,7 +143,7 @@ LocationID::Ptr EventSystem::createOriginatorId() const {
 
 /** private method used to retrieve the named EventReceiver object
   */
-boost::shared_ptr<EventReceiver> EventSystem::getReceiver(const std::string& name) {
+boost::shared_ptr<EventReceiver> EventSystem::getReceiver(std::string const& name) {
     list<boost::shared_ptr<EventReceiver> >::iterator i;
     for (i = _receivers.begin(); i != _receivers.end(); i++) {
         if ((*i)->getTopicName() == name)
@@ -197,18 +153,10 @@ boost::shared_ptr<EventReceiver> EventSystem::getReceiver(const std::string& nam
 }
 
 
-/** \brief cast an Event to StatusEvent
-  * \param event an Event
-  * \return a StatusEvent
-  */
 StatusEvent* EventSystem::castToStatusEvent(Event* event) {
     return (StatusEvent *)event;
 }
 
-/** \brief cast an Event to CommandEvent
-  * \param event an Event
-  * \return a CommandEvent
-  */
 CommandEvent* EventSystem::castToCommandEvent(Event* event) {
     return (CommandEvent *)event;
 }

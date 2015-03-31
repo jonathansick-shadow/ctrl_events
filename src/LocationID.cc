@@ -2,7 +2,7 @@
 
 /* 
  * LSST Data Management System
- * Copyright 2008-2014  AURA/LSST.
+ * Copyright 2008-2015  AURA/LSST.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -22,13 +22,14 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** \file LocationID.cc
-  *
-  * \brief host information
-  *
-  * \ingroup events
-  *
-  */
+/** 
+ * @file LocationID.cc
+ *
+ * @ingroup ctrl/events
+ *
+ * @brief host information
+ *
+ */
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -39,11 +40,6 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-/** \brief LocationID object. This object represents the originating process
-  *        of an event. This consists of the host name, the process id of the 
-  *        process that created this LocationID and a local id which is unique
-  *        for this process. When created, this represents a unique location ID.
-  */
 LocationID::LocationID() {
     Host host = Host::getHost();
     _hostname = host.getHostName();
@@ -51,19 +47,13 @@ LocationID::LocationID() {
     _localID = _localCounter++;
 }
 
-/** \brief LocationID object. This object represents the originating process
-  *        of an event.  When created, this represents a reconstituted ID.
-  */
-LocationID::LocationID(const std::string& hostname, int pid, int localID) : 
+LocationID::LocationID(std::string const& hostname, int pid, int localID) : 
     _hostname(hostname),
     _pid(pid),
     _localID(localID) 
     {}
 
-/** \brief LocationID object. This object represents the originating process
-  *        of an event.  When created, this represents a duplicated ID.
-  */
-LocationID::LocationID(const LocationID& id) {
+LocationID::LocationID(LocationID const& id) {
     _hostname = id.getHostName();
     _pid = id.getProcessID();
     _localID = id.getLocalID();
@@ -71,23 +61,14 @@ LocationID::LocationID(const LocationID& id) {
 
 int LocationID::_localCounter = 0;
 
-/** \brief Retrieve the host name
-  * \return a string containing the name of a host
-  */
 std::string LocationID::getHostName() const {
     return _hostname;
 }
 
-/** \brief Retrieve the process id
-  * \return an int of the process id
-  */
 int LocationID::getProcessID() const {
     return _pid;
 }
 
-/** \brief Retrieve the local id
-  * \return an int of local id
-  */
 int LocationID::getLocalID() const {
     return _localID;
 }
