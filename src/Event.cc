@@ -58,7 +58,6 @@
 #include "activemq/core/ActiveMQConnectionFactory.h"
 
 namespace pexExceptions = lsst::pex::exceptions;
-namespace pexLogging = lsst::pex::logging;
 namespace dafBase = lsst::daf::base;
 
 

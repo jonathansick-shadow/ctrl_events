@@ -52,8 +52,6 @@
 #include <activemq/core/ActiveMQConnectionFactory.h>
 
 namespace pexExceptions = lsst::pex::exceptions;
-namespace pexLogging = lsst::pex::logging;
-
 
 using namespace std;
 using std::numeric_limits;

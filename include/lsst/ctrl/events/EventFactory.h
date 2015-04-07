@@ -39,10 +39,8 @@
 #include <list>
 #include <boost/shared_ptr.hpp>
 
-#include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/logging/LogRecord.h"
 #include "lsst/ctrl/events.h"
 
 using lsst::daf::base::PropertySet;
