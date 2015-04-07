@@ -33,9 +33,8 @@ import sys
 
 if __name__ == "__main__":
     host = sys.argv[1]
-    runid = sys.argv[2]
     print "listening on host "+host
-    x = events.EventReceiver(host, events.EventLog.LOGGING_TOPIC, "RUNID = '%s'" % runid )
+    x = events.EventReceiver(host, events.LogEvent.LOGGING_TOPIC)
     while (True): 
         print "waiting on logging event...\n"
         event = x.receiveEvent()

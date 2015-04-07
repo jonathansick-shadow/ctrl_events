@@ -24,6 +24,7 @@
 #
 
 import platform
+import lsst.ctrl.events as events
 
 class TestEnvironment:
     """Information about this testing environment"""
@@ -33,6 +34,8 @@ class TestEnvironment:
         # set these values to the broker host and port
         self.broker = "lsst8.ncsa.illinois.edu"
         self.port = 61616
+        logEvent = events.LogEvent()
+        self.logging_topic = logEvent.getLoggingTopic()
 
         # add any domains where the tests will be running and still be
         # expected to reach the broker above.
@@ -43,6 +46,9 @@ class TestEnvironment:
 
     def getPort(self):
         return self.port
+
+    def getLoggingTopic(self):
+        return self.logging_topic
         
     def getTestDomains(self):
         return self.testDomains
