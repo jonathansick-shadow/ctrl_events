@@ -94,7 +94,7 @@ public:
      *        TOPIC - topic name on which to send logging messages (optional)
      *
      * @param option option name
-     * @param option option value
+     * @param value option value
      */
     virtual void setOption(const LogString& option, const LogString& value);
 
