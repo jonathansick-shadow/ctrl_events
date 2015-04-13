@@ -24,7 +24,6 @@
 #
 
 import unittest
-from socket import gethostname
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
@@ -33,7 +32,6 @@ class EventTestCase(unittest.TestCase):
     """A test case for Event."""
 
     def testEventEmpty(self):
-        status = "my special status"
         event = events.Event()
         props = event.getPropertySet() 
         self.assertEqual(props.nameCount(), 0)

@@ -28,9 +28,7 @@ Tests of the BlackboardItem classes
 """
 from __future__ import with_statement
 
-import pdb                              # we may want to say pdb.set_trace()
 import os, platform
-import sys
 import unittest
 import time
 from threading import Thread, Condition
@@ -78,7 +76,6 @@ class MultiThreadTestCase(unittest.TestCase):
     def testLockRelease(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
-        thisHost = platform.node()
 
         flag = Flag()
         t = EventThread(broker, flag)

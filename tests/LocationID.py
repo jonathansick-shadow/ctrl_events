@@ -28,7 +28,6 @@ import platform
 import socket
 import unittest
 import lsst.ctrl.events as events
-import lsst.daf.base as base
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
 from testEnvironment import TestEnvironment
@@ -40,8 +39,6 @@ class LocationIDTestCase(unittest.TestCase):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
         thisHost = platform.node()
-
-        eventSystem = events.EventSystem.getDefaultEventSystem()
 
         locationID = events.LocationID()
 

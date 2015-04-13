@@ -25,7 +25,6 @@
 
 import os
 import platform
-import time
 import unittest
 import lsst.ctrl.events as events
 import lsst.daf.base as base

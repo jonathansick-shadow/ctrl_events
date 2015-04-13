@@ -36,7 +36,6 @@ import tempfile
 import unittest
 import lsst.ctrl.events as events
 from testEnvironment import TestEnvironment
-import lsst.pex.exceptions as ex
 
 class TestLog(unittest.TestCase):
 

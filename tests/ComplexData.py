@@ -25,7 +25,6 @@
 
 import os
 import platform
-import time
 import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
@@ -95,7 +94,6 @@ class ComplexDataTestCase(unittest.TestCase):
     def testFilterableStatusEvent(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
-        thisHost = platform.node()
 
         topic = self.createTopicName("test_events_10_%s.B")
         receiver = self.createReceiver(broker, topic)
@@ -111,7 +109,6 @@ class ComplexDataTestCase(unittest.TestCase):
     def testPlainStatusEvent(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
-        thisHost = platform.node()
 
         topic = self.createTopicName("test_events_10_%s.A")
         receiver = self.createReceiver(broker, topic)
@@ -134,11 +131,9 @@ class ComplexDataTestCase(unittest.TestCase):
     def testIllegalFilterableStatusEvent(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
-        thisHost = platform.node()
 
         topic = self.createTopicName("test_events_10_%s.A")
 
-        receiver = events.EventReceiver(broker, topic)
         #
         # send a test event, and wait to receive it
         #

@@ -68,8 +68,6 @@ class StatusEventOriginatorTestCase(unittest.TestCase):
     
         val = recv.receiveEvent()
         assert val != None
-        ps = val.getCustomPropertySet()
-        ps = val.getPropertySet()
     
         eventSystem = events.EventSystem.getDefaultEventSystem()
         statusevent = eventSystem.castToStatusEvent(val)

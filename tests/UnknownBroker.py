@@ -27,7 +27,6 @@ import os
 import platform
 import unittest
 import lsst.ctrl.events as events
-import lsst.daf.base as datap
 import lsst.pex.exceptions as ex
 import lsst.utils.tests as tests
 
