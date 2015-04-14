@@ -36,7 +36,7 @@
 #include <limits>
 #include <cstring>
 
-#include "lsst/ctrl/events/LocationID.h"
+#include "lsst/ctrl/events/LocationId.h"
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/CommandEvent.h"
@@ -97,27 +97,27 @@ CommandEvent::CommandEvent(cms::TextMessage *msg) : Event(msg) {
 
 }
 
-CommandEvent::CommandEvent(LocationID const&  originator, LocationID const& destination, CONST_PTR(PropertySet) const& psp) : Event(*psp) {
+CommandEvent::CommandEvent(LocationId const&  originator, LocationId const& destination, CONST_PTR(PropertySet) const& psp) : Event(*psp) {
     _constructor(originator, destination);
 }
 
-CommandEvent::CommandEvent(LocationID const& originator, LocationID const&  destination, PropertySet const& ps) : Event(ps) {
+CommandEvent::CommandEvent(LocationId const& originator, LocationId const&  destination, PropertySet const& ps) : Event(ps) {
     _constructor(originator, destination);
 }
 
-CommandEvent::CommandEvent(LocationID const&  originator, LocationID const&  destination, PropertySet const& ps, PropertySet const& filterable) : Event(ps, filterable) {
+CommandEvent::CommandEvent(LocationId const&  originator, LocationId const&  destination, PropertySet const& ps, PropertySet const& filterable) : Event(ps, filterable) {
     _constructor(originator, destination);
 }
 
-CommandEvent::CommandEvent(std::string const& runId, LocationID const&  originator, LocationID const& destination, CONST_PTR(PropertySet) const& psp) : Event(runId, *psp) {
+CommandEvent::CommandEvent(std::string const& runId, LocationId const&  originator, LocationId const& destination, CONST_PTR(PropertySet) const& psp) : Event(runId, *psp) {
     _constructor(originator, destination);
 }
 
-CommandEvent::CommandEvent( std::string const& runId, LocationID const&  originator, LocationID const&  destination, PropertySet const& ps) : Event(runId, ps) {
+CommandEvent::CommandEvent( std::string const& runId, LocationId const&  originator, LocationId const&  destination, PropertySet const& ps) : Event(runId, ps) {
     _constructor(originator, destination);
 }
 
-CommandEvent::CommandEvent(std::string const& runId, LocationID const&  originator, LocationID const&  destination, PropertySet const& ps, PropertySet const& filterable) : Event(runId, ps, filterable) {
+CommandEvent::CommandEvent(std::string const& runId, LocationId const&  originator, LocationId const&  destination, PropertySet const& ps, PropertySet const& filterable) : Event(runId, ps, filterable) {
     _constructor(originator, destination);
 }
 
@@ -125,7 +125,7 @@ CommandEvent::CommandEvent(std::string const& runId, LocationID const&  originat
   * originating location of this event, and destination, the destination
   * location for this event.
   */
-void CommandEvent::_constructor(LocationID const&  originator, LocationID const&  destination) {
+void CommandEvent::_constructor(LocationId const&  originator, LocationId const&  destination) {
     _init();
 
     _psp->set(ORIG_HOSTNAME, originator.getHostName());
@@ -152,23 +152,21 @@ void CommandEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setIntProperty(DEST_LOCALID, _psp->get<int>(DEST_LOCALID));
 }
 
-LocationID::Ptr CommandEvent::getOriginator() const { 
+LocationId::Ptr CommandEvent::getOriginator() const { 
     std::string hostname =  _psp->get<std::string>(ORIG_HOSTNAME);
     int pid =  _psp->get<int>(ORIG_PROCESSID);
     int local =  _psp->get<int>(ORIG_LOCALID);
-    return LocationID::Ptr(new LocationID(hostname, pid, local));
+    return LocationId::Ptr(new LocationId(hostname, pid, local));
 }
 
-LocationID::Ptr CommandEvent::getDestination() const { 
+LocationId::Ptr CommandEvent::getDestination() const { 
     std::string hostname = _psp->get<std::string>(DEST_HOSTNAME); 
     int pid = _psp->get<int>(DEST_PROCESSID); 
     int local = _psp->get<int>(DEST_LOCALID);
-    return LocationID::Ptr(new LocationID(hostname, pid, local));
+    return LocationId::Ptr(new LocationId(hostname, pid, local));
 }
 
 CommandEvent::~CommandEvent() {
 }
 
-}
-}
-}
+}}}

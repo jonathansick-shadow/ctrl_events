@@ -38,7 +38,7 @@ Access to the lsst::ctrl::events classes
 %{
 #include "lsst/daf/base.h"
 #include "lsst/ctrl/events/Host.h"
-#include "lsst/ctrl/events/LocationID.h"
+#include "lsst/ctrl/events/LocationId.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
@@ -52,7 +52,7 @@ Access to the lsst::ctrl::events classes
 
 %include "lsst/p_lsstSwig.i"
 
-%shared_ptr(lsst::ctrl::events::LocationID)
+%shared_ptr(lsst::ctrl::events::LocationId)
 
 
 %import "lsst/daf/base/baseLib.i"
@@ -68,7 +68,7 @@ Access to the lsst::ctrl::events classes
 }
 
 %include "lsst/ctrl/events/Host.h"
-%include "lsst/ctrl/events/LocationID.h"
+%include "lsst/ctrl/events/LocationId.h"
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"
 %include "lsst/ctrl/events/CommandEvent.h"

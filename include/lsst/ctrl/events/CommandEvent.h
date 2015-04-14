@@ -43,7 +43,7 @@
 
 #include "lsst/base.h"
 #include "lsst/ctrl/events/Event.h"
-#include "lsst/ctrl/events/LocationID.h"
+#include "lsst/ctrl/events/LocationId.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 
@@ -84,7 +84,7 @@ public:
      * @param destination destination location for this event
      * @param psp PropertySet to pass in this event
      */
-    CommandEvent(LocationID const& originator, LocationID const& destination, CONST_PTR(PropertySet) const& psp);
+    CommandEvent(LocationId const& originator, LocationId const& destination, CONST_PTR(PropertySet) const& psp);
 
 
     /**
@@ -93,7 +93,7 @@ public:
      * @param destination destination location for this event
      * @param ps PropertySet to pass in this event
      */
-    CommandEvent(LocationID const& originator, LocationID const& destination, PropertySet const& ps);
+    CommandEvent(LocationId const& originator, LocationId const& destination, PropertySet const& ps);
 
     /**
      * @brief Constructor for CommandEvent
@@ -102,7 +102,7 @@ public:
      * @param ps PropertySet to pass in this event
      * @param filterable additional, broker-filterable, PropertySet parameters
      */
-    CommandEvent(LocationID const& originator, LocationID const& destination, PropertySet const& ps, 
+    CommandEvent(LocationId const& originator, LocationId const& destination, PropertySet const& ps, 
                     PropertySet const& filterable);
 
     /**
@@ -112,7 +112,7 @@ public:
      * @param destination destination location for this event
      * @param psp PropertySet to pass in this event
      */
-    CommandEvent(std::string const& runid, LocationID const& originator, LocationID const& destination, 
+    CommandEvent(std::string const& runid, LocationId const& originator, LocationId const& destination, 
                     CONST_PTR(PropertySet) const& psp);
 
     /**
@@ -122,7 +122,7 @@ public:
      * @param destination destination location for this event
      * @param ps PropertySet to pass in this event
      */
-    CommandEvent(std::string const& runid, LocationID const& originator, LocationID const& destination, 
+    CommandEvent(std::string const& runid, LocationId const& originator, LocationId const& destination, 
                     PropertySet const& ps);
 
     /**
@@ -133,7 +133,7 @@ public:
      * @param ps PropertySet to pass in this event
      * @param filterable additional, broker-filterable, PropertySet parameters
      */
-    CommandEvent(std::string const& runid, LocationID const& originator, LocationID const& destination, 
+    CommandEvent(std::string const& runid, LocationId const& originator, LocationId const& destination, 
                     PropertySet const& ps, PropertySet const& filterable);
 
     /**
@@ -148,26 +148,24 @@ public:
     virtual ~CommandEvent();
 
     /**
-     * @brief retrieve an object containing the OriginatoDesination LocationID
+     * @brief retrieve an object containing the OriginatoDesination LocationId
      */
-    LocationID::Ptr getOriginator() const;
+    LocationId::Ptr getOriginator() const;
 
     /**
-     * @brief retrieve an object containing the OriginatoDesination LocationID
+     * @brief retrieve an object containing the OriginatoDesination LocationId
      */
-    LocationID::Ptr getDestination() const;
+    LocationId::Ptr getDestination() const;
 
 
 private:
-    void _constructor(LocationID const& originator, LocationID const& destination);
+    void _constructor(LocationId const& originator, LocationId const& destination);
     virtual void populateHeader(cms::TextMessage *msg) const;
 
     void _init();
 
 };
-}
-}
-}
 
+}}}
 
 #endif /*end LSST_CTRL_EVENTS_COMMANDEVENT_H*/

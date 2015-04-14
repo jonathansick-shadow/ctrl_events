@@ -42,7 +42,7 @@ class EventSelectorTestCase(unittest.TestCase):
         root.set("myname","myname")
         root.set("STATUS", "my special status")
         
-        locationID = events.LocationID()
+        locationID = events.LocationId()
     
         event = events.StatusEvent(runid, locationID, root)
         # ok...now publish it

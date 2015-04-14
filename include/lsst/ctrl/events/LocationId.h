@@ -23,11 +23,11 @@
  */
 
 /** 
- * @file LocationID.h
+ * @file LocationId.h
  *
  * @ingroup ctrl/events
  *
- * @brief defines the LocationID class
+ * @brief defines the LocationId class
  *
  */
 
@@ -43,35 +43,35 @@ namespace ctrl {
 namespace events {
 
 /**
- * @class LocationID
+ * @class LocationId
  * @brief Represent process that created an event
  */
-class LocationID {
+class LocationId {
 public:
 
-    typedef boost::shared_ptr<LocationID> Ptr;
-    typedef boost::shared_ptr<LocationID const> ConstPtr;
+    typedef boost::shared_ptr<LocationId> Ptr;
+    typedef boost::shared_ptr<LocationId const> ConstPtr;
 
     /** 
-     * @brief LocationID object. This object represents the originating process
+     * @brief LocationId object. This object represents the originating process
      *        process of an event. This consists of the host name, the process 
-     *        id of the process that created this LocationID and a local id 
+     *        id of the process that created this LocationId and a local id 
      *        which is unique for this process. When created, this represents 
      *        a unique location ID.
      */
-    LocationID();
+    LocationId();
 
     /** 
-     * @brief LocationID object. This object represents the originating process
+     * @brief LocationId object. This object represents the originating process
      *        of an event.  When created, this represents a duplicated ID.
      */
-    LocationID(LocationID const& id);
+    LocationId(LocationId const& id);
 
     /** 
-     * @brief LocationID object. This object represents the originating process
+     * @brief LocationId object. This object represents the originating process
      *        of an event.  When created, this represents a reconstituted ID.
      */
-    LocationID(std::string const& hostname, int pid, int localID);
+    LocationId(std::string const& hostname, int pid, int localID);
 
 
     /** 
@@ -93,10 +93,10 @@ public:
     int getLocalID() const;
 
 protected:
-    static int _localCounter;
-    std::string _hostname;
-    int _pid;
-    int _localID;
+    static int _localCounter; /// used for localID & is unique for instances of LocationId in a process
+    std::string _hostname;    /// host name
+    int _pid;                 /// process id
+    int _localID;             /// local id
 
 };
 }

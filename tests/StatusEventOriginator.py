@@ -45,7 +45,7 @@ class StatusEventOriginatorTestCase(unittest.TestCase):
         root.set("RUNID","srptestrun")
         root.set("bazinga", "sheldon")
         
-        originatorId = events.LocationID()
+        originatorId = events.LocationId()
         event = events.StatusEvent("srptestrun", originatorId, root)
     
         # ok...now publish it

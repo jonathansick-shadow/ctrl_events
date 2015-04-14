@@ -69,7 +69,7 @@ class CommandTestCase(unittest.TestCase):
         self.assertEqual(dest.getHostName(), platform.node())
 
     # test command event and command event with additional filterable properties.
-    # this is run as one test, rather than two because of how LocationIDs are
+    # this is run as one test, rather than two because of how LocationIds are
     # generated and the checks for the local values are order dependent
     @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testCommandEvent(self):
@@ -83,7 +83,7 @@ class CommandTestCase(unittest.TestCase):
         receiver = events.EventReceiver(broker, topic)
         trans = events.EventTransmitter(broker, topic)
     
-        originatorId = events.LocationID()
+        originatorId = events.LocationId()
         root = PropertySet()
         root.set("TOPIC",topic)
         root.set("myname","myname")
@@ -91,9 +91,9 @@ class CommandTestCase(unittest.TestCase):
         event = events.StatusEvent("srptestrun", originatorId, root)
     
         statusOriginatorId = event.getOriginator()
-        destinationID = events.LocationID(statusOriginatorId)
+        destinationID = events.LocationId(statusOriginatorId)
     
-        commandOriginatorID = events.LocationID()
+        commandOriginatorID = events.LocationId()
         root2 = PropertySet()
         root2.set("TOPIC",topic)
         root2.set("myname","myname2")
@@ -117,13 +117,13 @@ class CommandTestCase(unittest.TestCase):
     
         trans = events.EventTransmitter(broker, topic)
     
-        originatorId = events.LocationID()
+        originatorId = events.LocationId()
         event = events.StatusEvent("srptestrun", originatorId, root)
     
         statusOriginatorId = event.getOriginator()
-        destinationID = events.LocationID(statusOriginatorId)
+        destinationID = events.LocationId(statusOriginatorId)
     
-        commandOriginatorID = events.LocationID()
+        commandOriginatorID = events.LocationId()
 
         filterable = PropertySet()
         filterable.set("FOO", 12.3)
