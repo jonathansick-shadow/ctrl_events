@@ -74,7 +74,5 @@ Event* EventFactory::createEvent(cms::TextMessage* msg) {
     }
     return new Event(msg);
 }
-}
 
-}
-}
+}}}

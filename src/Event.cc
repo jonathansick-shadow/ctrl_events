@@ -537,7 +537,5 @@ template void Event::add<long>(std::string const& name, std::string const& tag,P
 template void Event::add<long long>(std::string const& name, std::string const& tag, PropertySet const& ps, boost::property_tree::ptree& child);
 
 template void Event::add<std::string>(std::string const& name, std::string const& tag, PropertySet const& ps, boost::property_tree::ptree& child);
-}
-}
-}
 
+}}}

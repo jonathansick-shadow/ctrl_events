@@ -69,7 +69,7 @@ namespace events {
 
 /**
  * @class EventAppender
- * @brief Representation of an LSST Event
+ * @brief log4cxx appender class which sends logging messages out on the event stream
  */
 
 class EventAppender : public log4cxx::AppenderSkeleton
@@ -99,23 +99,35 @@ public:
     virtual void setOption(const LogString& option, const LogString& value);
 
     /* log4cxx methods */
+
+    /**
+     * @brief prepares EventAppender for use
+     */ 
     virtual void activateOptions(log4cxx::helpers::Pool& p);
+    /**
+     * @brief handles a log event.  For this appender, this means sending an event to the logging topic.
+     */
     void append(const spi::LoggingEventPtr& event, log4cxx::helpers::Pool& p);
+    /**
+     * @brief shuts down the appender
+     */
     void close();
+    /**
+     * @brief this appender does not require a layout to format the text
+     * @return always returns false
+     */
     bool requiresLayout() const { return false; }
 
 protected:
-    lsst::ctrl::events::EventTransmitter* getTransmitter();
-    lsst::ctrl::events::EventTransmitter *_transmitter;
+    lsst::ctrl::events::EventTransmitter* getTransmitter(); /* method to return currently active transmitter */
+    lsst::ctrl::events::EventTransmitter *_transmitter;     /* event transmitter */
 
-    LogString _broker;
-    LogString _topic;
-    int _port;
+    LogString _broker; /* name of the broker */
+    LogString _topic;  /* name of the topic where events are sent */
+    int _port;         /* port number used by the broker */
 
 };
     LOG4CXX_PTR_DEF(EventAppender);
-}
-}
-}
+}}}
 
 #endif /*end LSST_CTRL_EVENTS_EVENTAPPENDER_H*/

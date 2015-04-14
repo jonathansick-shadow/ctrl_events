@@ -185,6 +185,4 @@ EventTransmitter::~EventTransmitter() {
     _connection = NULL;
 }
 
-}
-}
-}
+}}}

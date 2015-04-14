@@ -46,14 +46,14 @@ using namespace std;
 namespace lsst {
 namespace ctrl {
 namespace events {
+
 void EventLibrary::initializeLibrary() {
     if (libraryInitialized == 0) {
         activemq::library::ActiveMQCPP::initializeLibrary();
         libraryInitialized = 1;
     }
 }
+
 int EventLibrary::libraryInitialized = 0;
 
-}
-}
-}
+}}}

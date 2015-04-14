@@ -155,6 +155,4 @@ void EventAppender::close() {
     this->closed = true;
 }
 
-}
-}
-}
+}}}

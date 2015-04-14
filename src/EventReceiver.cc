@@ -194,6 +194,4 @@ EventReceiver::~EventReceiver() {
     _connection = NULL;
 }
 
-}
-}
-}
+}}}

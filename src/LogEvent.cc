@@ -164,6 +164,4 @@ std::string LogEvent::getLoggingTopic() {
 LogEvent::~LogEvent() {
 }
 
-}
-}
-}
+}}}
