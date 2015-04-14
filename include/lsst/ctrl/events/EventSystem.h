@@ -40,7 +40,6 @@
 #include <list>
 #include <boost/shared_ptr.hpp>
 
-#include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/ctrl/events.h"
@@ -133,10 +132,10 @@ public:
     Event* receiveEvent(std::string const& topicName, const long timeout);
 
     /**
-     * @brief create an LocationID
-     * @return LocationID::Ptr
+     * @brief create an LocationId
+     * @return LocationId::Ptr
      */
-    LocationID::Ptr createOriginatorId() const;
+    LocationId::Ptr createOriginatorId() const;
 
     /** 
      * @brief cast an Event to StatusEvent
@@ -165,9 +164,8 @@ protected:
     static list<boost::shared_ptr<EventTransmitter> >_transmitters;
     static list<boost::shared_ptr<EventReceiver> >_receivers;
 };
-}
-}
-}
+
+}}}
 
 #endif /*end LSST_CTRL_EVENTS_EVENTSYSTEM_H*/
 

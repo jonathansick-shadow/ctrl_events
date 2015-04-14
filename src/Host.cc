@@ -82,6 +82,4 @@ std::string const& Host::getHostName() {
     return _hostname;
 }
 
-}
-}
-}
+}}}

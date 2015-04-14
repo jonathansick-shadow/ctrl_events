@@ -41,9 +41,8 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "lsst/ctrl/events/LocationID.h"
+#include "lsst/ctrl/events/LocationId.h"
 #include "lsst/ctrl/events/Event.h"
-#include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 
@@ -80,68 +79,68 @@ public:
 
     /** 
      * @brief Constructor to create a StatusEvent
-     * @param originator the LocationID of where this StatusEvent was created
+     * @param originator the LocationId of where this StatusEvent was created
      * @param ps a PropertySet
      */
-    StatusEvent(LocationID const& originator, PropertySet const& ps);
+    StatusEvent(LocationId const& originator, PropertySet const& ps);
 
 
     /** 
      * @brief Constructor to create a StatusEvent
-     * @param originator the LocationID of where this StatusEvent was created
+     * @param originator the LocationId of where this StatusEvent was created
      * @param ps a PropertySet
      * @param filterable a PropertySet that will be added to Event headers so
      *        they can be filtered using selectors.
      */
-    StatusEvent(LocationID const& originator, PropertySet const& ps, PropertySet const& filterable);
+    StatusEvent(LocationId const& originator, PropertySet const& ps, PropertySet const& filterable);
 
    /** 
     * @brief Constructor to create a StatusEvent
     * @param runid a string identify for this Event
-    * @param originator the LocationID of where this StatusEvent was created
+    * @param originator the LocationId of where this StatusEvent was created
     * @param ps a PropertySet
     */
-    StatusEvent(std::string const& runid, LocationID const& originator, PropertySet const& ps);
+    StatusEvent(std::string const& runid, LocationId const& originator, PropertySet const& ps);
 
     /** 
      * @brief Constructor to create a StatusEvent
      * @param runid a string identify for this Event
-     * @param originator the LocationID of where this StatusEvent was created
+     * @param originator the LocationId of where this StatusEvent was created
      * @param ps a PropertySet
      * @param filterable a PropertySet that will be added to Event headers so
      *        they can be filtered using selectors.
      */
-    StatusEvent(std::string const& runid, LocationID const& originator, PropertySet const& ps, PropertySet const& filterable);
+    StatusEvent(std::string const& runid, LocationId const& originator, PropertySet const& ps, PropertySet const& filterable);
 
     /** 
      * \brief Constructor to create a StatusEvent
      * \param runid a string identify for this Event
-     * \param originator the LocationID of where this StatusEvent was created
+     * \param originator the LocationId of where this StatusEvent was created
      * \param psp a PropertySet::Ptr
      */
-    StatusEvent(std::string const& runid, LocationID const& originator, PropertySet::Ptr const psp);
+    StatusEvent(std::string const& runid, LocationId const& originator, PropertySet::Ptr const psp);
 
 
     /** 
      * @brief Constructor to create a StatusEvent
      * @param runid a string identify for this Event
-     * @param originator the LocationID of where this StatusEvent was created
+     * @param originator the LocationId of where this StatusEvent was created
      * @param psp a PropertySet::Ptr
      * @param filterable a PropertySet that will be added to Event headers so
      *        they can be filtered using selectors.
      */
-    StatusEvent(std::string const& runid, LocationID const& originator, PropertySet::Ptr const psp, PropertySet const& filterable);
+    StatusEvent(std::string const& runid, LocationId const& originator, PropertySet::Ptr const psp, PropertySet const& filterable);
 
 
     /** 
      * @brief accessor to get originator information
-     * @return a LocationID containing the Originator information
+     * @return a LocationId containing the Originator information
      */
-    LocationID *getOriginator();
+    LocationId *getOriginator();
 
 private:
     void _init();
-    void _constructor(LocationID const& originator);
+    void _constructor(LocationId const& originator);
     /*  method used to take originator from the TextMessage to set in
      * the StatusEvent
      */

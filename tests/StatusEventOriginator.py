@@ -45,7 +45,7 @@ class StatusEventOriginatorTestCase(unittest.TestCase):
         root.set("RUNID","srptestrun")
         root.set("bazinga", "sheldon")
         
-        originatorId = events.LocationID()
+        originatorId = events.LocationId()
         event = events.StatusEvent("srptestrun", originatorId, root)
     
         # ok...now publish it
@@ -68,8 +68,6 @@ class StatusEventOriginatorTestCase(unittest.TestCase):
     
         val = recv.receiveEvent()
         assert val != None
-        ps = val.getCustomPropertySet()
-        ps = val.getPropertySet()
     
         eventSystem = events.EventSystem.getDefaultEventSystem()
         statusevent = eventSystem.castToStatusEvent(val)

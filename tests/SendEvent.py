@@ -25,11 +25,9 @@
 
 import os
 import platform
-import sys
 import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
-from socket import gethostname
 import lsst.utils.tests as tests
 from testEnvironment import TestEnvironment
 

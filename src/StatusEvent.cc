@@ -36,7 +36,7 @@
 #include <limits>
 #include <cstring>
 
-#include "lsst/ctrl/events/LocationID.h"
+#include "lsst/ctrl/events/LocationId.h"
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
@@ -52,8 +52,6 @@
 #include <activemq/core/ActiveMQConnectionFactory.h>
 
 namespace pexExceptions = lsst::pex::exceptions;
-namespace pexLogging = lsst::pex::logging;
-
 
 using namespace std;
 using std::numeric_limits;
@@ -85,44 +83,44 @@ StatusEvent::StatusEvent(cms::TextMessage *msg) : Event(msg) {
     _psp->set(ORIG_LOCALID, (int)msg->getIntProperty(ORIG_LOCALID));
 }
 
-StatusEvent::StatusEvent(LocationID const& originatorID, 
+StatusEvent::StatusEvent(LocationId const& originatorID, 
                          PropertySet const& ps) : Event(ps) {
     _constructor(originatorID);
 }
 
-StatusEvent::StatusEvent(LocationID const& originatorID,
+StatusEvent::StatusEvent(LocationId const& originatorID,
                          PropertySet const& ps, 
                          PropertySet const& filterable) : Event(ps, filterable) {
     _constructor(originatorID);
 }
 
 StatusEvent::StatusEvent(std::string const& runID, 
-                         LocationID const& originatorID, 
+                         LocationId const& originatorID, 
                          PropertySet::Ptr const psp) : Event(runID, *psp) {
     _constructor(originatorID);
 }
 
 StatusEvent::StatusEvent(std::string const& runID, 
-                         LocationID const& originatorID, 
+                         LocationId const& originatorID, 
                          PropertySet::Ptr const psp, 
                          PropertySet const& filterable) : Event(runID, *psp, filterable) {
     _constructor(originatorID);
 }
 
 StatusEvent::StatusEvent(std::string const& runID, 
-                         LocationID const& originatorID, 
+                         LocationId const& originatorID, 
                          PropertySet const& ps) : Event(runID, ps) {
     _constructor(originatorID);
 }
 
 StatusEvent::StatusEvent(std::string const& runID, 
-                         LocationID const& originatorID,
+                         LocationId const& originatorID,
                          PropertySet const& ps,
                          PropertySet const& filterable) : Event(runID, ps, filterable) {
     _constructor(originatorID);
 }
 
-void StatusEvent::_constructor(LocationID const& originatorID) {
+void StatusEvent::_constructor(LocationId const& originatorID) {
     _init();
 
     _psp->set(ORIG_HOSTNAME, originatorID.getHostName());
@@ -140,16 +138,14 @@ void StatusEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setIntProperty(ORIG_LOCALID, _psp->get<int>(ORIG_LOCALID));
 }
 
-LocationID *StatusEvent::getOriginator() {
+LocationId *StatusEvent::getOriginator() {
     std::string hostname = _psp->get<std::string>(ORIG_HOSTNAME);
     int pid = _psp->get<int>(ORIG_PROCESSID);
     int local = _psp->get<int>(ORIG_LOCALID);
-    return new LocationID(hostname, pid, local);
+    return new LocationId(hostname, pid, local);
 }
 
 StatusEvent::~StatusEvent() {
 }
 
-}
-}
-}
+}}}

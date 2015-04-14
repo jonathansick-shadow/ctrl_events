@@ -74,11 +74,9 @@ class MultiTopicSendTestCase(unittest.TestCase):
     
         val = y1.receiveEvent()
         self.assertNotEqual(val, None)
-        ps = val.getPropertySet()
     
         val = y2.receiveEvent()
         self.assertNotEqual(val, None)
-        ps = val.getPropertySet()
 
 def suite():
     """Returns a suite containing all the tests cases in this module."""

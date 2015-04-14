@@ -37,13 +37,8 @@ Access to the lsst::ctrl::events classes
 
 %{
 #include "lsst/daf/base.h"
-/* swig pulls in references to ScreenLog.h and DualLog.h for some reason, so that's why these are here */
-#include "lsst/pex/logging.h"
-#include "lsst/pex/logging/BlockTimingLog.h"
-#include "lsst/pex/logging/ScreenLog.h"
-#include "lsst/pex/logging/DualLog.h"
 #include "lsst/ctrl/events/Host.h"
-#include "lsst/ctrl/events/LocationID.h"
+#include "lsst/ctrl/events/LocationId.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
@@ -52,19 +47,17 @@ Access to the lsst::ctrl::events classes
 #include "lsst/ctrl/events/EventTransmitter.h"
 #include "lsst/ctrl/events/EventReceiver.h"
 #include "lsst/ctrl/events/EventSystem.h"
-#include "lsst/ctrl/events/EventLog.h"
-#include "lsst/ctrl/events/EventFormatter.h"
 
 %}
 
 %include "lsst/p_lsstSwig.i"
 
-%shared_ptr(lsst::ctrl::events::EventFormatter)
-%shared_ptr(lsst::ctrl::events::LocationID)
+%shared_ptr(lsst::ctrl::events::LocationId)
 
 
 %import "lsst/daf/base/baseLib.i"
-%import "lsst/pex/logging/loggingLib.i"
+
+%include log4cxx.i
 
 %typemap(out) std::vector<std::string > {
     int len = ($1).size();
@@ -75,7 +68,7 @@ Access to the lsst::ctrl::events classes
 }
 
 %include "lsst/ctrl/events/Host.h"
-%include "lsst/ctrl/events/LocationID.h"
+%include "lsst/ctrl/events/LocationId.h"
 %include "lsst/ctrl/events/Event.h"
 %include "lsst/ctrl/events/StatusEvent.h"
 %include "lsst/ctrl/events/CommandEvent.h"
@@ -89,8 +82,6 @@ Access to the lsst::ctrl::events classes
 %newobject lsst::ctrl::events::EventReceiver::receiveCommandEvent;
 %newobject lsst::ctrl::events::EventReceiver::receiveLogEvent;
 %include "lsst/ctrl/events/EventReceiver.h"
-%include "lsst/ctrl/events/EventLog.h"
-%include "lsst/ctrl/events/EventFormatter.h"
 %include "lsst/ctrl/events/EventSystem.h"
 
 %extend lsst::ctrl::events::EventReceiver {

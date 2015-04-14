@@ -26,7 +26,6 @@
 import os
 import platform
 import unittest
-from socket import gethostname
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests

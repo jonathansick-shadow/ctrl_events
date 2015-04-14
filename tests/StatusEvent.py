@@ -25,7 +25,6 @@
 
 import os
 import platform
-import time
 import unittest
 import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
@@ -95,7 +94,6 @@ class StatusEventTestCase(unittest.TestCase):
     def testPlainStatusEvent(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
-        thisHost = platform.node()
 
         topic = self.createTopicName("test_events_10_%s.A")
         receiver = self.createReceiver(broker, topic)
@@ -119,7 +117,6 @@ class StatusEventTestCase(unittest.TestCase):
     def testStatusEventWithRunID(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
-        thisHost = platform.node()
 
         topicA = self.createTopicName("test_events_10_%s.B")
         receiverA = self.createReceiver(broker, topicA)
@@ -143,7 +140,6 @@ class StatusEventTestCase(unittest.TestCase):
     def testFilterableStatusEvent(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
-        thisHost = platform.node()
 
         topic = self.createTopicName("test_events_10_%s.C")
 
@@ -164,7 +160,6 @@ class StatusEventTestCase(unittest.TestCase):
     def testFilterableStatusEventWithRunID(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
-        thisHost = platform.node()
 
         topic = self.createTopicName("test_events_10_%s.D")
 

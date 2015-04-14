@@ -50,7 +50,7 @@ public:
     /** 
      * @brief get the Host object, which can access the host
      *         and ip address.
-     * @return The EventSystem object
+     * @return The Host object
      */
     static Host const& getHost();
 
@@ -73,8 +73,7 @@ protected:
     static unsigned int _IPAddr;
 
 };
-}
-}
-}
+
+}}}
 
 #endif /*end LSST_CTRL_EVENTS_HOST_H*/

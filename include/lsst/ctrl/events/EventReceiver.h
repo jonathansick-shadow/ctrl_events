@@ -41,7 +41,6 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/ctrl/events/Event.h"
@@ -118,9 +117,6 @@ private:
 
     // Object that receives the messages
     cms::MessageConsumer* _consumer;
-
-    // used to completely turn off event  transmission
-    bool _turnEventsOff;
 
     // the topic for this receiver
     std::string _topic;

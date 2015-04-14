@@ -23,12 +23,10 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
-import platform
 import socket
 import struct
 import unittest
 import lsst.ctrl.events as events
-from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
 
 class HostTestCase(unittest.TestCase):

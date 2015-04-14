@@ -43,14 +43,13 @@
 
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
-#include "lsst/ctrl/events/EventLog.h"
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/ctrl/events/EventLibrary.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/Host.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
-#include "lsst/ctrl/events/LocationID.h"
+#include "lsst/ctrl/events/LocationId.h"
 
 namespace pexExceptions =lsst::pex::exceptions;
 
@@ -137,8 +136,8 @@ Event* EventSystem::receiveEvent(std::string const& topicName, const long timeou
     return receiver->receiveEvent(timeout);
 }
 
-LocationID::Ptr EventSystem::createOriginatorId() const {
-    return LocationID::Ptr(new LocationID());
+LocationId::Ptr EventSystem::createOriginatorId() const {
+    return LocationId::Ptr(new LocationId());
 }
 
 /** private method used to retrieve the named EventReceiver object
@@ -161,6 +160,4 @@ CommandEvent* EventSystem::castToCommandEvent(Event* event) {
     return (CommandEvent *)event;
 }
 
-}
-}
-}
+}}}

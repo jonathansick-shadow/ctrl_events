@@ -41,15 +41,15 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include <log4cxx/spi/loggingevent.h>
+#include <log4cxx/helpers/pool.h>
+#include <log4cxx/level.h>
+
 #include "lsst/ctrl/events/Event.h"
-#include "lsst/pex/logging/LogRecord.h"
-#include "lsst/pex/logging/Component.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 
 using lsst::daf::base::PropertySet;
-
-namespace pexLogging = lsst::pex::logging;
 
 using namespace std;
 
@@ -64,12 +64,22 @@ namespace events {
 class LogEvent : public Event
 {
 public:
-    static const std::string COMMENT;
     static const std::string LEVEL;
-    static const std::string LOG;
+    static const std::string LOGGER;
+
+    static const std::string MESSAGE;
+    static const std::string TIMESTAMP;
+    static const std::string THREADNAME;
+    static const std::string FILENAME;
+    static const std::string CLASSNAME;
+    static const std::string METHODNAME;
+    static const std::string LINENUMBER;
+    static const std::string LOCATION;
+
+    static const std::string LOGGING_TOPIC;
 
     LogEvent();
-    LogEvent(const std::string& runid, const pexLogging::LogRecord& rec);
+    LogEvent(log4cxx::spi::LoggingEventPtr const& event, log4cxx::helpers::Pool& p);
     LogEvent(cms::TextMessage *msg);
 
     virtual ~LogEvent();
@@ -78,8 +88,8 @@ public:
 
     int getLevel();
 
-    std::string getLog();
-    vector<std::string> getComment();
+    std::string getLoggingTopic();
+    std::string getLogger();
 
 private:
     static const std::string DELIMITER;

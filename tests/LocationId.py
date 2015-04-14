@@ -28,23 +28,19 @@ import platform
 import socket
 import unittest
 import lsst.ctrl.events as events
-import lsst.daf.base as base
-import lsst.pex.logging as logging
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
 from testEnvironment import TestEnvironment
 
-class LocationIDTestCase(unittest.TestCase):
-    """Test LocationID"""
+class LocationIdTestCase(unittest.TestCase):
+    """Test LocationId"""
         
-    def testLocationID(self):
+    def testLocationId(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
         thisHost = platform.node()
 
-        eventSystem = events.EventSystem.getDefaultEventSystem()
-
-        locationID = events.LocationID()
+        locationID = events.LocationId()
 
         # check to see if localID is 0
         localId = locationID.getLocalID()
@@ -58,7 +54,7 @@ class LocationIDTestCase(unittest.TestCase):
         processId = locationID.getProcessID()
         self.assertEqual(processId, os.getpid())
 
-        locationID2 = events.LocationID()
+        locationID2 = events.LocationId()
 
         # check to see if localID is 1
         localId = locationID2.getLocalID()
@@ -113,7 +109,7 @@ def suite():
     """Returns a suite containing all the tests cases in this module."""
     tests.init()
     suites = []
-    suites += unittest.makeSuite(LocationIDTestCase)
+    suites += unittest.makeSuite(LocationIdTestCase)
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
 

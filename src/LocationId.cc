@@ -23,7 +23,7 @@
  */
 
 /** 
- * @file LocationID.cc
+ * @file LocationId.cc
  *
  * @ingroup ctrl/events
  *
@@ -33,46 +33,44 @@
 
 #include <sys/types.h>
 #include <unistd.h>
-#include "lsst/ctrl/events/LocationID.h"
+#include "lsst/ctrl/events/LocationId.h"
 #include "lsst/ctrl/events/Host.h"
 
 namespace lsst {
 namespace ctrl {
 namespace events {
 
-LocationID::LocationID() {
+LocationId::LocationId() {
     Host host = Host::getHost();
     _hostname = host.getHostName();
     _pid = getpid();
     _localID = _localCounter++;
 }
 
-LocationID::LocationID(std::string const& hostname, int pid, int localID) : 
+LocationId::LocationId(std::string const& hostname, int pid, int localID) : 
     _hostname(hostname),
     _pid(pid),
     _localID(localID) 
     {}
 
-LocationID::LocationID(LocationID const& id) {
+LocationId::LocationId(LocationId const& id) {
     _hostname = id.getHostName();
     _pid = id.getProcessID();
     _localID = id.getLocalID();
 }
 
-int LocationID::_localCounter = 0;
+int LocationId::_localCounter = 0;
 
-std::string LocationID::getHostName() const {
+std::string LocationId::getHostName() const {
     return _hostname;
 }
 
-int LocationID::getProcessID() const {
+int LocationId::getProcessID() const {
     return _pid;
 }
 
-int LocationID::getLocalID() const {
+int LocationId::getLocalID() const {
     return _localID;
 }
 
-}
-}
-}
+}}}

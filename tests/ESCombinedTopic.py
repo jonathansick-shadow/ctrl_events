@@ -25,7 +25,6 @@
 
 import os
 import platform
-import time
 import unittest
 import lsst.ctrl.events as events
 import lsst.daf.base as base
@@ -55,7 +54,6 @@ class CombinedEventTestCase(unittest.TestCase):
     def testCombinedEvent(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
-        thisHost = platform.node()
 
         topic1 = "test_events_3_%s_%d" % (platform.node(), os.getpid())
         topic2 = "test_events_3a_%s_%d" % (platform.node(), os.getpid())

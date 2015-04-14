@@ -43,8 +43,6 @@
 #include "lsst/daf/base/DateTime.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
-#include "lsst/pex/logging/Component.h"
-#include "lsst/pex/logging/LogRecord.h"
 #include <sys/socket.h>
 #include <sys/un.h>
 #include "lsst/ctrl/events/EventLibrary.h"
@@ -54,7 +52,6 @@
 
 namespace dafBase = lsst::daf::base;
 namespace pexExceptions = lsst::pex::exceptions;
-namespace pexLogging = lsst::pex::logging;
 
 
 using namespace std;
@@ -67,7 +64,6 @@ namespace events {
 EventTransmitter::EventTransmitter( const std::string& hostName, const std::string& topicName, int hostPort) {
     EventLibrary().initializeLibrary();
 
-    _turnEventsOff = false;
     init(hostName, topicName, hostPort);
 }
 
@@ -77,13 +73,10 @@ EventTransmitter::EventTransmitter( const std::string& hostName, const std::stri
 void EventTransmitter::init( const std::string& hostName, const std::string& topicName, int hostPort) {
     _connection = NULL;
     _session = NULL;
-    // _destination = NULL;
+    
     _producer = NULL;
     _topicName = topicName;
     _topic = NULL;
-
-    if (_turnEventsOff == true)
-        return;
 
     // set up a connection to the ActiveMQ server for message transmission
     try {
@@ -155,6 +148,7 @@ EventTransmitter::~EventTransmitter() {
 
     if (_topic != NULL)
         delete _topic;
+    _topic = NULL;
 
     try {
         if( _producer != NULL )
@@ -191,6 +185,4 @@ EventTransmitter::~EventTransmitter() {
     _connection = NULL;
 }
 
-}
-}
-}
+}}}
