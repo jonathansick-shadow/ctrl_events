@@ -54,13 +54,15 @@ Host const& Host::getHost() {
         // identificationId
 
         long int host_len = sysconf(_SC_HOST_NAME_MAX)+1; // add one for the null
-        _hostname.reserve(host_len);
+
+        std::vector<char> vec;
+        vec.resize(host_len);
 
         struct hostent *ent;
         unsigned char a,b,c,d;
 
-        if (gethostname(const_cast<char *>(_hostname.c_str()), host_len) == 0) {
-            _hostname.assign(_hostname.c_str(),strlen(_hostname.c_str()));
+        if (gethostname(vec.data(), vec.size()) == 0) {
+            _hostname = std::string(vec.data());
         } else {
             std::string msg("call to gethostname() failed");
             throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
