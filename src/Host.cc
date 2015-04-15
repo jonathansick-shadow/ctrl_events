@@ -38,6 +38,9 @@
 #include <unistd.h>
 
 #include "lsst/ctrl/events/Host.h"
+#include "lsst/pex/exceptions.h"
+
+namespace pexExceptions = lsst::pex::exceptions;
 
 namespace lsst {
 namespace ctrl {
@@ -50,15 +53,24 @@ Host const& Host::getHost() {
         // reconstructing it every time we create an
         // identificationId
 
-        long int host_len = sysconf(_SC_HOST_NAME_MAX);
+        long int host_len = sysconf(_SC_HOST_NAME_MAX)+1; // add one for the null
         boost::scoped_array<char> buf(new char[host_len]);
 
         struct hostent *ent;
         unsigned char a,b,c,d;
 
-        gethostname(buf.get(), host_len);
-        _hostname.assign(buf.get(),strlen(buf.get()));
-        ent = (struct hostent *)gethostbyname(buf.get()) ;
+        if (gethostname(buf.get(), host_len) == 0) {
+            _hostname.assign(buf.get(),strlen(buf.get()));
+        } else {
+            std::string msg("call to gethostname() failed");
+            throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
+        }
+
+        ent = (struct hostent *)gethostbyname(buf.get());
+        if (ent == NULL) {
+            std::string msg("call to gethostbyname() failed");
+            throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
+        }
 
         a = ent->h_addr_list[0][0] & 0xFF;
         b = ent->h_addr_list[0][1] & 0xFF;
