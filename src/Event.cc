@@ -196,10 +196,6 @@ Event::Event(std::string const& runId, PropertySet const& ps, PropertySet const&
 }
 
 void Event::_constructor(std::string const& runId, PropertySet const& ps, PropertySet const& filterable) {
-    long int host_len = sysconf(_SC_HOST_NAME_MAX);
-
-    boost::scoped_array<char> hostname(new char[host_len]);
-
     _init();
     
     _psp = ps.deepCopy();

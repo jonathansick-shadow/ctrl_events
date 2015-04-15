@@ -34,6 +34,8 @@
 #include <string>
 #include <string.h>
 #include <netdb.h>
+#include "boost/scoped_array.hpp"
+#include <unistd.h>
 
 #include "lsst/ctrl/events/Host.h"
 
@@ -48,11 +50,13 @@ Host const& Host::getHost() {
         // reconstructing it every time we create an
         // identificationId
 
-        char buf [HOST_NAME_MAX];
+        long int host_len = sysconf(_SC_HOST_NAME_MAX);
+        char buf[host_len];
+
         struct hostent *ent;
         unsigned char a,b,c,d;
 
-        gethostname(buf, HOST_NAME_MAX);
+        gethostname(buf, host_len);
         _hostname.assign(buf,strlen(buf));
         ent = (struct hostent *)gethostbyname(buf) ;
 
