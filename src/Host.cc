@@ -51,14 +51,14 @@ Host const& Host::getHost() {
         // identificationId
 
         long int host_len = sysconf(_SC_HOST_NAME_MAX);
-        char buf[host_len];
+        boost::scoped_array<char> buf(new char[host_len]);
 
         struct hostent *ent;
         unsigned char a,b,c,d;
 
-        gethostname(buf, host_len);
-        _hostname.assign(buf,strlen(buf));
-        ent = (struct hostent *)gethostbyname(buf) ;
+        gethostname(buf.get(), host_len);
+        _hostname.assign(buf.get(),strlen(buf.get()));
+        ent = (struct hostent *)gethostbyname(buf.get()) ;
 
         a = ent->h_addr_list[0][0] & 0xFF;
         b = ent->h_addr_list[0][1] & 0xFF;
