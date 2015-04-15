@@ -54,19 +54,19 @@ Host const& Host::getHost() {
         // identificationId
 
         long int host_len = sysconf(_SC_HOST_NAME_MAX)+1; // add one for the null
-        boost::scoped_array<char> buf(new char[host_len]);
+        _hostname.reserve(host_len);
 
         struct hostent *ent;
         unsigned char a,b,c,d;
 
-        if (gethostname(buf.get(), host_len) == 0) {
-            _hostname.assign(buf.get(),strlen(buf.get()));
+        if (gethostname(const_cast<char *>(_hostname.c_str()), host_len) == 0) {
+            _hostname.assign(_hostname.c_str(),strlen(_hostname.c_str()));
         } else {
             std::string msg("call to gethostname() failed");
             throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
         }
 
-        ent = (struct hostent *)gethostbyname(buf.get());
+        ent = (struct hostent *)gethostbyname(_hostname.c_str());
         if (ent == NULL) {
             std::string msg("call to gethostbyname() failed");
             throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
