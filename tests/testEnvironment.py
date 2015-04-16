@@ -41,6 +41,11 @@ class TestEnvironment:
         # expected to reach the broker above.
         self.testDomains = ["ncsa.illinois.edu"]
 
+        # add any hosts not in the domain above where the tests 
+        # will be running and still be expected to reach the broker.
+        # this is here for anyone that wants to run these tests locally
+        self.testHosts = []
+
     def getBroker(self):
         return self.broker
 
@@ -56,5 +61,16 @@ class TestEnvironment:
     def validTestDomain(self):
         """is the host this code is running on in the test domain list"""
         host = platform.node()        
+        # no host?
+        if host is None:
+            return False
+        # check to see if the host is listed as able to run the tests
+        if host in self.testHosts:
+            return True
+        # if we don't have a domain at this point, and it's not in the
+        # approved host list, return False
+        if host.find('.') == -1:
+            return False
+        # split the domain portion off to see if it's in the valid domain list
         domain = host.split('.',1)[1]
         return domain in self.testDomains
