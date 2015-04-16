@@ -34,8 +34,13 @@
 #include <string>
 #include <string.h>
 #include <netdb.h>
+#include "boost/scoped_array.hpp"
+#include <unistd.h>
 
 #include "lsst/ctrl/events/Host.h"
+#include "lsst/pex/exceptions.h"
+
+namespace pexExceptions = lsst::pex::exceptions;
 
 namespace lsst {
 namespace ctrl {
@@ -48,13 +53,26 @@ Host const& Host::getHost() {
         // reconstructing it every time we create an
         // identificationId
 
-        char buf [HOST_NAME_MAX];
+        long int host_len = sysconf(_SC_HOST_NAME_MAX)+1; // add one for the null
+
+        std::vector<char> vec;
+        vec.resize(host_len);
+
         struct hostent *ent;
         unsigned char a,b,c,d;
 
-        gethostname(buf, HOST_NAME_MAX);
-        _hostname.assign(buf,strlen(buf));
-        ent = (struct hostent *)gethostbyname(buf) ;
+        if (gethostname(vec.data(), vec.size()) == 0) {
+            _hostname = std::string(vec.data());
+        } else {
+            std::string msg("call to gethostname() failed");
+            throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
+        }
+
+        ent = (struct hostent *)gethostbyname(_hostname.c_str());
+        if (ent == NULL) {
+            std::string msg("call to gethostbyname() failed");
+            throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
+        }
 
         a = ent->h_addr_list[0][0] & 0xFF;
         b = ent->h_addr_list[0][1] & 0xFF;

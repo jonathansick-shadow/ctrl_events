@@ -38,13 +38,11 @@ class HostTestCase(unittest.TestCase):
         
         ipAddr2 = socket.gethostbyname(socket.gethostname())
         self.assertEqual(ipAddr1, ipAddr2)
-        pass
 
 
     def testHostName(self):
         host = events.Host.getHost()
         self.assertEqual(socket.gethostname(), host.getHostName())
-        pass
         
 def suite():
     """Returns a suite containing all the tests cases in this module."""
