@@ -34,7 +34,6 @@
 #include <limits>
 #include <cstring>
 #include <unistd.h>
-#include <syscall.h>
 
 #include <log4cxx/helpers/stringhelper.h>
 #include <log4cxx/helpers/pool.h>
