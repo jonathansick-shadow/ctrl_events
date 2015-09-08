@@ -80,6 +80,8 @@ void EventAppender::setOption(const LogString& option, const LogString& value) {
         _port = atoi(value.c_str());
     } else if (StringHelper::equalsIgnoreCase(option, LOG4CXX_STR("TOPIC"), LOG4CXX_STR("topic"))) {
         _topic = value;
+    } else if (StringHelper::equalsIgnoreCase(option, LOG4CXX_STR("RUNID"), LOG4CXX_STR("runid"))) {
+        _runid = value;
     } else {
         AppenderSkeleton::setOption(option, value);
     }
@@ -132,7 +134,12 @@ void EventAppender::append(const spi::LoggingEventPtr& event, helpers::Pool& p) 
 
     psp->set("location", loc);
 
-    ctrlEvents::Event e = ctrlEvents::Event(*psp);
+    ctrlEvents::Event e;
+    if (_runid.empty()) {
+        e = ctrlEvents::Event(*psp);
+    } else {
+        e = ctrlEvents::Event(_runid, *psp);
+    }
 
     EventTransmitter *transmitter = getTransmitter();
 

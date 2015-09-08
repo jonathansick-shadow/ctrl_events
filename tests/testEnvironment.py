@@ -23,6 +23,7 @@
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
+import os
 import platform
 import lsst.ctrl.events as events
 
@@ -53,7 +54,12 @@ class TestEnvironment:
         return self.port
 
     def getLoggingTopic(self):
-        return self.logging_topic
+        thisHost = platform.node()
+
+        host_pid = "%s_%d" % (thisHost, os.getpid())
+
+        topic = "%s_%s" % (self.logging_topic, host_pid)
+        return topic
         
     def getTestDomains(self):
         return self.testDomains

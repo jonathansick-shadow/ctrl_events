@@ -92,13 +92,15 @@ class TestLog(unittest.TestCase):
     @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testBrokerOption(self):
         testEnv = TestEnvironment()
+        topic = testEnv.getLoggingTopic()
         confStr = "log4j.rootLogger=TRACE, EA\n"
         confStr += "log4j.appender.EA=EventAppender\n"
         confStr += "log4j.appender.EA.BROKER="+testEnv.getBroker()+"\n"
+        confStr += "log4j.appender.EA.TOPIC="+topic+"\n"
 
         self.configure(confStr)
 
-        recv = events.EventReceiver(testEnv.getBroker(), testEnv.getLoggingTopic())
+        recv = events.EventReceiver(testEnv.getBroker(), topic)
         log.MDC("x", 3)
         with log.LogContext("component"):
             log.trace("This is TRACE")
@@ -114,14 +116,16 @@ class TestLog(unittest.TestCase):
     @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testBrokerPortOption(self):
         testEnv = TestEnvironment()
+        topic = testEnv.getLoggingTopic()
         confStr = "log4j.rootLogger=TRACE, EA\n"
         confStr += "log4j.appender.EA=EventAppender\n"
         confStr += "log4j.appender.EA.BROKER="+testEnv.getBroker()+"\n"
         confStr += "log4j.appender.EA.PORT="+str(testEnv.getPort())+"\n"
+        confStr += "log4j.appender.EA.TOPIC="+topic+"\n"
 
         self.configure(confStr)
 
-        recv = events.EventReceiver(testEnv.getBroker(), testEnv.getLoggingTopic())
+        recv = events.EventReceiver(testEnv.getBroker(), topic)
         log.MDC("x", 3)
         with log.LogContext("component"):
             log.trace("This is TRACE")
@@ -137,15 +141,16 @@ class TestLog(unittest.TestCase):
     @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testBrokerTopicOption(self):
         testEnv = TestEnvironment()
+        weirdTopic = testEnv.getLoggingTopic()+"_"+testEnv.getLoggingTopic()
         confStr = "log4j.rootLogger=TRACE, EA\n"
         confStr += "log4j.appender.EA=EventAppender\n"
         confStr += "log4j.appender.EA.BROKER="+testEnv.getBroker()+"\n"
         confStr += "log4j.appender.EA.PORT="+str(testEnv.getPort())+"\n"
-        confStr += "log4j.appender.EA.TOPIC="+str(testEnv.getLoggingTopic())+"\n"
+        confStr += "log4j.appender.EA.TOPIC="+weirdTopic+"\n"
 
         self.configure(confStr)
 
-        recv = events.EventReceiver(testEnv.getBroker(), testEnv.getLoggingTopic())
+        recv = events.EventReceiver(testEnv.getBroker(), weirdTopic)
         log.MDC("x", 3)
         with log.LogContext("component"):
             log.trace("This is TRACE")
@@ -225,6 +230,90 @@ class TestLog(unittest.TestCase):
         self.assertConfigOutput(confStr, "log4cxx: Couldn't reach broker " + broker + " at port " + str(port))
 
 ###############################################################################
+
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
+    def testRunidSelector(self):
+        testEnv = TestEnvironment()
+        topic = testEnv.getLoggingTopic()
+        confStr = "log4j.rootLogger=TRACE, EA\n"
+        confStr += "log4j.appender.EA=EventAppender\n"
+        confStr += "log4j.appender.EA.BROKER="+testEnv.getBroker()+"\n"
+        confStr += "log4j.appender.EA.RUNID="+str(os.getpid())+"\n";
+        confStr += "log4j.appender.EA.TOPIC="+topic+"\n"
+
+        self.configure(confStr)
+
+        # receive for all events
+        recvALL = events.EventReceiver(testEnv.getBroker(), topic)
+
+        # receive for events for this runid
+        recv = events.EventReceiver(testEnv.getBroker(), topic, "RUNID = '%s'" % str(os.getpid()))
+
+        # send log messages
+        log.MDC("x", 3)
+        with log.LogContext("component"):
+            log.trace("This is TRACE")
+            log.info("This is INFO")
+            log.debug("This is DEBUG")
+        log.MDCRemove("x")
+
+        # make sure we got all the events we should have
+        self.assertValidMessage(recv.receiveEvent(), "This is TRACE")
+        self.assertValidMessage(recv.receiveEvent(), "This is INFO")
+        self.assertValidMessage(recv.receiveEvent(), "This is DEBUG")
+
+        # make sure we didn't get any more than we should have
+        ev = recv.receiveEvent(100)
+        self.assertEqual(ev, None)
+
+        # reconfigure with a new run id
+        confStr2 = "log4j.rootLogger=TRACE, EA\n"
+        confStr2 += "log4j.appender.EA=EventAppender\n"
+        confStr2 += "log4j.appender.EA.BROKER="+testEnv.getBroker()+"\n"
+        confStr2 += "log4j.appender.EA.RUNID="+"blah_"+str(os.getpid())+"\n";
+        confStr2 += "log4j.appender.EA.TOPIC="+topic+"\n"
+        self.configure(confStr2)
+
+        # set up a receiver for the new run id
+        recv2 = events.EventReceiver(testEnv.getBroker(), topic, "RUNID = 'blah_%s'" % str(os.getpid()))
+
+        # send log messages
+        log.MDC("x", 3)
+        with log.LogContext("component"):
+            log.trace("This is TRACE")
+            log.info("This is INFO")
+            log.debug("This is DEBUG")
+        log.MDCRemove("x")
+
+        # make sure we didn't receive any events from another run id
+        ev = recv.receiveEvent(100)
+        self.assertEqual(ev, None)
+
+        # make sure we got all the events we should have
+        self.assertValidMessage(recv2.receiveEvent(), "This is TRACE")
+        self.assertValidMessage(recv2.receiveEvent(), "This is INFO")
+        self.assertValidMessage(recv2.receiveEvent(), "This is DEBUG")
+
+        # make sure we didn't get any more than we should have
+        ev = recv2.receiveEvent(100)
+        self.assertEqual(ev, None)
+
+        # make sure we got all the events, for all messages on this topic
+        self.assertValidMessage(recvALL.receiveEvent(), "This is TRACE")
+        self.assertValidMessage(recvALL.receiveEvent(), "This is INFO")
+        self.assertValidMessage(recvALL.receiveEvent(), "This is DEBUG")
+
+        self.assertValidMessage(recvALL.receiveEvent(), "This is TRACE")
+        self.assertValidMessage(recvALL.receiveEvent(), "This is INFO")
+        self.assertValidMessage(recvALL.receiveEvent(), "This is DEBUG")
+
+        # make sure we didn't get any more than we should have
+        ev = recvALL.receiveEvent(100)
+        self.assertEqual(ev, None)
+        
+
+###############################################################################
+
 
 def main():
     unittest.main()
