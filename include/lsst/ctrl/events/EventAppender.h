@@ -125,6 +125,7 @@ protected:
     LogString _broker; /* name of the broker */
     LogString _topic;  /* name of the topic where events are sent */
     int _port;         /* port number used by the broker */
+    LogString _runid;  /* run id which can be used for selectors */
 
 };
     LOG4CXX_PTR_DEF(EventAppender);
