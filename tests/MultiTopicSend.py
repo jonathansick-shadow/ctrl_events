@@ -50,6 +50,7 @@ class MultiTopicSendTestCase(unittest.TestCase):
         event = events.Event("runid_test6",root)
         trans.publishEvent(event)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testMultiTopicSend(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()

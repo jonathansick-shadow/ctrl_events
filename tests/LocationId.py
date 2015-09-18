@@ -35,6 +35,7 @@ from testEnvironment import TestEnvironment
 class LocationIdTestCase(unittest.TestCase):
     """Test LocationId"""
         
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testLocationId(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
