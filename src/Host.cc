@@ -35,6 +35,7 @@
 #include <string.h>
 #include <netdb.h>
 #include "boost/scoped_array.hpp"
+#include <ifaddrs.h>
 #include <unistd.h>
 
 #include "lsst/ctrl/events/Host.h"
@@ -49,7 +50,7 @@ namespace events {
 Host const& Host::getHost() {
     if (thisHost == 0) {
 
-        // create the _IPAddr here, rather than
+        // create the _hostname here, rather than
         // reconstructing it every time we create an
         // identificationId
 
@@ -58,9 +59,6 @@ Host const& Host::getHost() {
         std::vector<char> vec;
         vec.resize(host_len);
 
-        struct hostent *ent;
-        unsigned char a,b,c,d;
-
         if (gethostname(vec.data(), vec.size()) == 0) {
             _hostname = std::string(vec.data());
         } else {
@@ -68,19 +66,6 @@ Host const& Host::getHost() {
             throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
         }
 
-        ent = (struct hostent *)gethostbyname(_hostname.c_str());
-        if (ent == NULL) {
-            std::string msg("call to gethostbyname() failed");
-            throw LSST_EXCEPT(pexExceptions::RuntimeError, msg);
-        }
-
-        a = ent->h_addr_list[0][0] & 0xFF;
-        b = ent->h_addr_list[0][1] & 0xFF;
-        c = ent->h_addr_list[0][2] & 0xFF;
-        d = ent->h_addr_list[0][3] & 0xFF;
-
-        _IPAddr = (a << 24) | (b << 16) | (c << 8) | d;
-  
         // create the default EventSystem object
         thisHost = new Host();
     }
@@ -89,12 +74,7 @@ Host const& Host::getHost() {
 }
 
 Host* Host::thisHost = 0;
-unsigned int Host::_IPAddr = 0;
 std::string Host::_hostname;
-
-unsigned int const Host::getIPAddress() {
-    return _IPAddr;
-}
 
 std::string const& Host::getHostName() {
     return _hostname;

@@ -32,14 +32,6 @@ import lsst.utils.tests as tests
 class HostTestCase(unittest.TestCase):
     """A test for Host"""
 
-    def testHostIPAddress(self):
-        host = events.Host.getHost()
-        ipAddr1 = socket.inet_ntoa(struct.pack('!L',host.getIPAddress()))
-        
-        ipAddr2 = socket.gethostbyname(socket.gethostname())
-        self.assertEqual(ipAddr1, ipAddr2)
-
-
     def testHostName(self):
         host = events.Host.getHost()
         self.assertEqual(socket.gethostname(), host.getHostName())
