@@ -55,12 +55,6 @@ public:
     static Host const& getHost();
 
     /** 
-     * @brief get the IP address
-     * @return an integer representing the IP address
-     */
-    unsigned int const getIPAddress();
-
-    /** 
      * @brief get the host name
      * @return a std::string containing the name of the hsot
      */
@@ -70,7 +64,6 @@ protected:
     static Host* thisHost;
 
     static std::string _hostname;
-    static unsigned int _IPAddr;
 
 };
 
