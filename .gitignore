@@ -19,3 +19,5 @@ tests/EventSystem_1
 tests/EventSystem_2
 tests/Events_1
 tests/Events_2
+bin/EventListener.py
+bin/logwatcher.py
