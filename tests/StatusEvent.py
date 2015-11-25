@@ -54,8 +54,6 @@ class StatusEventTestCase(unittest.TestCase):
         root.set("STATUS", "my special status")
         root.set("logger.status", "my logger special status")
         root.set("logger.pid", "1")
-        #root.set("logger.pid.foo", 1)
-        #root.set("logger.pid.bar", 2)
         
         eventSystem = events.EventSystem.getDefaultEventSystem();
         locationID = eventSystem.createOriginatorId()
@@ -106,7 +104,8 @@ class StatusEventTestCase(unittest.TestCase):
 
         self.assertNotEqual(val, None)
         values = ['EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
-        self.assertValid(val, values, 2)
+        customValues = ['myname', 'logger']
+        self.assertValid(val, values, customValues)
 
         self.assertNotEqual(val.getEventTime(), 0)
         self.assertNotEqual(val.getPubTime(), 0)
@@ -130,7 +129,8 @@ class StatusEventTestCase(unittest.TestCase):
         val = receiverA.receiveEvent()
         self.assertNotEqual(val, None)
         values = ['EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE', 'RUNID']
-        self.assertValid(val, values, 2)
+        customValues = ['myname', 'logger']
+        self.assertValid(val, values, customValues)
 
         self.assertNotEqual(val.getEventTime(), 0)
         self.assertNotEqual(val.getPubTime(), 0)
@@ -154,7 +154,8 @@ class StatusEventTestCase(unittest.TestCase):
         # should only be ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
         # in some order
         values = ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
-        self.assertValid(val, values, 1)
+        customValues = ['myname']
+        self.assertValid(val, values, customValues)
 
     @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testFilterableStatusEventWithRunID(self):
@@ -172,18 +173,20 @@ class StatusEventTestCase(unittest.TestCase):
         # should receive an event
         self.assertNotEqual(val, None)
         values = ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE']
-        self.assertValid(val, values, 1)
+        customValues = ['myname']
+        self.assertValid(val, values, customValues)
 
 
-    def assertValid(self, val, values, customCount):
+    def assertValid(self, val, values, customValues):
+        customCount = len(customValues)
         # get custom property names
         names = val.getCustomPropertyNames()
 
-        # should only be one custom property name...
+        # should only be the assumed custom property names...
         self.assertEqual(len(names), customCount)
 
-        # ...and that name should be "myname"
-        self.assertEqual(names[0], "myname")
+        for i in range(len(customValues)):
+            self.assertTrue(customValues[i] in names)
 
 
         # get custom property set
@@ -206,8 +209,6 @@ class StatusEventTestCase(unittest.TestCase):
 
         # get the entire property set
         ps = val.getPropertySet()
-        print "Entire property set"
-        print ps.toString()
 
         allValues = list(values)
         allValues.append('myname')
