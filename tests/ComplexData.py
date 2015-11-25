@@ -59,7 +59,6 @@ class ComplexDataTestCase(unittest.TestCase):
         root.set("logger.pid.xyzzy", 1)
         root.set("logger.pid.plover", 3.14)
         root.set("logger.pid.plugh", "a hollow voice says")
-        print "SENDING: ",root.toString()
         
         eventSystem = events.EventSystem.getDefaultEventSystem();
         locationID = eventSystem.createOriginatorId()
@@ -121,7 +120,8 @@ class ComplexDataTestCase(unittest.TestCase):
 
         self.assertNotEqual(val, None)
         values = ['EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
-        self.checkValidity(val, values)
+        customValues = ['logger', 'myname', 'value']
+        self.checkValidity(val, values, customValues)
 
         self.assertNotEqual(val.getEventTime(), 0)
         self.assertNotEqual(val.getPubTime(), 0)
@@ -156,26 +156,25 @@ class ComplexDataTestCase(unittest.TestCase):
 
         self.assertRaises(ex.Exception, trans.publishEvent, event)
 
-    def checkValidity(self, val, values):
+    def checkValidity(self, val, values, customValues):
+
         # get custom property names
         names = val.getCustomPropertyNames()
 
         # should only be two custom property names...
-        self.assertEqual(len(names), 3)
+        self.assertEqual(len(names), len(customValues))
 
-        # ...and that name should be "myname"
-        self.assertEqual(names[0], "myname")
+        for i in range(len(customValues)):
+            self.assertTrue(customValues[i] in names)
 
 
         # get custom property set
         ps = val.getCustomPropertySet()
 
-        # should only be two custom property names...
-        self.assertEqual(ps.nameCount(), 3)
+        self.assertEqual(ps.nameCount(), len(customValues))
 
         # ...and that should be "myname"
         self.assertTrue(ps.exists("myname"))
-        print "CustomPropertySet:",ps.toString()
 
 
         # check filterable property names
@@ -189,8 +188,6 @@ class ComplexDataTestCase(unittest.TestCase):
 
         # get the entire property set
         ps = val.getPropertySet()
-        print "Entire property set"
-        print ps.toString()
 
         allValues = list(values)
         allValues.append('myname')
