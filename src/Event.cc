@@ -88,6 +88,7 @@ void Event::_init() {
     _keywords.insert(STATUS);
     _keywords.insert(TOPIC);
     _keywords.insert(PUBTIME);
+    _psp = PropertySet::Ptr(new PropertySet);
 }
 
 Event::Event(cms::TextMessage *msg) {
@@ -218,8 +219,8 @@ void Event::_constructor(std::string const& runId, PropertySet const& ps, Proper
         _psp->set(RUNID, runId);
     }
 
-    // _type is filled in here and is ignored in the passed PropertySet
-    _psp->set(TYPE, EventTypes::EVENT);
+    if (!_psp->exists(TYPE)) 
+        _psp->set(TYPE, EventTypes::EVENT);
 
     // _topic is filled in on publish and is ignored in the passed PropertySet
     _psp->set(TOPIC, Event::UNINITIALIZED);
@@ -332,6 +333,11 @@ std::string Event::getRunId() {
     throw LSST_EXCEPT(pexExceptions::RuntimeError, std::string("property RUNID not found"));
 }
 
+void Event::setRunId(std::string runid) {
+    _keywords.insert(RUNID);
+    _psp->set(RUNID, runid);
+}
+
 std::string Event::getType() {
     return _psp->get<std::string>(TYPE);
 }
@@ -341,7 +347,7 @@ std::string Event::getStatus() {
 }
 
 void  Event::setStatus(std::string status) {
-    return _psp->set(STATUS, status);
+    _psp->set(STATUS, status);
 }
 
 void Event::setTopic(std::string topic) {

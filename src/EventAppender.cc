@@ -40,6 +40,7 @@
 #include <log4cxx/spi/location/locationinfo.h>
 #include <log4cxx/helpers/loglog.h>
 
+#include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/EventBroker.h"
 #include "lsst/ctrl/events/EventAppender.h"
 #include "lsst/ctrl/events/EventSystem.h"
@@ -116,30 +117,31 @@ EventTransmitter* EventAppender::getTransmitter() {
     
 
 void EventAppender::append(const spi::LoggingEventPtr& event, helpers::Pool& p) {
-    PropertySet::Ptr psp(new PropertySet);
+    PropertySet::Ptr logProp (new PropertySet);
+    logProp->set(LogEvent::TYPE, EventTypes::LOG);
 
-    psp->set("logger", event->getLoggerName());
-    psp->set("message", event->getMessage());
-    psp->set("timestamp", event->getTimeStamp());
-    psp->set("threadname", event->getThreadName());
-    psp->set("level", event->getLevel()->toInt());
+    logProp->set(LogEvent::LOGGER, event->getLoggerName());
+    logProp->set(LogEvent::LEVEL, event->getLevel()->toInt());
+
+    logProp->set(LogEvent::MESSAGE, event->getMessage());
+    logProp->set(LogEvent::TIMESTAMP, event->getTimeStamp());
+    logProp->set(LogEvent::THREADNAME, event->getThreadName());
 
     spi::LocationInfo location = event->getLocationInformation();
 
     PropertySet::Ptr loc(new PropertySet);
-    loc->set("filename", location.getFileName());
-    loc->set("classname", location.getClassName());
-    loc->set("methodname", location.getMethodName());
-    loc->set("linenumber", location.getLineNumber());
+    loc->set(LogEvent::FILENAME, location.getFileName());
+    loc->set(LogEvent::CLASSNAME, location.getClassName());
+    loc->set(LogEvent::METHODNAME, location.getMethodName());
+    loc->set(LogEvent::LINENUMBER, location.getLineNumber());
 
-    psp->set("location", loc);
+    logProp->set(LogEvent::LOCATION, loc);
 
-    ctrlEvents::Event e;
-    if (_runid.empty()) {
-        e = ctrlEvents::Event(*psp);
-    } else {
-        e = ctrlEvents::Event(_runid, *psp);
-    }
+    LocationId::Ptr originatorId(new LocationId());
+
+    ctrlEvents::LogEvent e = ctrlEvents::LogEvent(*originatorId, *logProp);
+    if (!_runid.empty())
+        e.setRunId(_runid);
 
     EventTransmitter *transmitter = getTransmitter();
 
