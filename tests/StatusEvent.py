@@ -110,6 +110,7 @@ class StatusEventTestCase(unittest.TestCase):
         self.assertNotEqual(val.getEventTime(), 0)
         self.assertNotEqual(val.getPubTime(), 0)
         self.assertGreater(val.getPubTime(), val.getEventTime())
+        self.assertEqual(val.getType(), events.EventTypes.STATUS)
 
 
     @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
