@@ -138,13 +138,14 @@ public:
      */
     LocationId *getOriginator();
 
-private:
-    void _init();
-    void _constructor(LocationId const& originator);
     /*  method used to take originator from the TextMessage to set in
      * the StatusEvent
      */
     virtual void populateHeader(cms::TextMessage *msg) const;
+
+private:
+    void _init();
+    void _constructor(LocationId const& originator);
 
 
 };

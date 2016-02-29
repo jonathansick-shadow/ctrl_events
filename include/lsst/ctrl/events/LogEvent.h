@@ -46,6 +46,7 @@
 #include <log4cxx/level.h>
 
 #include "lsst/ctrl/events/Event.h"
+#include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 
@@ -61,11 +62,12 @@ namespace events {
  * @brief Representation of an LSST Event
  */
 
-class LogEvent : public Event
+class LogEvent : public StatusEvent
 {
 public:
     static const std::string LEVEL;
     static const std::string LOGGER;
+
 
     static const std::string MESSAGE;
     static const std::string TIMESTAMP;
@@ -79,7 +81,7 @@ public:
     static const std::string LOGGING_TOPIC;
 
     LogEvent();
-    LogEvent(log4cxx::spi::LoggingEventPtr const& event, log4cxx::helpers::Pool& p);
+    LogEvent(LocationId const& originatorId, PropertySet const& ps);
     LogEvent(cms::TextMessage *msg);
 
     virtual ~LogEvent();

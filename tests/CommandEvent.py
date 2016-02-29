@@ -108,7 +108,6 @@ class CommandTestCase(unittest.TestCase):
         # these are the filterable names we expect to see
         names = ['DEST_HOSTNAME', 'DEST_LOCALID', 'DEST_PROCESSID', 'EVENTTIME', 'ORIG_HOSTNAME', 
                     'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE']
-        print dir(val)
         self.assertValid(val, names, commandOriginatorID.getLocalID(), destinationID.getLocalID())
 
 
@@ -142,6 +141,8 @@ class CommandTestCase(unittest.TestCase):
         names = ['DEST_HOSTNAME', 'DEST_LOCALID', 'DEST_PROCESSID', 'EVENTTIME', 'ORIG_HOSTNAME', 
                 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE', 'FOO', 'BAR']
         self.assertValid(val, names, commandOriginatorID.getLocalID(), destinationID.getLocalID())
+
+        self.assertTrue(event.getType(), events.EventTypes.COMMAND)
 
 def suite():
     """Returns a suite containing all the tests cases in this module."""

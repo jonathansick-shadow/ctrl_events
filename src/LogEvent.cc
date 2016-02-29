@@ -36,19 +36,13 @@
 #include <limits>
 #include <cstring>
 
+#include "lsst/ctrl/events/LocationId.h"
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/LogEvent.h"
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
-
-#include <log4cxx/helpers/stringhelper.h>
-#include <log4cxx/helpers/pool.h>
-#include <log4cxx/spi/location/locationinfo.h>
-
-using namespace log4cxx;
-using namespace log4cxx::helpers;
 
 namespace pexExceptions = lsst::pex::exceptions;
 
@@ -61,14 +55,15 @@ namespace events {
 
 const std::string LogEvent::LEVEL = "LEVEL";
 const std::string LogEvent::LOGGER = "LOGGER";
-const std::string LogEvent::MESSAGE = "MESSAGE";
-const std::string LogEvent::TIMESTAMP = "TIMESTAMP";
-const std::string LogEvent::THREADNAME = "THREADNAME";
-const std::string LogEvent::FILENAME = "FILENAME";
-const std::string LogEvent::CLASSNAME = "CLASSNAME";
-const std::string LogEvent::METHODNAME = "METHODNAME";
-const std::string LogEvent::LINENUMBER = "LINENUMBER";
-const std::string LogEvent::LOCATION = "LOCATION";
+
+const std::string LogEvent::MESSAGE = "message";
+const std::string LogEvent::TIMESTAMP = "timestamp";
+const std::string LogEvent::THREADNAME = "threadname";
+const std::string LogEvent::FILENAME = "filename";
+const std::string LogEvent::CLASSNAME = "classname";
+const std::string LogEvent::METHODNAME = "methodname";
+const std::string LogEvent::LINENUMBER = "linenumber";
+const std::string LogEvent::LOCATION = "location";
 
 const std::string LogEvent::LOGGING_TOPIC = "Logging";
 
@@ -76,30 +71,16 @@ const std::string LogEvent::LOGGING_TOPIC = "Logging";
  * @brief Creates LogEvent which contains a PropertySet
  */
 
-LogEvent::LogEvent() : Event() {
+LogEvent::LogEvent() : StatusEvent() {
     _init();
 }
 
-LogEvent::LogEvent(const log4cxx::spi::LoggingEventPtr& event, log4cxx::helpers::Pool& p) : Event() {
+LogEvent::LogEvent(LocationId const& originatorId, PropertySet const& ps) : StatusEvent(originatorId, ps) {
     _init();
 
-    _psp->set(TYPE, EventTypes::LOG);
-    _psp->set(LogEvent::LOGGER, event->getLoggerName());
-    _psp->set(LogEvent::LEVEL, event->getLevel()->toInt());
+    //# TODO: don't set this in EventAppender
 
-    _psp->set(LogEvent::MESSAGE, event->getMessage());
-    _psp->set(LogEvent::TIMESTAMP, event->getTimeStamp());
-    _psp->set(LogEvent::THREADNAME, event->getThreadName());
-
-    spi::LocationInfo location = event->getLocationInformation();
-
-    PropertySet::Ptr loc(new PropertySet);
-    loc->set(LogEvent::FILENAME, location.getFileName());
-    loc->set(LogEvent::CLASSNAME, location.getClassName());
-    loc->set(LogEvent::METHODNAME, location.getMethodName());
-    loc->set(LogEvent::LINENUMBER, location.getLineNumber());
-
-    _psp->set(LogEvent::LOCATION, loc);
+    _psp->set(LogEvent::TYPE, EventTypes::LOG);
 }
 
 
@@ -115,11 +96,12 @@ void LogEvent::_init() {
  * @brief Constructor to take a JMS TextMessage and turn it into a LogEvent
  * @param msg a TextMessage
  */
-LogEvent::LogEvent(cms::TextMessage *msg) : Event(msg) {
+LogEvent::LogEvent(cms::TextMessage *msg) : StatusEvent(msg) {
     _init();
 
     _psp->set(LogEvent::LEVEL, msg->getIntProperty(LogEvent::LEVEL));
     _psp->set(LogEvent::LOGGER, msg->getStringProperty(LogEvent::LOGGER));
+
 
 }
 
@@ -127,7 +109,7 @@ LogEvent::LogEvent(cms::TextMessage *msg) : Event(msg) {
   */
 
 void LogEvent::populateHeader(cms::TextMessage* msg) const {
-    Event::populateHeader(msg);
+    StatusEvent::populateHeader(msg);
 
     msg->setIntProperty(LogEvent::LEVEL, _psp->get<int>(LogEvent::LEVEL));
     msg->setStringProperty(LogEvent::LOGGER, _psp->get<std::string>(LogEvent::LOGGER));

@@ -31,6 +31,7 @@ import lsst.log as log
 import os
 import platform
 import shutil
+import socket
 import sys
 import tempfile
 import unittest
@@ -311,6 +312,41 @@ class TestLog(unittest.TestCase):
         ev = recvALL.receiveEvent(100)
         self.assertEqual(ev, None)
         
+###############################################################################
+
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
+    def testHostNameAndProcessId(self):
+        testEnv = TestEnvironment()
+        topic = testEnv.getLoggingTopic()
+        confStr = "log4j.rootLogger=TRACE, EA\n"
+        confStr += "log4j.appender.EA=EventAppender\n"
+        confStr += "log4j.appender.EA.BROKER="+testEnv.getBroker()+"\n"
+        confStr += "log4j.appender.EA.TOPIC="+topic+"\n"
+
+        self.configure(confStr)
+
+        recv = events.EventReceiver(testEnv.getBroker(), topic)
+        log.MDC("x", 3)
+        with log.LogContext("component"):
+            log.trace("This is TRACE")
+        log.MDCRemove("x")
+        e = recv.receiveEvent()
+        self.assertValidMessage(e, "This is TRACE")
+        ps = e.getPropertySet()
+
+        # the host name should be the same since we're sending and receiving
+        # from the same host
+        host = ps.get("ORIG_HOSTNAME")
+        self.assertEqual(host,socket.gethostname())
+
+        # the process id should be the same since we're sending and receiving
+        # from the same process
+        pid = ps.get("ORIG_PROCESSID")
+        self.assertEqual(os.getpid(), pid)
+
+        t = ps.get("TYPE")
+        self.assertEqual(t, events.EventTypes.LOG)
+
 
 ###############################################################################
 

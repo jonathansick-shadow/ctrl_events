@@ -174,6 +174,12 @@ public:
     std::string getRunId();
 
     /**
+     * @brief set the RunId for this Event
+     * @param[in] runid string representation of run identifier
+     */
+    void setRunId(std::string runid);
+
+    /**
      * @brief get the Event type
      * @return string representation of the Event type
      */
