@@ -372,11 +372,13 @@ template<typename T>void Event::add(std::string const& name, std::string const& 
     std::vector<T> vec = ps.getArray<T>(name);
 
     typename std::vector<T>::iterator iter;
+    boost::property_tree::ptree children;
     for (iter = vec.begin(); iter != vec.end(); iter++) {
         boost::property_tree::ptree pt;
-        pt.put(tag, *iter);
-        child.put_child(name, pt);
+        pt.put("", *iter);
+        children.push_back(std::make_pair(tag, pt));
     }
+    child.put_child(name, children);
 }
 
 std::string Event::marshall(PropertySet const& ps) {

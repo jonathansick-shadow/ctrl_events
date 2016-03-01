@@ -44,6 +44,9 @@ class EventSystemReceiveTestCase(unittest.TestCase):
         root.set("misc1","data 1")
         root.set("misc2","data 2")
         root.set("value", 3.14)
+        root.set("array1", ('a', 'b', 'c', 'd'))
+        root.set("array2", (1, 2, 3, 4, 5))
+        root.set("array3", (6.1, 6.2, 6.3, 6.4, 6.5))
         
         eventSystem = events.EventSystem.getDefaultEventSystem()
         event = events.Event("runid_es4", root)
@@ -70,7 +73,7 @@ class EventSystemReceiveTestCase(unittest.TestCase):
         self.assertNotEqual(val, None)
 
         cpNames = val.getCustomPropertyNames()
-        names = ["DATE", "PID", "HOST", "IP", "EVNT", "misc1", "misc2", "value"]
+        names = ["DATE", "PID", "HOST", "IP", "EVNT", "misc1", "misc2", "value", "array1", "array2", "array3"]
 
         self.assertEqual(len(cpNames), len(names))
         for x in names:
@@ -87,6 +90,9 @@ class EventSystemReceiveTestCase(unittest.TestCase):
         self.assertEqual(ps.get("misc1"), "data 1")
         self.assertEqual(ps.get("misc2"), "data 2")
         self.assertEqual(ps.get("value"), 3.14)
+        self.assertEqual(ps.get("array1"), ('a', 'b', 'c', 'd'))
+        self.assertEqual(ps.get("array2"), (1, 2, 3, 4, 5))
+        self.assertEqual(ps.get("array3"), (6.1, 6.2, 6.3, 6.4, 6.5))
 
         #
         # wait a short time to receive an event.  none was sent, so we should
