@@ -58,6 +58,7 @@ class EventTransmitterTestCase(unittest.TestCase):
         #
         self.sendEvent(broker, topic, 300)
         self.sendEvent(broker, topic, 200)
+        self.sendEvent(broker, topic, ( 6, 7, 8, 9, 6))
 
         val = recv.receiveEvent()
         self.assertNotEqual(val, None)
@@ -72,6 +73,13 @@ class EventTransmitterTestCase(unittest.TestCase):
         # check to see we got 200 back
         ps = val.getPropertySet()
         self.assertEqual(ps.get("FOO"), 200)
+
+        val = recv.receiveEvent()
+        self.assertNotEqual(val, None)
+
+        # check to see we got 200 back
+        ps = val.getPropertySet()
+        self.assertEqual(ps.get("FOO"), (6, 7, 8, 9, 6))
 
         # check to see no other events are waiting
         val = recv.receiveEvent(1)
