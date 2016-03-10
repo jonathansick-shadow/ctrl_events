@@ -61,29 +61,29 @@ class EventTransmitterTestCase(unittest.TestCase):
         self.sendEvent(broker, topic, ( 6, 7, 8, 9, 6))
 
         val = recv.receiveEvent()
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
 
         # check to see we got 300 back
         ps = val.getPropertySet()
         self.assertEqual(ps.get("FOO"), 300)
 
         val = recv.receiveEvent()
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
 
         # check to see we got 200 back
         ps = val.getPropertySet()
         self.assertEqual(ps.get("FOO"), 200)
 
         val = recv.receiveEvent()
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
 
         # check to see we got 200 back
         ps = val.getPropertySet()
-        self.assertEqual(ps.get("FOO"), (6, 7, 8, 9, 6))
+        self.assertTupleEqual(ps.get("FOO"), (6, 7, 8, 9, 6))
 
         # check to see no other events are waiting
         val = recv.receiveEvent(1)
-        self.assertEqual(val, None)
+        self.assertIsNone(val)
 
 def suite():
     """Returns a suite containing all the tests cases in this module."""

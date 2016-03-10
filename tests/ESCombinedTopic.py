@@ -70,12 +70,12 @@ class CombinedEventTestCase(unittest.TestCase):
         self.sendEvent(combinedTopic)
     
         val = eventSystem.receiveEvent(topic1)
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
         ps = val.getPropertySet()
         print ps.toString()
     
         val = eventSystem.receiveEvent(topic2)
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
         ps = val.getPropertySet()
         print ps.toString()
 

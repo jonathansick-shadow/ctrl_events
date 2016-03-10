@@ -102,7 +102,7 @@ class StatusEventTestCase(unittest.TestCase):
 
         val = receiver.receiveEvent()
 
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
         values = ['EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
         customValues = ['myname', 'logger']
         self.assertValid(val, values, customValues)
@@ -127,8 +127,8 @@ class StatusEventTestCase(unittest.TestCase):
         self.sendPlainStatusEvent(broker, topicA, "test_runID_10")
 
 
-        val = receiverA.receiveEvent()
-        self.assertNotEqual(val, None)
+        val = receiverA.receiveStatusEvent()
+        self.assertIsNotNone(val)
         values = ['EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE', 'RUNID']
         customValues = ['myname', 'logger']
         self.assertValid(val, values, customValues)
@@ -150,7 +150,7 @@ class StatusEventTestCase(unittest.TestCase):
 
         val = receiver.receiveEvent()
 
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
 
         # should only be ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
         # in some order
@@ -172,7 +172,7 @@ class StatusEventTestCase(unittest.TestCase):
         val = receiver.receiveEvent()
 
         # should receive an event
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
         values = ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE']
         customValues = ['myname']
         self.assertValid(val, values, customValues)

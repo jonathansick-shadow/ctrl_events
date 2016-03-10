@@ -67,7 +67,7 @@ class StatusEventOriginatorTestCase(unittest.TestCase):
         self.sendEvent(broker, topic)
     
         val = recv.receiveEvent()
-        assert val != None
+        self.assertIsNotNone(val)
     
         eventSystem = events.EventSystem.getDefaultEventSystem()
         statusevent = eventSystem.castToStatusEvent(val)

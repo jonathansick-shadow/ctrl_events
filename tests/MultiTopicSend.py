@@ -74,10 +74,10 @@ class MultiTopicSendTestCase(unittest.TestCase):
         self.sendEvent(broker, topic1+","+topic2)
     
         val = y1.receiveEvent()
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
     
         val = y2.receiveEvent()
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
 
 def suite():
     """Returns a suite containing all the tests cases in this module."""

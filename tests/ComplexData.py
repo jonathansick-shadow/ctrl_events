@@ -102,7 +102,7 @@ class ComplexDataTestCase(unittest.TestCase):
         self.sendFilterableStatusEvent(broker, topic)
         val = receiver.receiveEvent()
 
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
 
     @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testPlainStatusEvent(self):
@@ -118,7 +118,7 @@ class ComplexDataTestCase(unittest.TestCase):
 
         val = receiver.receiveEvent()
 
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
         values = ['EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
         customValues = ['logger', 'myname', 'value']
         self.checkValidity(val, values, customValues)

@@ -101,10 +101,10 @@ class CommandTestCase(unittest.TestCase):
         event2 = events.CommandEvent("srptestrun", commandOriginatorID, destinationID, root2)
     
         trans.publishEvent(event2)
-        val = receiver.receiveEvent()
+        val = receiver.receiveCommandEvent()
 
         # be sure we received an event
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
         # these are the filterable names we expect to see
         names = ['DEST_HOSTNAME', 'DEST_LOCALID', 'DEST_PROCESSID', 'EVENTTIME', 'ORIG_HOSTNAME', 
                     'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE']
@@ -132,10 +132,10 @@ class CommandTestCase(unittest.TestCase):
     
         trans.publishEvent(event2)
     
-        val = receiver.receiveEvent()
+        val = receiver.receiveCommandEvent()
 
         # be sure we received an event
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
 
         # these are the filterable names we expect to see
         names = ['DEST_HOSTNAME', 'DEST_LOCALID', 'DEST_PROCESSID', 'EVENTTIME', 'ORIG_HOSTNAME', 

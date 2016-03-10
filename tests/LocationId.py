@@ -104,7 +104,7 @@ class LocationIdTestCase(unittest.TestCase):
         # should NOT receive another event, because it was filtered out by
         # the broker
         returnedEvent2 = receiver.receiveEvent(1)
-        self.assertEqual(returnedEvent2, None)
+        self.assertIsNone(returnedEvent2)
         
 def suite():
     """Returns a suite containing all the tests cases in this module."""

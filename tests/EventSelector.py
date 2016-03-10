@@ -69,7 +69,7 @@ class EventSelectorTestCase(unittest.TestCase):
     
         # we'll get the second event, not the first
         val = rec.receiveEvent()
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
         ps = val.getPropertySet()
         self.assertTrue(ps.exists('RUNID'))
         self.assertEqual(ps.get('RUNID'),runid)
@@ -77,7 +77,7 @@ class EventSelectorTestCase(unittest.TestCase):
         self.sendEvent("invalid", broker, topic)
         # shouldn't receive anything else
         val2 = rec.receiveEvent(1)
-        self.assertEqual(val2, None)
+        self.assertIsNone(val2)
 
 def suite():
     """Returns a suite containing all the tests cases in this module."""
