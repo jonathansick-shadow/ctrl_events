@@ -1,9 +1,9 @@
 // -*- lsst-c++ -*-
 
-/* 
+/*
  * LSST Data Management System
- * Copyright 2008-2015  AURA/LSST.
- * 
+ * Copyright 2008-2016  AURA/LSST.
+ *
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
  *
@@ -11,19 +11,19 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
- * You should have received a copy of the LSST License Statement and 
- * the GNU General Public License along with this program.  If not, 
+ *
+ * You should have received a copy of the LSST License Statement and
+ * the GNU General Public License along with this program.  If not,
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 
-/** 
- * @file EventTransmitter.cc
+/**
+ * @file EventEnqueuer.cc
  *
  * @ingroup ctrl/events
  *
@@ -37,7 +37,7 @@
 #include <cstring>
 #include <time.h>
 
-#include "lsst/ctrl/events/EventTransmitter.h"
+#include "lsst/ctrl/events/EventEnqueuer.h"
 
 #include "lsst/daf/base/DateTime.h"
 #include "lsst/daf/base/PropertySet.h"
@@ -60,19 +60,19 @@ namespace lsst {
 namespace ctrl {
 namespace events {
 
-EventTransmitter::EventTransmitter( const std::string& hostName, const std::string& topicName, int hostPort) : Transmitter() {
-    init(hostName, topicName, false, hostPort);
+EventEnqueuer::EventEnqueuer( const std::string& hostName, const std::string& queueName, int hostPort) : Transmitter() {
+    init(hostName, queueName, true, hostPort);
 }
 
-std::string EventTransmitter::getDestinationPropertyName() {
-    return "TOPIC";
+std::string EventEnqueuer::getDestinationPropertyName() {
+    return "QUEUE";
 }
 
-std::string EventTransmitter::getTopicName() {
+std::string EventEnqueuer::getQueueName() {
     return getDestinationName();
 }
 
-EventTransmitter::~EventTransmitter() {
+EventEnqueuer::~EventEnqueuer() {
 }
 
 }}}
