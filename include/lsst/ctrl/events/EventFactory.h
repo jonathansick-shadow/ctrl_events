@@ -41,7 +41,8 @@
 
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
-#include "lsst/ctrl/events.h"
+
+#include "lsst/ctrl/events/Event.h"
 
 using lsst::daf::base::PropertySet;
 
@@ -61,7 +62,7 @@ public:
 
     ~EventFactory();
 
-    static Event* createEvent(cms::TextMessage* msg);
+    static Event::Ptr createEvent(cms::TextMessage* msg);
 
 };
 }

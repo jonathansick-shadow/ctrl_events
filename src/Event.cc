@@ -47,9 +47,9 @@
 #include "boost/property_tree/json_parser.hpp"
 #include "boost/foreach.hpp"
 
-#include "lsst/ctrl/events/Host.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/EventTypes.h"
+
 #include "lsst/daf/base/DateTime.h"
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
@@ -74,6 +74,7 @@ const std::string Event::EVENTTIME = "EVENTTIME";
 const std::string Event::RUNID = "RUNID";
 const std::string Event::STATUS = "STATUS";
 const std::string Event::TOPIC = "TOPIC";
+const std::string Event::QUEUE = "QUEUE";
 const std::string Event::PUBTIME = "PUBTIME";
 
 const std::string Event::UNINITIALIZED = "uninitialized";
@@ -97,14 +98,15 @@ Event::Event(cms::TextMessage *msg) {
 
     _psp = processTextMessage(msg);
 
-    for (vector<std::string>::iterator name = names.begin(); name != names.end(); ++name) {
-        _keywords.insert(*name);
+    for (std::string name : names) {
+        _keywords.insert(name);
     }
 
     _psp->set(EVENTTIME, msg->getCMSTimestamp());
 
-    for (vector<std::string>::iterator n = names.begin(); n != names.end(); ++n) {
-        std::string const& name = *n;
+    for (std::string n : names) {
+        //std::string const& name = *n;
+        std::string const& name = n;
         cms::Message::ValueType vType = msg->getPropertyValueType(name);
         switch(vType) {
             case cms::Message::NULL_TYPE:
@@ -143,14 +145,12 @@ Event::Event(cms::TextMessage *msg) {
                 break;
         }
     }
-    
 }
 
 vector<std::string> Event::getFilterablePropertyNames() {
     vector<std::string> _names;
-    set<std::string>::iterator keyIterator;
-    for (keyIterator = _keywords.begin(); keyIterator != _keywords.end(); keyIterator++) {
-        _names.push_back(*keyIterator);
+    for (std::string keyIterator : _keywords) {
+        _names.push_back(keyIterator);
     }
     return _names;
 }
@@ -198,7 +198,7 @@ Event::Event(std::string const& runId, PropertySet const& ps, PropertySet const&
 
 void Event::_constructor(std::string const& runId, PropertySet const& ps, PropertySet const& filterable) {
     _init();
-    
+
     _psp = ps.deepCopy();
 
 
@@ -231,8 +231,8 @@ void Event::_constructor(std::string const& runId, PropertySet const& ps, Proper
     if (filterable.nameCount() > 0) {
         vector<std::string> names = filterable.names();
 
-        for (vector<std::string>::iterator name = names.begin(); name != names.end(); ++name) {
-            _keywords.insert(*name);
+        for (std::string name : names) {
+            _keywords.insert(name);
         }
 
         _psp->combine(filterable.PropertySet::deepCopy());
@@ -240,9 +240,7 @@ void Event::_constructor(std::string const& runId, PropertySet const& ps, Proper
 }
 
 void Event::populateHeader(cms::TextMessage* msg)  const {
-    set<std::string>::iterator keyIterator;
-    for (keyIterator = _keywords.begin(); keyIterator != _keywords.end(); keyIterator++) {
-        std::string const& name = *keyIterator;
+    for (std::string name : _keywords) {
         std::type_info const& t = _psp->typeOf(name);
         if (t == typeid(bool)) {
             msg->setBooleanProperty(name, _psp->get<bool>(name));
@@ -293,9 +291,9 @@ std::string Event::getEventDate() {
 PropertySet::Ptr Event::getCustomPropertySet() const {
     PropertySet::Ptr psp = _psp->deepCopy();
 
-    set<std::string>::iterator keyIterator;
-    for (keyIterator = _keywords.begin(); keyIterator != _keywords.end(); keyIterator++) 
-        psp->remove(*keyIterator);
+    for (std::string keyword : _keywords) {
+        psp->remove(keyword);
+    }
     return psp;
 }
 
@@ -371,11 +369,10 @@ template<typename T>void Event::add(std::string const& name, std::string const& 
 
     std::vector<T> vec = ps.getArray<T>(name);
 
-    typename std::vector<T>::iterator iter;
     boost::property_tree::ptree children;
-    for (iter = vec.begin(); iter != vec.end(); iter++) {
+    for (auto iter: vec) {
         boost::property_tree::ptree pt;
-        pt.put("", *iter);
+        pt.put("", iter);
         children.push_back(std::make_pair(tag, pt));
     }
     child.put_child(name, children);
@@ -386,9 +383,7 @@ std::string Event::marshall(PropertySet const& ps) {
 
     boost::property_tree::ptree child;
  
-    for (vector<std::string>::iterator n = names.begin(); n != names.end(); ++n) {
-        std::string name = *n;
-
+    for (std::string name : names) {
         if (ps.typeOf(name) == typeid(bool)) {
             add<bool>(name, "bool", ps, child);
         } else if (ps.typeOf(name) == typeid(long)) {
@@ -405,10 +400,9 @@ std::string Event::marshall(PropertySet const& ps) {
             add<std::string>(name, "string", ps, child);
         } else if (ps.typeOf(name) == typeid(lsst::daf::base::DateTime)) {
             std::vector<lsst::daf::base::DateTime> vec  = ps.getArray<lsst::daf::base::DateTime>(name);
-            std::vector<lsst::daf::base::DateTime>::iterator iter;
-            for (iter = vec.begin(); iter != vec.end(); iter++) {
+            for (lsst::daf::base::DateTime dateTime : vec) {
                 boost::property_tree::ptree pt;
-                pt.put("datetime", (*iter).nsecs());
+                pt.put("datetime", (dateTime).nsecs());
                 child.put_child(name, pt);
             }
         } else {
@@ -430,7 +424,8 @@ PropertySet::Ptr Event::processTextMessage(cms::TextMessage* textMessage) {
 
     std::string text = textMessage->getText();
 
-    return unmarshall(text);
+    PropertySet::Ptr unmarsh = unmarshall(text);
+    return unmarsh;
 }
 
 /** private method to try to add data to a property set

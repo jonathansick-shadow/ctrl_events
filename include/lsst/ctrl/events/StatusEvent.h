@@ -62,6 +62,9 @@ namespace events {
 class StatusEvent : public Event
 {
 public:
+
+    typedef boost::shared_ptr<StatusEvent> Ptr;
+
     static std::string const ORIG_HOSTNAME;
     static std::string const ORIG_PROCESSID;
     static std::string const ORIG_LOCALID;

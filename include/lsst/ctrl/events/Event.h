@@ -42,7 +42,8 @@
 #include <iostream>
 #include <set>
 
-#include "lsst/utils/Utils.h"
+#include "boost/shared_ptr.hpp"
+
 #include "lsst/daf/base/PropertySet.h"
 #include "boost/property_tree/ptree.hpp"
 
@@ -62,12 +63,14 @@ namespace events {
 class Event
 {
 public:
+    typedef boost::shared_ptr<Event> Ptr;
 
     static const std::string TYPE;
     static const std::string EVENTTIME;
     static const std::string RUNID;
     static const std::string STATUS;
     static const std::string TOPIC;
+    static const std::string QUEUE;
     static const std::string PUBTIME;
     static const std::string UNINITIALIZED;
 

@@ -39,6 +39,7 @@
 #include <unistd.h>
 
 #include "lsst/ctrl/events/Host.h"
+
 #include "lsst/pex/exceptions.h"
 
 namespace pexExceptions = lsst::pex::exceptions;

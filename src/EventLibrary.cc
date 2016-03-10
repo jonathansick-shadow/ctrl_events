@@ -36,7 +36,9 @@
 
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
+
 #include "lsst/ctrl/events/EventLibrary.h"
+
 #include <activemq/library/ActiveMQCPP.h>
 
 namespace pexExceptions =lsst::pex::exceptions;

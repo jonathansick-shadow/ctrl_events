@@ -36,11 +36,9 @@
 #include <limits>
 #include <cstring>
 
-#include "lsst/ctrl/events/LocationId.h"
 #include "lsst/ctrl/events/EventTypes.h"
-#include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/LogEvent.h"
-#include "lsst/ctrl/events/EventSystem.h"
+
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/pex/exceptions.h"
 

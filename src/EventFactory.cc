@@ -44,7 +44,6 @@
 #include "lsst/ctrl/events/EventTypes.h"
 
 #include "lsst/ctrl/events/EventFactory.h"
-#include "lsst/ctrl/events/EventLibrary.h"
 
 namespace pexExceptions =lsst::pex::exceptions;
 
@@ -60,19 +59,20 @@ EventFactory::EventFactory() {
 EventFactory::~EventFactory() {
 }
 
-Event* EventFactory::createEvent(cms::TextMessage* msg) {
+Event::Ptr EventFactory::createEvent(cms::TextMessage* msg) {
     vector<std::string> names = msg->getPropertyNames();
 
     std::string _type = msg->getStringProperty("TYPE");
 
     if (_type == EventTypes::LOG) {
-        return new LogEvent(msg);
+        return LogEvent::Ptr(new LogEvent(msg));
     } else if (_type == EventTypes::STATUS) {
-        return new StatusEvent(msg);
+        return StatusEvent::Ptr(new StatusEvent(msg));
     } else if (_type == EventTypes::COMMAND) {
-        return new CommandEvent(msg);
+        return CommandEvent::Ptr(new CommandEvent(msg));
+    } else {
+        return Event::Ptr(new Event(msg));
     }
-    return new Event(msg);
 }
 
 }}}

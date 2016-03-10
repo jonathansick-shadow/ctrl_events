@@ -40,10 +40,10 @@
 #include <log4cxx/spi/location/locationinfo.h>
 #include <log4cxx/helpers/loglog.h>
 
-#include "lsst/ctrl/events/EventTypes.h"
-#include "lsst/ctrl/events/EventBroker.h"
 #include "lsst/ctrl/events/EventAppender.h"
-#include "lsst/ctrl/events/EventSystem.h"
+#include "lsst/ctrl/events/LogEvent.h"
+#include "lsst/ctrl/events/LocationId.h"
+#include "lsst/ctrl/events/EventTypes.h"
 
 #include "lsst/pex/exceptions.h"
 

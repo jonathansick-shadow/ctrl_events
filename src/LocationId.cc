@@ -33,6 +33,7 @@
 
 #include <sys/types.h>
 #include <unistd.h>
+
 #include "lsst/ctrl/events/LocationId.h"
 #include "lsst/ctrl/events/Host.h"
 

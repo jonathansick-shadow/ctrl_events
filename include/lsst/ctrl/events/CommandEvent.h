@@ -63,6 +63,9 @@ namespace events {
 class CommandEvent : public Event
 {
 public:
+
+    typedef boost::shared_ptr<CommandEvent> Ptr;
+
     static const std::string ORIG_HOSTNAME;
     static const std::string ORIG_PROCESSID;
     static const std::string ORIG_LOCALID;
