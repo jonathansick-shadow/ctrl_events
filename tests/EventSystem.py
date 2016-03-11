@@ -131,6 +131,7 @@ class EventSystemTestCase(unittest.TestCase):
 
         self.performEventTest(topic1)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testTopicSpecified(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
@@ -145,6 +146,7 @@ class EventSystemTestCase(unittest.TestCase):
 
         self.performEventTest(topic2)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testTopicSelector(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
@@ -158,6 +160,7 @@ class EventSystemTestCase(unittest.TestCase):
         eventSystem.createReceiver(broker, topic3, "RUNID = '%s'" % runid)
         self.performEventSelectorTest(runid, topic3)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testQueueOrder(self):
         # this tests the order in which the sender and receiver are created
         # and event is created and sent before the receiver exists, and the
@@ -193,6 +196,7 @@ class EventSystemTestCase(unittest.TestCase):
         # verify PropertySet contents
         self.verifyPropertySet(recvProp)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testQueueDefaultPort(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
@@ -207,6 +211,7 @@ class EventSystemTestCase(unittest.TestCase):
 
         self.performEventTest(queue1)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testQueueSpecifiedPort(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
@@ -220,6 +225,7 @@ class EventSystemTestCase(unittest.TestCase):
 
         self.performEventTest(queue2)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testQueueSelector(self):
         testEnv = TestEnvironment()
         broker = testEnv.getBroker()
