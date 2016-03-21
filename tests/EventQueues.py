@@ -114,6 +114,20 @@ class EventQueuesTestCase(unittest.TestCase):
         val = recv.receiveEvent(1)
         self.assertIsNone(val)
 
+    @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
+    def testDestinationPropertyName(self):
+        testEnv = TestEnvironment()
+        broker = testEnv.getBroker()
+        port = testEnv.getPort()
+        thisHost = platform.node()
+
+        topic = "test_events_queue3_%s_%d" % (thisHost, os.getpid())
+        recv = events.EventDequeuer(broker, topic, port);
+        trans = events.EventDequeuer(broker, topic, port);
+
+        self.assertEqual(events.Event.QUEUE, recv.getDestinationPropertyName());
+        self.assertEqual(events.Event.QUEUE, trans.getDestinationPropertyName());
+
 def suite():
     """Returns a suite containing all the tests cases in this module."""
     tests.init()
