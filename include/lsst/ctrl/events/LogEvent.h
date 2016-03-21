@@ -52,8 +52,6 @@
 
 using lsst::daf::base::PropertySet;
 
-using namespace std;
-
 namespace lsst {
 namespace ctrl {
 namespace events { 

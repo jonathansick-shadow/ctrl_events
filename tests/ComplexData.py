@@ -50,9 +50,9 @@ class ComplexDataTestCase(unittest.TestCase):
         trans = events.EventTransmitter(broker, topic)
         
         root = PropertySet()
-        root.set("TOPIC",topic)
+        root.set(events.Event.TOPIC, topic)
         root.set("myname","myname")
-        root.set("STATUS", "my special status")
+        root.set(events.Event.STATUS, "my special status")
         root.set("value", 12)
         root.set("logger.status", "my logger special status")
         root.set("logger.name", "myname")
@@ -74,9 +74,9 @@ class ComplexDataTestCase(unittest.TestCase):
         trans = events.EventTransmitter(broker, topic)
 
         root = PropertySet()
-        root.set("TOPIC",topic)
+        root.set(events.Event.TOPIC, topic)
         root.set("myname","myname")
-        root.set("STATUS", "my special status")
+        root.set(events.Event.STATUS, "my special status")
 
         filter = PropertySet()
         filter.set("FOO", "bar")
@@ -102,7 +102,7 @@ class ComplexDataTestCase(unittest.TestCase):
         self.sendFilterableStatusEvent(broker, topic)
         val = receiver.receiveEvent()
 
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
 
     @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testPlainStatusEvent(self):
@@ -118,8 +118,10 @@ class ComplexDataTestCase(unittest.TestCase):
 
         val = receiver.receiveEvent()
 
-        self.assertNotEqual(val, None)
-        values = ['EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
+        self.assertIsNotNone(val)
+        values = [events.StatusEvent.EVENTTIME, events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID,
+                    events.StatusEvent.ORIG_PROCESSID, events.StatusEvent.PUBTIME, events.StatusEvent.STATUS,
+                    events.StatusEvent.TOPIC, events.StatusEvent.TYPE]
         customValues = ['logger', 'myname', 'value']
         self.checkValidity(val, values, customValues)
 
@@ -140,9 +142,9 @@ class ComplexDataTestCase(unittest.TestCase):
         trans = events.EventTransmitter(broker, topic)
 
         root = PropertySet()
-        root.set("TOPIC",topic)
+        root.set(events.StatusEvent.TOPIC, topic)
         root.set("myname","myname")
-        root.set("STATUS", "my special status")
+        root.set(events.StatusEvent.STATUS, "my special status")
 
         filter = PropertySet()
         filter.set("FOO", "bar")

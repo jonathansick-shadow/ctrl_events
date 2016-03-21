@@ -41,14 +41,13 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include "lsst/base.h"
 #include "lsst/ctrl/events/LocationId.h"
 #include "lsst/ctrl/events/Event.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 
 using lsst::daf::base::PropertySet;
-
-using namespace std;
 
 namespace lsst {
 namespace ctrl {
@@ -62,6 +61,7 @@ namespace events {
 class StatusEvent : public Event
 {
 public:
+
     static std::string const ORIG_HOSTNAME;
     static std::string const ORIG_PROCESSID;
     static std::string const ORIG_LOCALID;
@@ -116,20 +116,20 @@ public:
      * \brief Constructor to create a StatusEvent
      * \param runid a string identify for this Event
      * \param originator the LocationId of where this StatusEvent was created
-     * \param psp a PropertySet::Ptr
+     * \param psp a PTR(PropertySet)
      */
-    StatusEvent(std::string const& runid, LocationId const& originator, PropertySet::Ptr const psp);
+    StatusEvent(std::string const& runid, LocationId const& originator, CONST_PTR(PropertySet) psp);
 
 
     /** 
      * @brief Constructor to create a StatusEvent
      * @param runid a string identify for this Event
      * @param originator the LocationId of where this StatusEvent was created
-     * @param psp a PropertySet::Ptr
+     * @param psp a PTR(PropertySet)
      * @param filterable a PropertySet that will be added to Event headers so
      *        they can be filtered using selectors.
      */
-    StatusEvent(std::string const& runid, LocationId const& originator, PropertySet::Ptr const psp, PropertySet const& filterable);
+    StatusEvent(std::string const& runid, LocationId const& originator, CONST_PTR(PropertySet) psp, PropertySet const& filterable);
 
 
     /** 

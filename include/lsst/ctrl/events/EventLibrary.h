@@ -40,11 +40,6 @@
 #include <list>
 #include <boost/shared_ptr.hpp>
 
-#include "lsst/utils/Utils.h"
-#include "lsst/ctrl/events.h"
-
-using namespace std;
-
 namespace lsst {
 namespace ctrl {
 namespace events {

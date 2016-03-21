@@ -1,6 +1,7 @@
 .sconsign.dblite
 config.log
 .sconf_temp
+_build.*
 *.o
 *.os
 *.so
@@ -10,6 +11,7 @@ config.log
 *_wrap.cc
 *Lib.py
 doc/html
+doc/xml
 doc/*.tag
 doc/*.inc
 doc/doxygen.conf

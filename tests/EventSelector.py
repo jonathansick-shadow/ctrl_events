@@ -38,9 +38,9 @@ class EventSelectorTestCase(unittest.TestCase):
         trans = events.EventTransmitter(brokerName, topic)
         
         root = PropertySet()
-        root.set("TOPIC",topic)
+        root.set(events.Event.TOPIC, topic)
         root.set("myname","myname")
-        root.set("STATUS", "my special status")
+        root.set(events.Event.STATUS, "my special status")
         
         locationID = events.LocationId()
     
@@ -60,7 +60,7 @@ class EventSelectorTestCase(unittest.TestCase):
     
         runid = 'test_runid_11_%d' % os.getpid()
 
-        rec = events.EventReceiver(broker, topic, "RUNID = '%s'" % runid)
+        rec = events.EventReceiver(broker, topic, "%s = '%s'" % (events.Event.RUNID, runid))
     
         #
         # send a test event, and wait to receive it
@@ -69,15 +69,15 @@ class EventSelectorTestCase(unittest.TestCase):
     
         # we'll get the second event, not the first
         val = rec.receiveEvent()
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
         ps = val.getPropertySet()
-        self.assertTrue(ps.exists('RUNID'))
-        self.assertEqual(ps.get('RUNID'),runid)
+        self.assertTrue(ps.exists(events.Event.RUNID))
+        self.assertEqual(ps.get(events.Event.RUNID),runid)
 
         self.sendEvent("invalid", broker, topic)
         # shouldn't receive anything else
         val2 = rec.receiveEvent(1)
-        self.assertEqual(val2, None)
+        self.assertIsNone(val2)
 
 def suite():
     """Returns a suite containing all the tests cases in this module."""

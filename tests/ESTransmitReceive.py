@@ -70,7 +70,7 @@ class EventSystemReceiveTestCase(unittest.TestCase):
         self.sendEvent(topic)
 
         val = eventSystem.receiveEvent(topic)
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
 
         cpNames = val.getCustomPropertyNames()
         names = ["DATE", "PID", "HOST", "IP", "EVNT", "misc1", "misc2", "value", "array1", "array2", "array3"]
@@ -90,16 +90,16 @@ class EventSystemReceiveTestCase(unittest.TestCase):
         self.assertEqual(ps.get("misc1"), "data 1")
         self.assertEqual(ps.get("misc2"), "data 2")
         self.assertEqual(ps.get("value"), 3.14)
-        self.assertEqual(ps.get("array1"), ('a', 'b', 'c', 'd'))
-        self.assertEqual(ps.get("array2"), (1, 2, 3, 4, 5))
-        self.assertEqual(ps.get("array3"), (6.1, 6.2, 6.3, 6.4, 6.5))
+        self.assertTupleEqual(ps.get("array1"), ('a', 'b', 'c', 'd'))
+        self.assertTupleEqual(ps.get("array2"), (1, 2, 3, 4, 5))
+        self.assertTupleEqual(ps.get("array3"), (6.1, 6.2, 6.3, 6.4, 6.5))
 
         #
         # wait a short time to receive an event.  none was sent, so we should
         # time out and confirm that we didn't get anything
         #
         val = eventSystem.receiveEvent(topic, 1000)
-        self.assertEqual(val, None)
+        self.assertIsNone(val)
 
 def suite():
     """Returns a suite containing all the tests cases in this module."""

@@ -30,31 +30,9 @@
  * @brief Status Event implementation
  *
  */
-#include <iomanip>
-#include <sstream>
-#include <stdexcept>
-#include <limits>
-#include <cstring>
 
-#include "lsst/ctrl/events/LocationId.h"
-#include "lsst/ctrl/events/EventTypes.h"
-#include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
-#include "lsst/ctrl/events/EventSystem.h"
-#include "lsst/daf/base/DateTime.h"
-#include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/exceptions.h"
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <netdb.h>
-#include <time.h>
-
-#include <activemq/core/ActiveMQConnectionFactory.h>
-
-namespace pexExceptions = lsst::pex::exceptions;
-
-using namespace std;
-using std::numeric_limits;
+#include "lsst/ctrl/events/EventTypes.h"
 
 namespace lsst {
 namespace ctrl {
@@ -96,13 +74,13 @@ StatusEvent::StatusEvent(LocationId const& originatorID,
 
 StatusEvent::StatusEvent(std::string const& runID, 
                          LocationId const& originatorID, 
-                         PropertySet::Ptr const psp) : Event(runID, *psp) {
+                         CONST_PTR(PropertySet) psp) : Event(runID, *psp) {
     _constructor(originatorID);
 }
 
 StatusEvent::StatusEvent(std::string const& runID, 
                          LocationId const& originatorID, 
-                         PropertySet::Ptr const psp, 
+                         CONST_PTR(PropertySet) psp, 
                          PropertySet const& filterable) : Event(runID, *psp, filterable) {
     _constructor(originatorID);
 }

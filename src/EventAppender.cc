@@ -40,10 +40,10 @@
 #include <log4cxx/spi/location/locationinfo.h>
 #include <log4cxx/helpers/loglog.h>
 
-#include "lsst/ctrl/events/EventTypes.h"
-#include "lsst/ctrl/events/EventBroker.h"
 #include "lsst/ctrl/events/EventAppender.h"
-#include "lsst/ctrl/events/EventSystem.h"
+#include "lsst/ctrl/events/LogEvent.h"
+#include "lsst/ctrl/events/LocationId.h"
+#include "lsst/ctrl/events/EventTypes.h"
 
 #include "lsst/pex/exceptions.h"
 
@@ -117,7 +117,7 @@ EventTransmitter* EventAppender::getTransmitter() {
     
 
 void EventAppender::append(const spi::LoggingEventPtr& event, helpers::Pool& p) {
-    PropertySet::Ptr logProp (new PropertySet);
+    PTR(PropertySet) logProp (new PropertySet);
     logProp->set(LogEvent::TYPE, EventTypes::LOG);
 
     logProp->set(LogEvent::LOGGER, event->getLoggerName());
@@ -129,7 +129,7 @@ void EventAppender::append(const spi::LoggingEventPtr& event, helpers::Pool& p) 
 
     spi::LocationInfo location = event->getLocationInformation();
 
-    PropertySet::Ptr loc(new PropertySet);
+    PTR(PropertySet) loc(new PropertySet);
     loc->set(LogEvent::FILENAME, location.getFileName());
     loc->set(LogEvent::CLASSNAME, location.getClassName());
     loc->set(LogEvent::METHODNAME, location.getMethodName());
@@ -137,7 +137,7 @@ void EventAppender::append(const spi::LoggingEventPtr& event, helpers::Pool& p) 
 
     logProp->set(LogEvent::LOCATION, loc);
 
-    LocationId::Ptr originatorId(new LocationId());
+    PTR(LocationId) originatorId(new LocationId());
 
     ctrlEvents::LogEvent e = ctrlEvents::LogEvent(*originatorId, *logProp);
     if (!_runid.empty())

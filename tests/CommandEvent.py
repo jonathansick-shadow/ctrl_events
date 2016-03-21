@@ -85,9 +85,9 @@ class CommandTestCase(unittest.TestCase):
     
         originatorId = events.LocationId()
         root = PropertySet()
-        root.set("TOPIC",topic)
+        root.set(events.StatusEvent.TOPIC,topic)
         root.set("myname","myname")
-        root.set("STATUS", "my special status")
+        root.set(events.StatusEvent.STATUS, "my special status")
         event = events.StatusEvent("srptestrun", originatorId, root)
     
         statusOriginatorId = event.getOriginator()
@@ -95,19 +95,21 @@ class CommandTestCase(unittest.TestCase):
     
         commandOriginatorID = events.LocationId()
         root2 = PropertySet()
-        root2.set("TOPIC",topic)
+        root2.set(events.CommandEvent.TOPIC,topic)
         root2.set("myname","myname2")
-        root2.set("STATUS", "my special status2")
+        root2.set(events.CommandEvent.STATUS, "my special status2")
         event2 = events.CommandEvent("srptestrun", commandOriginatorID, destinationID, root2)
     
         trans.publishEvent(event2)
-        val = receiver.receiveEvent()
+        val = receiver.receiveCommandEvent()
 
         # be sure we received an event
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
         # these are the filterable names we expect to see
-        names = ['DEST_HOSTNAME', 'DEST_LOCALID', 'DEST_PROCESSID', 'EVENTTIME', 'ORIG_HOSTNAME', 
-                    'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE']
+        names = [events.CommandEvent.DEST_HOSTNAME, events.CommandEvent.DEST_LOCALID, events.CommandEvent.DEST_PROCESSID, 
+                events.CommandEvent.EVENTTIME, events.CommandEvent.ORIG_HOSTNAME, events.CommandEvent.ORIG_LOCALID, 
+                events.CommandEvent.ORIG_PROCESSID, events.CommandEvent.PUBTIME, events.CommandEvent.RUNID, 
+                events.CommandEvent.STATUS, events.CommandEvent.TOPIC, events.CommandEvent.TYPE]
         self.assertValid(val, names, commandOriginatorID.getLocalID(), destinationID.getLocalID())
 
 
@@ -132,14 +134,16 @@ class CommandTestCase(unittest.TestCase):
     
         trans.publishEvent(event2)
     
-        val = receiver.receiveEvent()
+        val = receiver.receiveCommandEvent()
 
         # be sure we received an event
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
 
         # these are the filterable names we expect to see
-        names = ['DEST_HOSTNAME', 'DEST_LOCALID', 'DEST_PROCESSID', 'EVENTTIME', 'ORIG_HOSTNAME', 
-                'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE', 'FOO', 'BAR']
+        names = [events.CommandEvent.DEST_HOSTNAME, events.CommandEvent.DEST_LOCALID, events.CommandEvent.DEST_PROCESSID, 
+                events.CommandEvent.EVENTTIME, events.CommandEvent.ORIG_HOSTNAME, events.CommandEvent.ORIG_LOCALID, 
+                events.CommandEvent.ORIG_PROCESSID, events.CommandEvent.PUBTIME, events.CommandEvent.RUNID, 
+                events.CommandEvent.STATUS, events.CommandEvent.TOPIC, events.CommandEvent.TYPE, 'FOO', 'BAR']
         self.assertValid(val, names, commandOriginatorID.getLocalID(), destinationID.getLocalID())
 
         self.assertTrue(event.getType(), events.EventTypes.COMMAND)

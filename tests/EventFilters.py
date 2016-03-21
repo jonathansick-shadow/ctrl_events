@@ -162,7 +162,7 @@ class EventFiltersTestCase(unittest.TestCase):
     
     
         val = recv.receiveEvent()
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
     
         ps = val.getPropertySet()
         
@@ -190,7 +190,8 @@ class EventFiltersTestCase(unittest.TestCase):
 
         names = val.getFilterablePropertyNames()
 
-        values = ['EVENTTIME', 'FOO', 'PLOUGH', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE', 'XYZZY']
+        values = [events.Event.EVENTTIME, 'FOO', 'PLOUGH', events.Event.PUBTIME, events.Event.RUNID, events.Event.STATUS, 
+                events.Event.TOPIC, events.Event.TYPE, 'XYZZY']
 
         for x in values:
             self.assertTrue(x in names)
@@ -200,7 +201,7 @@ class EventFiltersTestCase(unittest.TestCase):
         # time out and confirm that we didn't get anything
         #
         val = recv.receiveEvent(1000)
-        self.assertEqual(val, None)
+        self.assertIsNone(val)
 
 def suite():
     """Returns a suite containing all the tests cases in this module."""

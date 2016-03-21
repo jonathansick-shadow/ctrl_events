@@ -39,10 +39,10 @@ class CombinedReceiveEventTestCase(unittest.TestCase):
         trans = events.EventTransmitter(broker, topic)
         
         root = PropertySet()
-        root.set("TOPIC",topic)
+        root.set(events.Event.TOPIC,topic)
         root.set("myname","myname")
-        root.set("STATUS", "my special status")
-        root.set("RUNID","srptestrun")
+        root.set(events.Event.STATUS, "my special status")
+        root.set(events.Event.RUNID,"srptestrun")
         
         event = events.Event("srptestrun", root)
     
@@ -78,43 +78,43 @@ class CombinedReceiveEventTestCase(unittest.TestCase):
 
         # receive event on topicA, and check to see it's the right one
         val = recvA.receiveEvent()
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
         ps = val.getPropertySet()
-        name = ps.get("TOPIC")
+        name = ps.get(events.Event.TOPIC)
         self.assertEqual(name, topicA)
 
         # receiving no more messages on topicA
         val = recvA.receiveEvent(1)
-        self.assertEqual(val, None)
+        self.assertIsNone(val)
 
         # receive event on topicB, and check to see it's the right one
         val = recvB.receiveEvent()
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
         ps = val.getPropertySet()
-        name = ps.get("TOPIC")
+        name = ps.get(events.Event.TOPIC)
         self.assertEqual(name, topicB)
 
         # receiving no more messages on topicB
         val = recvB.receiveEvent(1)
-        self.assertEqual(val, None)
+        self.assertIsNone(val)
     
         # receive event on topicC, and check to see it's the one sent to topicA
         val = recvC.receiveEvent()
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
         ps = val.getPropertySet()
-        name = ps.get("TOPIC")
+        name = ps.get(events.Event.TOPIC)
         self.assertEqual(name, topicA)
     
         # receive event on topicC, and check to see it's the one sent to topicB
         val = recvC.receiveEvent()
-        self.assertNotEqual(val, None)
+        self.assertIsNotNone(val)
         ps = val.getPropertySet()
-        name = ps.get("TOPIC")
+        name = ps.get(events.Event.TOPIC)
         self.assertEqual(name, topicB)
 
         # receiving no more messages on topicC
         val = recvC.receiveEvent(1)
-        self.assertEqual(val, None)
+        self.assertIsNone(val)
     
 
 def suite():

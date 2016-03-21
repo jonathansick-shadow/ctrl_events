@@ -31,6 +31,8 @@ Access to the lsst::ctrl::events classes
 %enddef
 
 %feature("autodoc", "1");
+%feature("notabstract") EventTransmitter;
+
 %module(package="lsst.ctrl.events", docstring=eventsLib_DOCSTRING) eventsLib
 
 
@@ -44,8 +46,12 @@ Access to the lsst::ctrl::events classes
 #include "lsst/ctrl/events/CommandEvent.h"
 #include "lsst/ctrl/events/LogEvent.h"
 #include "lsst/ctrl/events/EventTypes.h"
+#include "lsst/ctrl/events/Transmitter.h"
 #include "lsst/ctrl/events/EventTransmitter.h"
+#include "lsst/ctrl/events/EventEnqueuer.h"
+#include "lsst/ctrl/events/Receiver.h"
 #include "lsst/ctrl/events/EventReceiver.h"
+#include "lsst/ctrl/events/EventDequeuer.h"
 #include "lsst/ctrl/events/EventSystem.h"
 
 %}
@@ -53,6 +59,10 @@ Access to the lsst::ctrl::events classes
 %include "lsst/p_lsstSwig.i"
 
 %shared_ptr(lsst::ctrl::events::LocationId)
+%shared_ptr(lsst::ctrl::events::Event)
+%shared_ptr(lsst::ctrl::events::StatusEvent)
+%shared_ptr(lsst::ctrl::events::CommandEvent)
+%shared_ptr(lsst::ctrl::events::LogEvent)
 
 
 %import "lsst/daf/base/baseLib.i"
@@ -74,34 +84,71 @@ Access to the lsst::ctrl::events classes
 %include "lsst/ctrl/events/CommandEvent.h"
 %include "lsst/ctrl/events/LogEvent.h"
 %include "lsst/ctrl/events/EventTypes.h"
+%include "lsst/ctrl/events/Transmitter.h"
 %include "lsst/ctrl/events/EventTransmitter.h"
+%include "lsst/ctrl/events/EventEnqueuer.h"
 
 %newobject lsst::ctrl::events::EventReceiver::receiveEvent;
 %newobject lsst::ctrl::events::EventSystem::receiveEvent;
 %newobject lsst::ctrl::events::EventReceiver::receiveStatusEvent;
 %newobject lsst::ctrl::events::EventReceiver::receiveCommandEvent;
 %newobject lsst::ctrl::events::EventReceiver::receiveLogEvent;
+%include "lsst/ctrl/events/Receiver.h"
 %include "lsst/ctrl/events/EventReceiver.h"
+%include "lsst/ctrl/events/EventDequeuer.h"
 %include "lsst/ctrl/events/EventSystem.h"
 
 %extend lsst::ctrl::events::EventReceiver {
-    lsst::ctrl::events::StatusEvent *receiveStatusEvent() {
-        return dynamic_cast<lsst::ctrl::events::StatusEvent*>(self->receiveEvent());
+    PTR(lsst::ctrl::events::StatusEvent) receiveStatusEvent() {
+        PTR(lsst::ctrl::events::Event) ev = self->receiveEvent();
+        return boost::static_pointer_cast<lsst::ctrl::events::StatusEvent>(ev);
     }
-    lsst::ctrl::events::StatusEvent *receiveStatusEvent(long timeout) {
-        return dynamic_cast<lsst::ctrl::events::StatusEvent*>(self->receiveEvent(timeout));
+    PTR(lsst::ctrl::events::StatusEvent) receiveStatusEvent(long timeout) {
+        PTR(lsst::ctrl::events::Event) ev = self->receiveEvent(timeout);
+        return boost::static_pointer_cast<lsst::ctrl::events::StatusEvent>(ev);
     }
-    lsst::ctrl::events::CommandEvent *receiveCommandEvent() {
-        return dynamic_cast<lsst::ctrl::events::CommandEvent*>(self->receiveEvent());
+    PTR(lsst::ctrl::events::CommandEvent) receiveCommandEvent() {
+        PTR(lsst::ctrl::events::Event) ev = self->receiveEvent();
+        return boost::static_pointer_cast<lsst::ctrl::events::CommandEvent>(ev);
     }
-    lsst::ctrl::events::CommandEvent *receiveCommandEvent(long timeout) {
-        return dynamic_cast<lsst::ctrl::events::CommandEvent*>(self->receiveEvent(timeout));
+    PTR(lsst::ctrl::events::CommandEvent) receiveCommandEvent(long timeout) {
+        PTR(lsst::ctrl::events::Event) ev = self->receiveEvent(timeout);
+        return boost::static_pointer_cast<lsst::ctrl::events::CommandEvent>(ev);
     }
-    lsst::ctrl::events::LogEvent *receiveLogEvent() {
-        return dynamic_cast<lsst::ctrl::events::LogEvent*>(self->receiveEvent());
+    PTR(lsst::ctrl::events::LogEvent) receiveLogEvent() {
+        PTR(lsst::ctrl::events::Event) ev = self->receiveEvent();
+        return boost::static_pointer_cast<lsst::ctrl::events::LogEvent>(ev);
     }
-    lsst::ctrl::events::LogEvent *receiveLogEvent(long timeout) {
-        return dynamic_cast<lsst::ctrl::events::LogEvent*>(self->receiveEvent(timeout));
+    PTR(lsst::ctrl::events::LogEvent) receiveLogEvent(long timeout) {
+        PTR(lsst::ctrl::events::Event) ev = self->receiveEvent(timeout);
+        return boost::static_pointer_cast<lsst::ctrl::events::LogEvent>(ev);
+    }
+}
+
+%extend lsst::ctrl::events::EventDequeuer {
+    PTR(lsst::ctrl::events::StatusEvent) receiveStatusEvent() {
+        PTR(lsst::ctrl::events::Event) ev = self->receiveEvent();
+        return boost::static_pointer_cast<lsst::ctrl::events::StatusEvent>(ev);
+    }
+    PTR(lsst::ctrl::events::StatusEvent) receiveStatusEvent(long timeout) {
+        PTR(lsst::ctrl::events::Event) ev = self->receiveEvent(timeout);
+        return boost::static_pointer_cast<lsst::ctrl::events::StatusEvent>(ev);
+    }
+    PTR(lsst::ctrl::events::CommandEvent) receiveCommandEvent() {
+        PTR(lsst::ctrl::events::Event) ev = self->receiveEvent();
+        return boost::static_pointer_cast<lsst::ctrl::events::CommandEvent>(ev);
+    }
+    PTR(lsst::ctrl::events::CommandEvent) receiveCommandEvent(long timeout) {
+        PTR(lsst::ctrl::events::Event) ev = self->receiveEvent(timeout);
+        return boost::static_pointer_cast<lsst::ctrl::events::CommandEvent>(ev);
+    }
+    PTR(lsst::ctrl::events::LogEvent) receiveLogEvent() {
+        PTR(lsst::ctrl::events::Event) ev = self->receiveEvent();
+        return boost::static_pointer_cast<lsst::ctrl::events::LogEvent>(ev);
+    }
+    PTR(lsst::ctrl::events::LogEvent) receiveLogEvent(long timeout) {
+        PTR(lsst::ctrl::events::Event) ev = self->receiveEvent(timeout);
+        return boost::static_pointer_cast<lsst::ctrl::events::LogEvent>(ev);
     }
 }
 

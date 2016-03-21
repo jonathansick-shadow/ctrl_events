@@ -39,10 +39,10 @@ class StatusEventOriginatorTestCase(unittest.TestCase):
         trans = events.EventTransmitter(brokerName, topic)
         
         root = PropertySet()
-        root.set("TOPIC",topic)
+        root.set(events.Event.TOPIC, topic)
         root.set("myname","myname")
-        root.set("STATUS", "my special status")
-        root.set("RUNID","srptestrun")
+        root.set(events.StatusEvent.STATUS, "my special status")
+        root.set(events.StatusEvent.RUNID,"srptestrun")
         root.set("bazinga", "sheldon")
         
         originatorId = events.LocationId()
@@ -67,7 +67,7 @@ class StatusEventOriginatorTestCase(unittest.TestCase):
         self.sendEvent(broker, topic)
     
         val = recv.receiveEvent()
-        assert val != None
+        self.assertIsNotNone(val)
     
         eventSystem = events.EventSystem.getDefaultEventSystem()
         statusevent = eventSystem.castToStatusEvent(val)

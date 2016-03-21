@@ -30,18 +30,9 @@
  * @brief Singleton used to be sure ActiveMQ is initialized.
  *
  */
-#include <iomanip>
-#include <sstream>
-#include <stdexcept>
 
-#include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/exceptions.h"
 #include "lsst/ctrl/events/EventLibrary.h"
 #include <activemq/library/ActiveMQCPP.h>
-
-namespace pexExceptions =lsst::pex::exceptions;
-
-using namespace std;
 
 namespace lsst {
 namespace ctrl {

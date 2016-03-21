@@ -265,7 +265,7 @@ class TestLog(unittest.TestCase):
 
         # make sure we didn't get any more than we should have
         ev = recv.receiveEvent(100)
-        self.assertEqual(ev, None)
+        self.assertIsNone(ev)
 
         # reconfigure with a new run id
         confStr2 = "log4j.rootLogger=TRACE, EA\n"
@@ -288,7 +288,7 @@ class TestLog(unittest.TestCase):
 
         # make sure we didn't receive any events from another run id
         ev = recv.receiveEvent(100)
-        self.assertEqual(ev, None)
+        self.assertIsNone(ev)
 
         # make sure we got all the events we should have
         self.assertValidMessage(recv2.receiveEvent(), "This is TRACE")
@@ -297,7 +297,7 @@ class TestLog(unittest.TestCase):
 
         # make sure we didn't get any more than we should have
         ev = recv2.receiveEvent(100)
-        self.assertEqual(ev, None)
+        self.assertIsNone(ev)
 
         # make sure we got all the events, for all messages on this topic
         self.assertValidMessage(recvALL.receiveEvent(), "This is TRACE")
@@ -310,7 +310,7 @@ class TestLog(unittest.TestCase):
 
         # make sure we didn't get any more than we should have
         ev = recvALL.receiveEvent(100)
-        self.assertEqual(ev, None)
+        self.assertIsNone(ev)
         
 ###############################################################################
 
@@ -336,15 +336,15 @@ class TestLog(unittest.TestCase):
 
         # the host name should be the same since we're sending and receiving
         # from the same host
-        host = ps.get("ORIG_HOSTNAME")
-        self.assertEqual(host,socket.gethostname())
+        host = ps.get(events.LogEvent.ORIG_HOSTNAME)
+        self.assertEqual(host, socket.gethostname())
 
         # the process id should be the same since we're sending and receiving
         # from the same process
-        pid = ps.get("ORIG_PROCESSID")
+        pid = ps.get(events.LogEvent.ORIG_PROCESSID)
         self.assertEqual(os.getpid(), pid)
 
-        t = ps.get("TYPE")
+        t = ps.get(events.LogEvent.TYPE)
         self.assertEqual(t, events.EventTypes.LOG)
 
 

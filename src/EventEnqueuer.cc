@@ -2,7 +2,7 @@
 
 /*
  * LSST Data Management System
- * Copyright 2008-2015  AURA/LSST.
+ * Copyright 2008-2016  AURA/LSST.
  *
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -23,39 +23,34 @@
  */
 
 /**
- * @file EventReceiver.cc
+ * @file EventEnqueuer.cc
  *
  * @ingroup ctrl/events
  *
- * @brief Object to receive Events from the specified event topic
+ * @brief Objects to send Events to the specified event queue
  *
  */
 
-#include "lsst/ctrl/events/EventReceiver.h"
-
+#include "lsst/ctrl/events/EventEnqueuer.h"
 #include "lsst/ctrl/events/Event.h"
 
 namespace lsst {
 namespace ctrl {
 namespace events {
 
-EventReceiver::EventReceiver(const std::string& hostName, const std::string& destinationName, int hostPort) : Receiver() {
-    init(hostName, destinationName, "", false, hostPort);
+EventEnqueuer::EventEnqueuer( const std::string& hostName, const std::string& queueName, int hostPort) : Transmitter() {
+    init(hostName, queueName, true, hostPort);
 }
 
-EventReceiver::EventReceiver(const std::string& hostName, const std::string& destinationName, const std::string& selector, int hostPort) : Receiver() {
-    init(hostName, destinationName, selector, false, hostPort);
+std::string EventEnqueuer::getDestinationPropertyName() {
+    return Event::QUEUE;
 }
 
-std::string EventReceiver::getDestinationPropertyName() {
-    return Event::TOPIC;
+std::string EventEnqueuer::getQueueName() {
+    return getDestinationName();
 }
 
-std::string EventReceiver::getTopicName() {
-    return _destinationName;
-}
-
-EventReceiver::~EventReceiver() {
+EventEnqueuer::~EventEnqueuer() {
 }
 
 }}}
