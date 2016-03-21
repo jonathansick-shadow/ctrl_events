@@ -23,35 +23,16 @@
  */
 
 /**
- * @file EventReceiver.cc
+ * @file EventDequeuer.cc
  *
  * @ingroup ctrl/events
  *
- * @brief Object to receive Events from the specified event bus
+ * @brief Object to receive Events from the specified event queue
  *
  */
-#include <iomanip>
-#include <sstream>
-#include <stdexcept>
-#include <cstring>
 
 #include "lsst/ctrl/events/EventDequeuer.h"
-
-#include "lsst/daf/base/DateTime.h"
-#include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/exceptions.h"
-#include <sys/socket.h>
-#include <sys/un.h>
-
-#include "lsst/ctrl/events/EventLibrary.h"
-#include "lsst/ctrl/events/EventFactory.h"
-
-#include <activemq/core/ActiveMQConnectionFactory.h>
-#include <activemq/exceptions/ActiveMQException.h>
-
-namespace pexExceptions = lsst::pex::exceptions;
-
-namespace activemqCore = activemq::core;
+#include "lsst/ctrl/events/Event.h"
 
 namespace lsst {
 namespace ctrl {
@@ -66,7 +47,7 @@ EventDequeuer::EventDequeuer(const std::string& hostName, const std::string& des
 }
 
 std::string EventDequeuer::getDestinationPropertyName() {
-    return "QUEUE";
+    return Event::QUEUE;
 }
 
 std::string EventDequeuer::getQueueName() {

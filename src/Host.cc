@@ -30,14 +30,9 @@
  * @brief quickly return the host ip address
  *
  */
-#include <limits.h>
-#include <string>
-#include <string.h>
-#include <netdb.h>
-#include "boost/scoped_array.hpp"
-#include <ifaddrs.h>
-#include <unistd.h>
 
+#include <string>
+#include <vector>
 #include "lsst/ctrl/events/Host.h"
 
 #include "lsst/pex/exceptions.h"

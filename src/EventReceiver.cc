@@ -27,30 +27,13 @@
  *
  * @ingroup ctrl/events
  *
- * @brief Object to receive Events from the specified event bus
+ * @brief Object to receive Events from the specified event topic
  *
  */
-#include <iomanip>
-#include <sstream>
-#include <stdexcept>
-#include <cstring>
 
 #include "lsst/ctrl/events/EventReceiver.h"
 
-#include "lsst/daf/base/DateTime.h"
-#include "lsst/pex/exceptions.h"
-#include <sys/socket.h>
-#include <sys/un.h>
-
-#include "lsst/ctrl/events/EventLibrary.h"
-#include "lsst/ctrl/events/EventFactory.h"
-
-#include <activemq/core/ActiveMQConnectionFactory.h>
-#include <activemq/exceptions/ActiveMQException.h>
-
-namespace pexExceptions = lsst::pex::exceptions;
-
-namespace activemqCore = activemq::core;
+#include "lsst/ctrl/events/Event.h"
 
 namespace lsst {
 namespace ctrl {
@@ -65,7 +48,7 @@ EventReceiver::EventReceiver(const std::string& hostName, const std::string& des
 }
 
 std::string EventReceiver::getDestinationPropertyName() {
-    return "TOPIC";
+    return Event::TOPIC;
 }
 
 std::string EventReceiver::getTopicName() {

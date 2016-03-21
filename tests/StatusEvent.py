@@ -49,9 +49,9 @@ class StatusEventTestCase(unittest.TestCase):
         trans = events.EventTransmitter(broker, topic)
         
         root = PropertySet()
-        root.set("TOPIC",topic)
+        root.set(events.Event.TOPIC, topic)
         root.set("myname","myname")
-        root.set("STATUS", "my special status")
+        root.set(events.Event.STATUS, "my special status")
         root.set("logger.status", "my logger special status")
         root.set("logger.pid", "1")
         
@@ -69,9 +69,9 @@ class StatusEventTestCase(unittest.TestCase):
         trans = events.EventTransmitter(broker, topic)
         
         root = PropertySet()
-        root.set("TOPIC",topic)
+        root.set(events.Event.TOPIC, topic)
         root.set("myname","myname")
-        root.set("STATUS", "my special status")
+        root.set(events.Event.STATUS, "my special status")
 
         filter = PropertySet()
         filter.set("FOO", "bar")
@@ -103,7 +103,7 @@ class StatusEventTestCase(unittest.TestCase):
         val = receiver.receiveEvent()
 
         self.assertIsNotNone(val)
-        values = ['EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
+        values = [events.Event.EVENTTIME, events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID, events.StatusEvent.ORIG_PROCESSID, events.Event.PUBTIME, events.Event.STATUS, events.Event.TOPIC, events.Event.TYPE]
         customValues = ['myname', 'logger']
         self.assertValid(val, values, customValues)
 
@@ -129,7 +129,7 @@ class StatusEventTestCase(unittest.TestCase):
 
         val = receiverA.receiveStatusEvent()
         self.assertIsNotNone(val)
-        values = ['EVENTTIME', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE', 'RUNID']
+        values = [events.Event.EVENTTIME, events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID, events.StatusEvent.ORIG_PROCESSID, events.Event.PUBTIME, events.Event.STATUS, events.Event.TOPIC, events.Event.TYPE, events.Event.RUNID]
         customValues = ['myname', 'logger']
         self.assertValid(val, values, customValues)
 
@@ -152,9 +152,7 @@ class StatusEventTestCase(unittest.TestCase):
 
         self.assertIsNotNone(val)
 
-        # should only be ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
-        # in some order
-        values = ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'STATUS', 'TOPIC', 'TYPE']
+        values = [events.Event.EVENTTIME, 'FOO', events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID, events.StatusEvent.ORIG_PROCESSID, 'PLOUGH', 'PLOVER', events.Event.PUBTIME, events.Event.STATUS, events.Event.TOPIC, events.Event.TYPE]
         customValues = ['myname']
         self.assertValid(val, values, customValues)
 
@@ -173,7 +171,7 @@ class StatusEventTestCase(unittest.TestCase):
 
         # should receive an event
         self.assertIsNotNone(val)
-        values = ['EVENTTIME', 'FOO', 'ORIG_HOSTNAME', 'ORIG_LOCALID', 'ORIG_PROCESSID', 'PLOUGH', 'PLOVER', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE']
+        values = [events.Event.EVENTTIME, 'FOO', events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID, events.StatusEvent.ORIG_PROCESSID, 'PLOUGH', 'PLOVER', events.Event.PUBTIME, events.Event.RUNID, events.Event.STATUS, events.Event.TOPIC, events.Event.TYPE]
         customValues = ['myname']
         self.assertValid(val, values, customValues)
 

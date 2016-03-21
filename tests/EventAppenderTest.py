@@ -336,15 +336,15 @@ class TestLog(unittest.TestCase):
 
         # the host name should be the same since we're sending and receiving
         # from the same host
-        host = ps.get("ORIG_HOSTNAME")
+        host = ps.get(events.LogEvent.ORIG_HOSTNAME)
         self.assertEqual(host, socket.gethostname())
 
         # the process id should be the same since we're sending and receiving
         # from the same process
-        pid = ps.get("ORIG_PROCESSID")
+        pid = ps.get(events.LogEvent.ORIG_PROCESSID)
         self.assertEqual(os.getpid(), pid)
 
-        t = ps.get("TYPE")
+        t = ps.get(events.LogEvent.TYPE)
         self.assertEqual(t, events.EventTypes.LOG)
 
 

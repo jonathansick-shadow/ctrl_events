@@ -190,7 +190,8 @@ class EventFiltersTestCase(unittest.TestCase):
 
         names = val.getFilterablePropertyNames()
 
-        values = ['EVENTTIME', 'FOO', 'PLOUGH', 'PUBTIME', 'RUNID', 'STATUS', 'TOPIC', 'TYPE', 'XYZZY']
+        values = [events.Event.EVENTTIME, 'FOO', 'PLOUGH', events.Event.PUBTIME, events.Event.RUNID, events.Event.STATUS, 
+                events.Event.TOPIC, events.Event.TYPE, 'XYZZY']
 
         for x in values:
             self.assertTrue(x in names)

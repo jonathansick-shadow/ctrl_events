@@ -31,21 +31,11 @@
  *
  */
 #include <iomanip>
-#include <sstream>
-#include <stdexcept>
-#include <limits>
-#include <cstring>
 
 #include "lsst/ctrl/events/EventTypes.h"
 #include "lsst/ctrl/events/LogEvent.h"
 
 #include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/exceptions.h"
-
-namespace pexExceptions = lsst::pex::exceptions;
-
-
-using namespace std;
 
 namespace lsst {
 namespace ctrl {

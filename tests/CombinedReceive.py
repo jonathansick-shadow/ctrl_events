@@ -39,10 +39,10 @@ class CombinedReceiveEventTestCase(unittest.TestCase):
         trans = events.EventTransmitter(broker, topic)
         
         root = PropertySet()
-        root.set("TOPIC",topic)
+        root.set(events.Event.TOPIC,topic)
         root.set("myname","myname")
-        root.set("STATUS", "my special status")
-        root.set("RUNID","srptestrun")
+        root.set(events.Event.STATUS, "my special status")
+        root.set(events.Event.RUNID,"srptestrun")
         
         event = events.Event("srptestrun", root)
     
@@ -80,7 +80,7 @@ class CombinedReceiveEventTestCase(unittest.TestCase):
         val = recvA.receiveEvent()
         self.assertIsNotNone(val)
         ps = val.getPropertySet()
-        name = ps.get("TOPIC")
+        name = ps.get(events.Event.TOPIC)
         self.assertEqual(name, topicA)
 
         # receiving no more messages on topicA
@@ -91,7 +91,7 @@ class CombinedReceiveEventTestCase(unittest.TestCase):
         val = recvB.receiveEvent()
         self.assertIsNotNone(val)
         ps = val.getPropertySet()
-        name = ps.get("TOPIC")
+        name = ps.get(events.Event.TOPIC)
         self.assertEqual(name, topicB)
 
         # receiving no more messages on topicB
@@ -102,14 +102,14 @@ class CombinedReceiveEventTestCase(unittest.TestCase):
         val = recvC.receiveEvent()
         self.assertIsNotNone(val)
         ps = val.getPropertySet()
-        name = ps.get("TOPIC")
+        name = ps.get(events.Event.TOPIC)
         self.assertEqual(name, topicA)
     
         # receive event on topicC, and check to see it's the one sent to topicB
         val = recvC.receiveEvent()
         self.assertIsNotNone(val)
         ps = val.getPropertySet()
-        name = ps.get("TOPIC")
+        name = ps.get(events.Event.TOPIC)
         self.assertEqual(name, topicB)
 
         # receiving no more messages on topicC

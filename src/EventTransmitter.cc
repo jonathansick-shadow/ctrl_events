@@ -30,31 +30,8 @@
  * @brief Objects to send Events to the specified event bus
  *
  */
-#include <iomanip>
-#include <sstream>
-#include <stdexcept>
-#include <limits>
-#include <cstring>
-#include <time.h>
 
 #include "lsst/ctrl/events/EventTransmitter.h"
-
-#include "lsst/daf/base/DateTime.h"
-#include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/exceptions.h"
-#include <sys/socket.h>
-#include <sys/un.h>
-
-#include "lsst/ctrl/events/EventLibrary.h"
-
-#include <activemq/core/ActiveMQConnectionFactory.h>
-
-namespace dafBase = lsst::daf::base;
-namespace pexExceptions = lsst::pex::exceptions;
-
-
-using namespace std;
-using std::numeric_limits;
 
 namespace lsst {
 namespace ctrl {
@@ -65,7 +42,7 @@ EventTransmitter::EventTransmitter( const std::string& hostName, const std::stri
 }
 
 std::string EventTransmitter::getDestinationPropertyName() {
-    return "TOPIC";
+    return Event::TOPIC;
 }
 
 std::string EventTransmitter::getTopicName() {

@@ -76,7 +76,7 @@ class EventSystemTestCase(unittest.TestCase):
         # verify PropertySet contents
         # shouldn't have a RUNID
         with self.assertRaises(ex.Exception):
-            recvProp.get("RUNID")
+            recvProp.get(events.Event.RUNID)
 
         self.verifyPropertySet(recvProp)
 
@@ -109,7 +109,7 @@ class EventSystemTestCase(unittest.TestCase):
         self.assertIsNotNone(recvProp)
 
         # verify the RUNID
-        self.assertEqual(recvProp.get("RUNID"), runid)
+        self.assertEqual(recvProp.get(events.Event.RUNID), runid)
 
         # verify the other PropertySet contents
         self.verifyPropertySet(recvProp)
@@ -157,7 +157,7 @@ class EventSystemTestCase(unittest.TestCase):
         runid = "id007"
 
         eventSystem.createTransmitter(broker, topic3)
-        eventSystem.createReceiver(broker, topic3, "RUNID = '%s'" % runid)
+        eventSystem.createReceiver(broker, topic3, "%s  = '%s'" % (events.Event.RUNID, runid))
         self.performEventSelectorTest(runid, topic3)
 
     @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
@@ -236,7 +236,7 @@ class EventSystemTestCase(unittest.TestCase):
         runid = "id007"
 
         eventSystem.createEnqueuer(broker, queue3)
-        eventSystem.createDequeuer(broker, queue3, "RUNID = '%s'" % runid)
+        eventSystem.createDequeuer(broker, queue3, "%s = '%s'" % (events.Event.RUNID, runid))
         self.performEventSelectorTest(runid, queue3)
 
 

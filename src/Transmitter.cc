@@ -30,21 +30,12 @@
  * @brief Objects to send Events to the specified event bus
  *
  */
-#include <iomanip>
-#include <sstream>
-#include <stdexcept>
-#include <limits>
-#include <cstring>
-#include <time.h>
 
 #include "lsst/ctrl/events/Transmitter.h"
 #include "lsst/ctrl/events/EventLibrary.h"
 
 #include "lsst/daf/base/DateTime.h"
 #include "lsst/pex/exceptions.h"
-#include <sys/socket.h>
-#include <sys/un.h>
-
 
 #include <activemq/core/ActiveMQConnectionFactory.h>
 
