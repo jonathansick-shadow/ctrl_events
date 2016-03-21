@@ -57,13 +57,12 @@ namespace events {
 class EventEnqueuer : public Transmitter
 {
 public:
-    typedef boost::shared_ptr<EventEnqueuer> Ptr;
 
     /**
-     * @brief Transmits events to the specified host and destination
+     * @brief Transmits events to the specified host and queue
      *
      * @param hostName the machine hosting the message broker
-     * @param destinationName the topic to transmit events to
+     * @param destinationName the queue to transmit events to
      * @param hostPort the port number which the message broker is listening to
      * @throws RuntimeError if local socket can't be created
      * @throws RuntimeError if connect to local socket fails
@@ -75,7 +74,7 @@ public:
 
     /**
      * @brief get the queue name
-     * @return a std::string containing the topic name
+     * @return a std::string containing the queue name
      */
     std::string getQueueName();
 

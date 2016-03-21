@@ -58,10 +58,8 @@ class EventTransmitter : public Transmitter
 {
 public:
 
-    typedef boost::shared_ptr<EventTransmitter> Ptr;
-
     /** 
-     * @brief Transmits events to the specified host and destination
+     * @brief Transmits events to the specified host and topic
      *
      * @param hostName the machine hosting the message broker
      * @param destinationName the topic to transmit events to

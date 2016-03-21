@@ -39,14 +39,13 @@
 #include <list>
 #include <boost/shared_ptr.hpp>
 
+#include "lsst/base.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 
 #include "lsst/ctrl/events/Event.h"
 
 using lsst::daf::base::PropertySet;
-
-using namespace std;
 
 namespace lsst {
 namespace ctrl {
@@ -62,7 +61,7 @@ public:
 
     ~EventFactory();
 
-    static Event::Ptr createEvent(cms::TextMessage* msg);
+    static PTR(Event) createEvent(cms::TextMessage* msg);
 
 };
 }

@@ -30,17 +30,6 @@
  * @brief Object to transmit information through the event framework.
  *
  */
-#include <iomanip>
-#include <sstream>
-#include <stdexcept>
-#include <limits>
-#include <cstring>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <netdb.h>
-#include <time.h>
-#include <typeinfo>
 
 #include "boost/scoped_array.hpp"
 #include "boost/property_tree/ptree.hpp"
@@ -89,7 +78,7 @@ void Event::_init() {
     _keywords.insert(STATUS);
     _keywords.insert(TOPIC);
     _keywords.insert(PUBTIME);
-    _psp = PropertySet::Ptr(new PropertySet);
+    _psp = PTR(PropertySet)(new PropertySet);
 }
 
 Event::Event(cms::TextMessage *msg) {
@@ -182,7 +171,7 @@ Event::Event(PropertySet const& ps, PropertySet const& filterable) {
     _constructor(empty, ps, filterable);
 }
 
-Event::Event(std::string const& runId, PropertySet::Ptr const psp) {
+Event::Event(std::string const& runId, CONST_PTR(PropertySet) psp) {
     PropertySet p;
     _constructor(runId, *psp, p);
 }
@@ -288,8 +277,8 @@ std::string Event::getEventDate() {
 }
 
 
-PropertySet::Ptr Event::getCustomPropertySet() const {
-    PropertySet::Ptr psp = _psp->deepCopy();
+PTR(PropertySet) Event::getCustomPropertySet() const {
+    PTR(PropertySet) psp = _psp->deepCopy();
 
     for (std::string keyword : _keywords) {
         psp->remove(keyword);
@@ -297,12 +286,12 @@ PropertySet::Ptr Event::getCustomPropertySet() const {
     return psp;
 }
 
-PropertySet::Ptr Event::getPropertySet() const {
+PTR(PropertySet) Event::getPropertySet() const {
     if (_psp != 0) {
-            PropertySet::Ptr psp = _psp->deepCopy();
+            PTR(PropertySet) psp = _psp->deepCopy();
             return psp;
     }
-    PropertySet::Ptr psp(new PropertySet);
+    PTR(PropertySet) psp(new PropertySet);
     return psp;
 }
 
@@ -357,7 +346,7 @@ std::string Event::getTopic() {
 }
 
 void Event::marshall(cms::TextMessage *msg) {
-    PropertySet::Ptr psp;
+    PTR(PropertySet) psp;
 
     populateHeader(msg);
     psp = getCustomPropertySet();
@@ -418,13 +407,13 @@ std::string Event::marshall(PropertySet const& ps) {
 
 /** private method unmarshall the DataProperty from the TextMessage
   */
-PropertySet::Ptr Event::processTextMessage(cms::TextMessage* textMessage) {
+PTR(PropertySet) Event::processTextMessage(cms::TextMessage* textMessage) {
     if (textMessage == NULL)
-        return PropertySet::Ptr();
+        return PTR(PropertySet)();
 
     std::string text = textMessage->getText();
 
-    PropertySet::Ptr unmarsh = unmarshall(text);
+    PTR(PropertySet) unmarsh = unmarshall(text);
     return unmarsh;
 }
 
@@ -469,17 +458,17 @@ bool Event::addDataItem(std::string const& typeInfo, boost::property_tree::ptree
 /** private method to iterate through the representation of a propertyset
   * within the boost::property_tree::ptree
   * \param child a boost::property_tree::ptree to iterate through
-  * \return a PropertySet::Ptr containing the data that was stored in child.
+  * \return a PTR(PropertySet) containing the data that was stored in child.
   */
-PropertySet::Ptr Event::parsePropertySet(boost::property_tree::ptree child) {
-    PropertySet::Ptr psp(new PropertySet);
+PTR(PropertySet) Event::parsePropertySet(boost::property_tree::ptree child) {
+    PTR(PropertySet) psp(new PropertySet);
     
     BOOST_FOREACH(boost::property_tree::ptree::value_type const &v, child.get_child("")) {
         std::string label = v.first;
         BOOST_FOREACH(boost::property_tree::ptree::value_type &v2, child.get_child(label)) {
             const bool b = addDataItem(v2.first, v2.second, label, *psp);
             if (!b) {
-                PropertySet::Ptr p2 = parsePropertySet(child.get_child(label));
+                PTR(PropertySet) p2 = parsePropertySet(child.get_child(label));
                 psp->add(label, p2);
                 break;
             }
@@ -490,15 +479,15 @@ PropertySet::Ptr Event::parsePropertySet(boost::property_tree::ptree child) {
 
 /** private method unmarshall the DataProperty from a text string
   * \param text a JSON text string
-  * \return a PropertySet::Ptr containing the data that was stored in text
+  * \return a PTR(PropertySet) containing the data that was stored in text
   */
-PropertySet::Ptr Event::unmarshall(std::string const& text) {
+PTR(PropertySet) Event::unmarshall(std::string const& text) {
 
     boost::property_tree::ptree pt;
     std::istringstream is (text);
     read_json(is, pt);
 
-    PropertySet::Ptr psp(new PropertySet);
+    PTR(PropertySet) psp(new PropertySet);
 
     BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt) {
         std::string key = v.first;
@@ -510,7 +499,7 @@ PropertySet::Ptr Event::unmarshall(std::string const& text) {
             const bool b = addDataItem(key2, v2.second, key, *psp);
             if (!b) {
                 std::string value = v2.second.get_value<std::string>();
-                PropertySet::Ptr p = parsePropertySet(child);
+                PTR(PropertySet) p = parsePropertySet(child);
                 psp->add(key, p);
                 break;
             }

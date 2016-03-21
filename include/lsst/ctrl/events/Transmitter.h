@@ -33,9 +33,6 @@
 #ifndef LSST_CTRL_EVENTS_TRANSMITTER_H
 #define LSST_CTRL_EVENTS_TRANSMITTER_H
 
-/*
-#include <activemq/commands/ActiveMQTopic.h>
-*/
 #include <cms/Connection.h>
 #include <cms/Session.h>
 #include <cms/TextMessage.h>
@@ -62,7 +59,7 @@ namespace events {
 class Transmitter
 {
 public:
-    typedef boost::shared_ptr<Transmitter> Ptr;
+
     Transmitter();
 
 
@@ -79,6 +76,7 @@ public:
 
     /**
      * @brief get the destination property name
+     * @note This is the TYPE of the destination we're using, either a TOPIC or a QUEUE
      */
     virtual std::string getDestinationPropertyName() { return NULL; }
 

@@ -48,8 +48,6 @@
 
 using lsst::daf::base::PropertySet;
 
-using namespace std;
-
 namespace lsst {
 namespace ctrl {
 namespace events {
@@ -59,22 +57,22 @@ namespace events {
  */
 class EventDequeuer : public Receiver {
 public:
-    typedef boost::shared_ptr<EventDequeuer> Ptr;
     /**
-     * @brief Receives events from the specified host and topic
+     * @brief Receives events from the specified host and queue
      * @param hostName the machine hosting the message broker
-     * @param destinationName the topic to receive events from
+     * @param destinationName the queue to receive events from
      * @param hostPort the port the message broker is listening on
      * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
      */
     EventDequeuer(const std::string& hostName, const std::string& destinationName, int hostPort = EventBroker::DEFAULTHOSTPORT);
 
     /**
-     * @brief Receives events from the specified host and topic
+     * @brief Receives events from the specified host and queue
      * @param hostName the machine hosting the message broker
-     * @param destinationName the topic to receive events from
+     * @param destinationName the queue to receive events from
      * @param selector the message selector expression to use.  A selector value of "" is equivalent to no selector.
      * @param hostPort the port the message broker is listening on
+     * @note The selector allows filtering of messages on the broker before the event is received
      * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
      */
     EventDequeuer(const std::string& hostName, const std::string& destinationName, const std::string& selector, int hostPort = EventBroker::DEFAULTHOSTPORT);
@@ -85,8 +83,8 @@ public:
     virtual ~EventDequeuer();
 
     /**
-     * @brief get topic name
-     * @return the topic name used by this EventReceiver
+     * @brief get queue name
+     * @return the queue name used by this EventDequeuer
      */
     std::string getQueueName();
 

@@ -49,8 +49,6 @@
 
 using lsst::daf::base::PropertySet;
 
-using namespace std;
-
 namespace lsst {
 namespace ctrl {
 namespace events { 
@@ -63,8 +61,6 @@ namespace events {
 class CommandEvent : public Event
 {
 public:
-
-    typedef boost::shared_ptr<CommandEvent> Ptr;
 
     static const std::string ORIG_HOSTNAME;
     static const std::string ORIG_PROCESSID;
@@ -87,7 +83,7 @@ public:
      * @param destination destination location for this event
      * @param psp PropertySet to pass in this event
      */
-    CommandEvent(LocationId const& originator, LocationId const& destination, CONST_PTR(PropertySet) const& psp);
+    CommandEvent(LocationId const& originator, LocationId const& destination, CONST_PTR(PropertySet)& psp);
 
 
     /**
@@ -116,7 +112,7 @@ public:
      * @param psp PropertySet to pass in this event
      */
     CommandEvent(std::string const& runid, LocationId const& originator, LocationId const& destination, 
-                    CONST_PTR(PropertySet) const& psp);
+                    CONST_PTR(PropertySet)& psp);
 
     /**
      * @brief Constructor for CommandEvent
@@ -151,14 +147,14 @@ public:
     virtual ~CommandEvent();
 
     /**
-     * @brief retrieve an object containing the OriginatoDesination LocationId
+     * @brief retrieve an object containing the Originator LocationId
      */
-    LocationId::Ptr getOriginator() const;
+    PTR(LocationId) getOriginator() const;
 
     /**
-     * @brief retrieve an object containing the OriginatoDesination LocationId
+     * @brief retrieve an object containing the Desination LocationId
      */
-    LocationId::Ptr getDestination() const;
+    PTR(LocationId) getDestination() const;
 
 
 private:

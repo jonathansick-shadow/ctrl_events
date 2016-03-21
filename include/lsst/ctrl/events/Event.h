@@ -42,14 +42,13 @@
 #include <iostream>
 #include <set>
 
-#include "boost/shared_ptr.hpp"
-
+#include "lsst/base.h"
 #include "lsst/daf/base/PropertySet.h"
+
+#include "boost/shared_ptr.hpp"
 #include "boost/property_tree/ptree.hpp"
 
 using lsst::daf::base::PropertySet;
-
-using namespace std;
 
 namespace lsst {
 namespace ctrl {
@@ -63,8 +62,6 @@ namespace events {
 class Event
 {
 public:
-    typedef boost::shared_ptr<Event> Ptr;
-
     static const std::string TYPE;
     static const std::string EVENTTIME;
     static const std::string RUNID;
@@ -96,9 +93,9 @@ public:
     /**
      * @brief Constructor for Event
      * @param[in] runid A "run id" to place in the header of this event
-     * @param[in] properties the PropertySet::Ptr to use to populate the event
+     * @param[in] properties the PTR(PropertySet) to use to populate the event
      */
-    Event(std::string const& runid, PropertySet::Ptr const properties);
+    Event(std::string const& runid, CONST_PTR(PropertySet) properties);
 
     /**
      * @brief Constructor for Event
@@ -128,9 +125,9 @@ public:
 
     /**
      * @brief retrieve the PropertySet for this Event
-     * @return PropertySet::Ptr to this PropertySet
+     * @return PTR(PropertySet) to this PropertySet
      */
-    PropertySet::Ptr getPropertySet() const;
+    PTR(PropertySet) getPropertySet() const;
 
     /**
      * @brief get the publication date of this Event, in ASCII
@@ -214,21 +211,21 @@ public:
 
     /**
      * @brief return all filterable property names
-     * @return a vector of filterable property names
+     * @return a std::vector of filterable property names
      */
-    vector<std::string> getFilterablePropertyNames();
+    std::vector<std::string> getFilterablePropertyNames();
 
     /**
      * @brief return all custom property names
-     * @return a vector of custom property names
+     * @return a std::vector of custom property names
      */
-    vector<std::string> getCustomPropertyNames();
+    std::vector<std::string> getCustomPropertyNames();
 
     /**
      * @brief return all custom property set
-     * @return a PropertySet::Ptr of custom properties
+     * @return a PTR(PropertySet) of custom properties
      */
-    PropertySet::Ptr getCustomPropertySet() const;
+    PTR(PropertySet) getCustomPropertySet() const;
 
     /**
      * @brief populate a cms::TextMessage header with properties
@@ -242,9 +239,9 @@ public:
     void marshall(cms::TextMessage *msg);
 
 protected:
-    PropertySet::Ptr _psp;
-    PropertySet::Ptr _filterable;
-    set<std::string> _keywords;
+    PTR(PropertySet) _psp;
+    PTR(PropertySet) _filterable;
+    std::set<std::string> _keywords;
     void _init();
     void _constructor(std::string const& runid, PropertySet const& properties, PropertySet const& filterable);
 
@@ -253,9 +250,9 @@ protected:
 
 private:
     std::string marshall(PropertySet const& properties);
-    PropertySet::Ptr processTextMessage(cms::TextMessage *textMessage);
-    PropertySet::Ptr unmarshall(std::string const& text);
-    PropertySet::Ptr parsePropertySet(boost::property_tree::ptree child);
+    PTR(PropertySet) processTextMessage(cms::TextMessage *textMessage);
+    PTR(PropertySet) unmarshall(std::string const& text);
+    PTR(PropertySet) parsePropertySet(boost::property_tree::ptree child);
     bool addDataItem(std::string const& typeInfo, boost::property_tree::ptree& item, std::string const& key, PropertySet& properties);
 };
 

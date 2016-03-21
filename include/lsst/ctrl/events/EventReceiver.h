@@ -48,8 +48,6 @@
 
 using lsst::daf::base::PropertySet;
 
-using namespace std;
-
 namespace lsst {
 namespace ctrl {
 namespace events { 
@@ -59,7 +57,7 @@ namespace events {
  */
 class EventReceiver : public Receiver {
 public:
-    typedef boost::shared_ptr<EventReceiver> Ptr;
+
     /** 
      * @brief Receives events from the specified host and topic
      * @param hostName the machine hosting the message broker
@@ -75,6 +73,7 @@ public:
      * @param destinationName the topic to receive events from
      * @param selector the message selector expression to use.  A selector value of "" is equivalent to no selector.
      * @param hostPort the port the message broker is listening on 
+     * @note The selector allows filtering of messages on the broker before the event is received
      * \throw throws lsst::pex::exceptions::RuntimeError if connection fails to initialize
      */
     EventReceiver(const std::string& hostName, const std::string& destinationName, const std::string& selector, int hostPort = EventBroker::DEFAULTHOSTPORT);

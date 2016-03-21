@@ -31,16 +31,10 @@
  *
  */
 #include <iomanip>
-#include <sstream>
-#include <stdexcept>
-#include <cstring>
 
 #include "lsst/ctrl/events/Receiver.h"
 
-#include "lsst/daf/base/DateTime.h"
 #include "lsst/pex/exceptions.h"
-#include <sys/socket.h>
-#include <sys/un.h>
 
 #include "lsst/ctrl/events/EventLibrary.h"
 #include "lsst/ctrl/events/EventFactory.h"
@@ -76,7 +70,7 @@ void Receiver::init(const std::string& hostName, const std::string& destinationN
 
         ss << hostPort;
 
-        string jmsURL = "tcp://"+hostName+":"+ss.str()+"?wireFormat=openwire";
+        std::string jmsURL = "tcp://"+hostName+":"+ss.str()+"?wireFormat=openwire";
 
         activemqCore::ActiveMQConnectionFactory* connectionFactory =
             new activemqCore::ActiveMQConnectionFactory( jmsURL );
@@ -113,11 +107,11 @@ void Receiver::init(const std::string& hostName, const std::string& destinationN
     }
 }
 
-Event::Ptr Receiver::receiveEvent() {
+PTR(Event) Receiver::receiveEvent() {
     return receiveEvent(infiniteTimeout);
 }
 
-Event::Ptr Receiver::receiveEvent(long timeout) {
+PTR(Event) Receiver::receiveEvent(long timeout) {
 
     cms::TextMessage* textMessage;
     try {
@@ -130,7 +124,7 @@ Event::Ptr Receiver::receiveEvent(long timeout) {
         throw LSST_EXCEPT(pexExceptions::RuntimeError, e.getMessage());
     }
 
-    Event::Ptr event(EventFactory().createEvent(textMessage));
+    PTR(Event) event(EventFactory().createEvent(textMessage));
     delete textMessage;
 
     return event;

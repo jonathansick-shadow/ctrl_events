@@ -53,8 +53,6 @@
 
 using lsst::daf::base::PropertySet;
 
-using namespace std;
-
 namespace lsst {
 namespace ctrl {
 namespace events {
@@ -63,7 +61,7 @@ namespace events {
  * @class EventSystem
  * @brief This object allows creation of the system's event transmitters
  *        and receivers, which can be specified at the beginning, and later
- *        used by specifying the topic to receive from or send on.
+ *        used by specifying the destination to receive from or send on.
  */
 class EventSystem {
 public:
@@ -121,6 +119,7 @@ public:
      * @param topicName the topic to receive messages from
      * @param selector the message selector to specify which messages to receive
      * @param hostPort the port where the broker can be reached
+     * @note The selector allows filtering of messages on the broker before the event is received
      */
     void createReceiver(std::string const& hostName, std::string const& topicName, std::string const& selector, int hostPort = EventBroker::DEFAULTHOSTPORT);
 
@@ -130,71 +129,72 @@ public:
      * @param queueName the queue to receive messages from
      * @param selector the message selector to specify which messages to receive
      * @param hostPort the port where the broker can be reached
+     * @note The selector allows filtering of messages on the broker before the event is received
      */
     void createDequeuer(std::string const& hostName, std::string const& queueName, std::string const& selector, int hostPort = EventBroker::DEFAULTHOSTPORT);
 
     /**
      * @brief send an event to a destination
-     * @param destinationName the topic to send messages to
+     * @param destinationName the destination to send messages to
      * @param event the Event to send
-     * @throws Runtime exception if the topic wasn't already registered using
+     * @throws Runtime exception if the destination wasn't already registered using
      *        the createTransmitter method
      */
     void publishEvent(std::string const& destinationName, Event& event);
 
     /**
      * @brief blocking receive for events.  Waits until an event
-     *        is received for the topic specified in the constructor
+     *        is received for the destination specified in the constructor
      * @param destinationName the destination to listen on
-     * @return a PropertySet::Ptr object
+     * @return an Event object
      */
-   Event::Ptr receiveEvent(std::string const& destinationName);
+   PTR(Event) receiveEvent(std::string const& destinationName);
 
     /**
      * @brief blocking receive for events, with timeout (in milliseconds).
-     *        Waits until an event is received for the topic specified
+     *        Waits until an event is received for the destination specified
      *        in the constructor, or until the timeout expires.
      * @param destinationName the destination to listen on
      * @param timeout the time in milliseconds to wait before returning
-     * @return a Property::Ptr object on success, 0 on failure
+     * @return an Event object on success, 0 on failure
      */
-    Event::Ptr receiveEvent(std::string const& destinationName, const long timeout);
+    PTR(Event) receiveEvent(std::string const& destinationName, const long timeout);
 
     /**
      * @brief create an LocationId
-     * @return LocationId::Ptr
+     * @return a LocationId 
      */
-    LocationId::Ptr createOriginatorId() const;
+    PTR(LocationId) createOriginatorId() const;
 
     /**
      * @brief cast an Event to StatusEvent
      * @param event an Event
      * @return a StatusEvent
      */
-    StatusEvent::Ptr castToStatusEvent(Event::Ptr event);
+    PTR(StatusEvent) castToStatusEvent(PTR(Event) event);
 
     /**
      * @brief cast an Event to CommandEvent
      * @param event an Event
      * @return a CommandEvent
      */
-    CommandEvent::Ptr castToCommandEvent(Event::Ptr event);
+    PTR(CommandEvent) castToCommandEvent(PTR(Event) event);
 
 private:
     static EventSystem *defaultEventSystem;
 
-    Transmitter::Ptr getTransmitter(std::string const& name);
-    Receiver::Ptr getReceiver(std::string const& name);
+    PTR(Transmitter) getTransmitter(std::string const& name);
+    PTR(Receiver) getReceiver(std::string const& name);
 
 protected:
     EventSystem();
 
 
-    static list<EventTransmitter::Ptr >_transmitters;
-    static list<EventReceiver::Ptr >_receivers;
+    static std::list<PTR(EventTransmitter) >_transmitters;
+    static std::list<PTR(EventReceiver) >_receivers;
 
-    static list<EventEnqueuer::Ptr >_enqueuers;
-    static list<EventDequeuer::Ptr >_dequeuers;
+    static std::list<PTR(EventEnqueuer) >_enqueuers;
+    static std::list<PTR(EventDequeuer) >_dequeuers;
 };
 
 }}}

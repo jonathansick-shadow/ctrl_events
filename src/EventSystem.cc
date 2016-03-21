@@ -30,23 +30,11 @@
  * @brief Coordinate EventTransmitters and EventReceiver objects
  *
  */
-#include <iomanip>
-#include <sstream>
-#include <stdexcept>
-
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
 
 #include "lsst/ctrl/events/EventSystem.h"
 #include "lsst/ctrl/events/EventLibrary.h"
 
-namespace pexExceptions =lsst::pex::exceptions;
-
-using namespace std;
+namespace pexExceptions = lsst::pex::exceptions;
 
 namespace lsst {
 namespace ctrl {
@@ -66,31 +54,31 @@ EventSystem& EventSystem::getDefaultEventSystem() {
 }
 
 EventSystem *EventSystem::defaultEventSystem = 0;
-list<EventTransmitter::Ptr> EventSystem::_transmitters;
-list<EventReceiver::Ptr> EventSystem::_receivers;
-list<EventEnqueuer::Ptr> EventSystem::_enqueuers;
-list<EventDequeuer::Ptr> EventSystem::_dequeuers;
+std::list<PTR(EventTransmitter)> EventSystem::_transmitters;
+std::list<PTR(EventReceiver)> EventSystem::_receivers;
+std::list<PTR(EventEnqueuer)> EventSystem::_enqueuers;
+std::list<PTR(EventDequeuer)> EventSystem::_dequeuers;
 
 void EventSystem::createTransmitter(std::string const& hostName, std::string const& topicName, int hostPort) {
-    Transmitter::Ptr transmitter;
+    PTR(Transmitter) transmitter;
     if ((transmitter = getTransmitter(topicName)) != 0)
         throw LSST_EXCEPT(pexExceptions::RuntimeError, "topic "+ topicName + " is already registered with EventSystem");
-    EventTransmitter::Ptr evTransmitter(new EventTransmitter(hostName, topicName, hostPort));
+    PTR(EventTransmitter) evTransmitter(new EventTransmitter(hostName, topicName, hostPort));
     _transmitters.push_back(evTransmitter);
 }
 
 void EventSystem::createEnqueuer(std::string const& hostName, std::string const& queueName, int hostPort) {
-    Transmitter::Ptr transmitter;
+    PTR(Transmitter) transmitter;
     if ((transmitter = getTransmitter(queueName)) != 0)
         throw LSST_EXCEPT(pexExceptions::RuntimeError, "queue "+ queueName + " is already registered with EventSystem");
-    EventEnqueuer::Ptr evTransmitter(new EventEnqueuer(hostName, queueName, hostPort));
+    PTR(EventEnqueuer) evTransmitter(new EventEnqueuer(hostName, queueName, hostPort));
     _enqueuers.push_back(evTransmitter);
 }
 
 void EventSystem::createReceiver(std::string const& hostName, std::string const& topicName, int hostPort) {
-    Receiver::Ptr receiver;
+    PTR(Receiver) receiver;
     if ((receiver = getReceiver(topicName)) == 0) {
-        EventReceiver::Ptr receiver(new EventReceiver(hostName, topicName, hostPort));
+        PTR(EventReceiver) receiver(new EventReceiver(hostName, topicName, hostPort));
         _receivers.push_back(receiver);
         return;
     }
@@ -98,34 +86,34 @@ void EventSystem::createReceiver(std::string const& hostName, std::string const&
 }
 
 void EventSystem::createDequeuer(std::string const& hostName, std::string const& queueName, int hostPort) {
-    Receiver::Ptr receiver;
+    PTR(Receiver) receiver;
     if ((receiver = getReceiver(queueName)) != 0)
         throw LSST_EXCEPT(pexExceptions::RuntimeError, "queue "+ queueName + " is already registered with EventSystem");
 
-    EventDequeuer::Ptr evReceiver(new EventDequeuer(hostName, queueName, hostPort));
+    PTR(EventDequeuer) evReceiver(new EventDequeuer(hostName, queueName, hostPort));
     _dequeuers.push_back(evReceiver);
 }
 
 void EventSystem::createReceiver(std::string const& hostName, std::string const& topicName, std::string const& selector, int hostPort) {
-    Receiver::Ptr receiver;
+    PTR(Receiver) receiver;
     if ((receiver = getReceiver(topicName)) != 0)
         throw LSST_EXCEPT(pexExceptions::RuntimeError, "topic"+ topicName + " is already registered with EventSystem");
 
-    EventReceiver::Ptr evReceiver(new EventReceiver(hostName, topicName, selector, hostPort));
+    PTR(EventReceiver) evReceiver(new EventReceiver(hostName, topicName, selector, hostPort));
     _receivers.push_back(evReceiver);
 }
 
 void EventSystem::createDequeuer(std::string const& hostName, std::string const& queueName, std::string const& selector, int hostPort) {
-    Receiver::Ptr receiver;
+    PTR(Receiver) receiver;
     if ((receiver = getReceiver(queueName)) != 0)
         throw LSST_EXCEPT(pexExceptions::RuntimeError, "queue"+ queueName + " is already registered with EventSystem");
 
-    EventDequeuer::Ptr evReceiver(new EventDequeuer(hostName, queueName, selector, hostPort));
+    PTR(EventDequeuer) evReceiver(new EventDequeuer(hostName, queueName, selector, hostPort));
     _dequeuers.push_back(evReceiver);
 }
 
 void EventSystem::publishEvent(std::string const& destinationName, Event& event) {
-    Transmitter::Ptr transmitter;
+    PTR(Transmitter) transmitter;
     if ((transmitter = getTransmitter(destinationName)) == 0) {
         throw LSST_EXCEPT(pexExceptions::RuntimeError, "destination "+ destinationName + " is not registered with EventSystem");
     }
@@ -134,28 +122,28 @@ void EventSystem::publishEvent(std::string const& destinationName, Event& event)
 
 /** private method to retrieve a transmitter from the internal list
   */
-Transmitter::Ptr EventSystem::getTransmitter(std::string const& name) {
-    for (EventTransmitter::Ptr transmitter  : _transmitters) {
+PTR(Transmitter) EventSystem::getTransmitter(std::string const& name) {
+    for (PTR(EventTransmitter) transmitter  : _transmitters) {
         if ((transmitter)->getTopicName() == name) {
             return transmitter;
         }
     }
 
-    for (EventEnqueuer::Ptr qTransmitter : _enqueuers) {
+    for (PTR(EventEnqueuer) qTransmitter : _enqueuers) {
         if ((qTransmitter)->getQueueName() == name) {
             return qTransmitter;
         }
     }
-    return Transmitter::Ptr();
+    return PTR(Transmitter)();
 }
 
 
-Event::Ptr EventSystem::receiveEvent(std::string const& destinationName) {
+PTR(Event) EventSystem::receiveEvent(std::string const& destinationName) {
     return receiveEvent(destinationName, EventReceiver::infiniteTimeout);
 }
 
-Event::Ptr EventSystem::receiveEvent(std::string const& destinationName, const long timeout) {
-    Receiver::Ptr receiver;
+PTR(Event) EventSystem::receiveEvent(std::string const& destinationName, const long timeout) {
+    PTR(Receiver) receiver;
     if ((receiver = getReceiver(destinationName)) == 0) {
         throw LSST_EXCEPT(pexExceptions::RuntimeError, "destination "+ destinationName +" is not registered with EventSystem");
     }
@@ -163,31 +151,31 @@ Event::Ptr EventSystem::receiveEvent(std::string const& destinationName, const l
     return receiver->receiveEvent(timeout);
 }
 
-LocationId::Ptr EventSystem::createOriginatorId() const {
-    return LocationId::Ptr(new LocationId());
+PTR(LocationId) EventSystem::createOriginatorId() const {
+    return PTR(LocationId)(new LocationId());
 }
 
 /** private method used to retrieve the named EventReceiver object
   */
-Receiver::Ptr EventSystem::getReceiver(std::string const& name) {
-    for (EventReceiver::Ptr receiver : _receivers) {
+PTR(Receiver) EventSystem::getReceiver(std::string const& name) {
+    for (PTR(EventReceiver) receiver : _receivers) {
         if ((receiver)->getTopicName() == name)
             return receiver;
     }
-    for (EventDequeuer::Ptr  qReceiver : _dequeuers) {
+    for (PTR(EventDequeuer)  qReceiver : _dequeuers) {
         if ((qReceiver)->getQueueName() == name)
             return qReceiver;
     }
-    return Receiver::Ptr();
+    return PTR(Receiver)();
 }
 
 
-StatusEvent::Ptr EventSystem::castToStatusEvent(Event::Ptr event) {
-    return static_pointer_cast<lsst::ctrl::events::StatusEvent>(event);
+PTR(StatusEvent) EventSystem::castToStatusEvent(PTR(Event) event) {
+    return boost::static_pointer_cast<lsst::ctrl::events::StatusEvent>(event);
 }
 
-CommandEvent::Ptr EventSystem::castToCommandEvent(Event::Ptr event) {
-    return static_pointer_cast<lsst::ctrl::events::CommandEvent>(event);
+PTR(CommandEvent) EventSystem::castToCommandEvent(PTR(Event) event) {
+    return boost::static_pointer_cast<lsst::ctrl::events::CommandEvent>(event);
 }
 
 }}}

@@ -30,25 +30,9 @@
  * @brief Command Event implementation
  *
  */
-#include <iomanip>
-#include <sstream>
-#include <stdexcept>
-#include <limits>
-#include <cstring>
 
 #include "lsst/ctrl/events/CommandEvent.h"
 #include "lsst/ctrl/events/EventTypes.h"
-
-#include "lsst/daf/base/DateTime.h"
-#include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/exceptions.h"
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <netdb.h>
-#include <time.h>
-
-#include <activemq/core/ActiveMQConnectionFactory.h>
-
 
 using namespace std;
 
@@ -95,7 +79,7 @@ CommandEvent::CommandEvent(cms::TextMessage *msg) : Event(msg) {
 
 }
 
-CommandEvent::CommandEvent(LocationId const&  originator, LocationId const& destination, CONST_PTR(PropertySet) const& psp) : Event(*psp) {
+CommandEvent::CommandEvent(LocationId const&  originator, LocationId const& destination, CONST_PTR(PropertySet)& psp) : Event(*psp) {
     _constructor(originator, destination);
 }
 
@@ -107,7 +91,7 @@ CommandEvent::CommandEvent(LocationId const&  originator, LocationId const&  des
     _constructor(originator, destination);
 }
 
-CommandEvent::CommandEvent(std::string const& runId, LocationId const&  originator, LocationId const& destination, CONST_PTR(PropertySet) const& psp) : Event(runId, *psp) {
+CommandEvent::CommandEvent(std::string const& runId, LocationId const&  originator, LocationId const& destination, CONST_PTR(PropertySet)& psp) : Event(runId, *psp) {
     _constructor(originator, destination);
 }
 
@@ -150,18 +134,18 @@ void CommandEvent::populateHeader(cms::TextMessage* msg) const {
     msg->setIntProperty(DEST_LOCALID, _psp->get<int>(DEST_LOCALID));
 }
 
-LocationId::Ptr CommandEvent::getOriginator() const { 
+PTR(LocationId) CommandEvent::getOriginator() const { 
     std::string hostname =  _psp->get<std::string>(ORIG_HOSTNAME);
     int pid =  _psp->get<int>(ORIG_PROCESSID);
     int local =  _psp->get<int>(ORIG_LOCALID);
-    return LocationId::Ptr(new LocationId(hostname, pid, local));
+    return PTR(LocationId)(new LocationId(hostname, pid, local));
 }
 
-LocationId::Ptr CommandEvent::getDestination() const { 
+PTR(LocationId) CommandEvent::getDestination() const { 
     std::string hostname = _psp->get<std::string>(DEST_HOSTNAME); 
     int pid = _psp->get<int>(DEST_PROCESSID); 
     int local = _psp->get<int>(DEST_LOCALID);
-    return LocationId::Ptr(new LocationId(hostname, pid, local));
+    return PTR(LocationId)(new LocationId(hostname, pid, local));
 }
 
 CommandEvent::~CommandEvent() {

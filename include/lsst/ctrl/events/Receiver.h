@@ -34,6 +34,7 @@
 #ifndef LSST_CTRL_EVENTS_RECEIVER_H
 #define LSST_CTRL_EVENTS_RECEIVER_H
 
+
 #include <cms/Connection.h>
 #include <cms/Session.h>
 #include <cms/TextMessage.h>
@@ -43,6 +44,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include "lsst/base.h"
 #include "lsst/utils/Utils.h"
 #include "lsst/daf/base/PropertySet.h"
 
@@ -50,8 +52,6 @@
 #include "lsst/ctrl/events/EventBroker.h"
 
 using lsst::daf::base::PropertySet;
-
-using namespace std;
 
 namespace lsst {
 namespace ctrl {
@@ -62,7 +62,6 @@ namespace events {
  */
 class Receiver {
 public:
-    typedef boost::shared_ptr<Receiver> Ptr;
     Receiver();
 
     /**
@@ -72,19 +71,20 @@ public:
 
     /**
      * @brief Wait until an Event is received
-     * @note Caller is responsible for deleting received Event.
+     * @return an Event
      */
-    Event::Ptr receiveEvent();
+    PTR(Event) receiveEvent();
 
     /**
      * @brief wait for a length of time for an event to be received.
      * @param timeout the length of time to wait in milliseconds; value of -1 waits indefinately.
-     * @note Caller is responsible for deleting received Event.
+     * @return an Event
      */
-    Event::Ptr receiveEvent(long timeout);
+    PTR(Event) receiveEvent(long timeout);
 
     /**
      * @brief get the destination property name
+     * @note This is the TYPE of the destination we're using, either a TOPIC or a QUEUE
      */
     virtual std::string getDestinationPropertyName() { return NULL; }
 

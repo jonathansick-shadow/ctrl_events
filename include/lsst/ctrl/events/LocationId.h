@@ -49,9 +49,6 @@ namespace events {
 class LocationId {
 public:
 
-    typedef boost::shared_ptr<LocationId> Ptr;
-    typedef boost::shared_ptr<LocationId const> ConstPtr;
-
     /** 
      * @brief LocationId object. This object represents the originating process
      *        process of an event. This consists of the host name, the process 

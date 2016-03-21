@@ -27,27 +27,16 @@
  *
  * @ingroup ctrl/events
  *
- * @brief Coordinate EventTransmitters and EventReceiver objects
+ * @brief Create the proper type of event, given a cms::TextMessage
  *
  */
-#include <iomanip>
-#include <sstream>
-#include <stdexcept>
 
-#include "lsst/daf/base/PropertySet.h"
-#include "lsst/pex/exceptions.h"
-
-#include "lsst/ctrl/events/Event.h"
 #include "lsst/ctrl/events/StatusEvent.h"
 #include "lsst/ctrl/events/CommandEvent.h"
 #include "lsst/ctrl/events/LogEvent.h"
 #include "lsst/ctrl/events/EventTypes.h"
 
 #include "lsst/ctrl/events/EventFactory.h"
-
-namespace pexExceptions =lsst::pex::exceptions;
-
-using namespace std;
 
 namespace lsst {
 namespace ctrl {
@@ -59,19 +48,19 @@ EventFactory::EventFactory() {
 EventFactory::~EventFactory() {
 }
 
-Event::Ptr EventFactory::createEvent(cms::TextMessage* msg) {
-    vector<std::string> names = msg->getPropertyNames();
+PTR(Event) EventFactory::createEvent(cms::TextMessage* msg) {
+    std::vector<std::string> names = msg->getPropertyNames();
 
     std::string _type = msg->getStringProperty("TYPE");
 
     if (_type == EventTypes::LOG) {
-        return LogEvent::Ptr(new LogEvent(msg));
+        return PTR(LogEvent)(new LogEvent(msg));
     } else if (_type == EventTypes::STATUS) {
-        return StatusEvent::Ptr(new StatusEvent(msg));
+        return PTR(StatusEvent)(new StatusEvent(msg));
     } else if (_type == EventTypes::COMMAND) {
-        return CommandEvent::Ptr(new CommandEvent(msg));
+        return PTR(CommandEvent)(new CommandEvent(msg));
     } else {
-        return Event::Ptr(new Event(msg));
+        return PTR(Event)(new Event(msg));
     }
 }
 
