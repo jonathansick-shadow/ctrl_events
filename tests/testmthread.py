@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-# 
+#
 # LSST Data Management System
 #
 # Copyright 2008-2014  AURA/LSST.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -12,14 +12,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -28,7 +28,8 @@ Tests of the BlackboardItem classes
 """
 from __future__ import with_statement
 
-import os, platform
+import os
+import platform
 import unittest
 import time
 from threading import Thread, Condition
@@ -36,12 +37,16 @@ from lsst.ctrl.events import EventSystem
 import lsst.utils.tests as tests
 from testEnvironment import TestEnvironment
 
+
 class Flag(object):
+
     def __init__(self):
         self.lock = Condition()
         self.markers = []
 
+
 class EventThread(Thread):
+
     def __init__(self, broker, flag):
         Thread.__init__(self, name="event")
         # self.setDaemon(True)
@@ -62,10 +67,11 @@ class EventThread(Thread):
         # print "receive timed out"
         # sys.stdout.flush()
         self.flag.markers.append("timeout")
-        
+
 
 class MultiThreadTestCase(unittest.TestCase):
     """Test multitreaded sends"""
+
     def setUp(self):
         pass
 
@@ -98,7 +104,7 @@ class MultiThreadTestCase(unittest.TestCase):
         print flag.markers
         self.assertEquals(flag.markers[2], "waiting",
                           "receive failed to release GIL")
-    
+
 __all__ = "MultiThreadTestCase".split()
 
 
@@ -109,6 +115,7 @@ def suite():
     suites += unittest.makeSuite(MultiThreadTestCase)
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit=False):
     """Run the tests."""

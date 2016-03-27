@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-# 
+#
 # LSST Data Management System
 #
 # Copyright 2008-2014  AURA/LSST.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -12,14 +12,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -37,6 +37,7 @@ import tempfile
 import unittest
 import lsst.ctrl.events as events
 from testEnvironment import TestEnvironment
+
 
 class TestLog(unittest.TestCase):
 
@@ -81,7 +82,7 @@ class TestLog(unittest.TestCase):
             fd.seek(0)
             log4cxxOutput = ""
             for line in fd:
-               log4cxxOutput += line.rstrip()
+                log4cxxOutput += line.rstrip()
             self.assertEquals(log4cxxOutput, value)
 
     def assertValidMessage(self, event, message):
@@ -211,9 +212,10 @@ class TestLog(unittest.TestCase):
         confStr += "log4j.appender.EA=EventAppender\n"
         confStr += "log4j.appender.EA.BROKER="+badBroker+"\n"
 
-        #this should raise an exception because the broker couldn't be reached
+        # this should raise an exception because the broker couldn't be reached
         #self.assertRaises(ex.Exception, self.configure, confStr)
-        self.assertConfigOutput(confStr, "log4cxx: Couldn't reach broker " + badBroker + " at port " + str(port))
+        self.assertConfigOutput(confStr, "log4cxx: Couldn't reach broker " +
+                                badBroker + " at port " + str(port))
 
 ###############################################################################
 
@@ -239,7 +241,7 @@ class TestLog(unittest.TestCase):
         confStr = "log4j.rootLogger=TRACE, EA\n"
         confStr += "log4j.appender.EA=EventAppender\n"
         confStr += "log4j.appender.EA.BROKER="+testEnv.getBroker()+"\n"
-        confStr += "log4j.appender.EA.RUNID="+str(os.getpid())+"\n";
+        confStr += "log4j.appender.EA.RUNID="+str(os.getpid())+"\n"
         confStr += "log4j.appender.EA.TOPIC="+topic+"\n"
 
         self.configure(confStr)
@@ -271,7 +273,7 @@ class TestLog(unittest.TestCase):
         confStr2 = "log4j.rootLogger=TRACE, EA\n"
         confStr2 += "log4j.appender.EA=EventAppender\n"
         confStr2 += "log4j.appender.EA.BROKER="+testEnv.getBroker()+"\n"
-        confStr2 += "log4j.appender.EA.RUNID="+"blah_"+str(os.getpid())+"\n";
+        confStr2 += "log4j.appender.EA.RUNID="+"blah_"+str(os.getpid())+"\n"
         confStr2 += "log4j.appender.EA.TOPIC="+topic+"\n"
         self.configure(confStr2)
 
@@ -311,7 +313,7 @@ class TestLog(unittest.TestCase):
         # make sure we didn't get any more than we should have
         ev = recvALL.receiveEvent(100)
         self.assertIsNone(ev)
-        
+
 ###############################################################################
 
     @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")

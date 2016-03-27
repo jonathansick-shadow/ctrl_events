@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-# 
+#
 # LSST Data Management System
 #
 # Copyright 2008-2014  AURA/LSST.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -12,14 +12,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -31,6 +31,7 @@ from lsst.daf.base import PropertySet
 import lsst.pex.exceptions as ex
 import lsst.utils.tests as tests
 from testEnvironment import TestEnvironment
+
 
 class ComplexDataTestCase(unittest.TestCase):
     """Test complex PropertySet sending"""
@@ -48,10 +49,10 @@ class ComplexDataTestCase(unittest.TestCase):
 
     def sendPlainStatusEvent(self, broker, topic, runID=None):
         trans = events.EventTransmitter(broker, topic)
-        
+
         root = PropertySet()
         root.set(events.Event.TOPIC, topic)
-        root.set("myname","myname")
+        root.set("myname", "myname")
         root.set(events.Event.STATUS, "my special status")
         root.set("value", 12)
         root.set("logger.status", "my logger special status")
@@ -59,8 +60,8 @@ class ComplexDataTestCase(unittest.TestCase):
         root.set("logger.pid.xyzzy", 1)
         root.set("logger.pid.plover", 3.14)
         root.set("logger.pid.plugh", "a hollow voice says")
-        
-        eventSystem = events.EventSystem.getDefaultEventSystem();
+
+        eventSystem = events.EventSystem.getDefaultEventSystem()
         locationID = eventSystem.createOriginatorId()
         if runID is None:
             event = events.StatusEvent(locationID, root)
@@ -75,14 +76,14 @@ class ComplexDataTestCase(unittest.TestCase):
 
         root = PropertySet()
         root.set(events.Event.TOPIC, topic)
-        root.set("myname","myname")
+        root.set("myname", "myname")
         root.set(events.Event.STATUS, "my special status")
 
         filter = PropertySet()
         filter.set("FOO", "bar")
         filter.set("PLOUGH", 123)
 
-        eventSystem = events.EventSystem.getDefaultEventSystem();
+        eventSystem = events.EventSystem.getDefaultEventSystem()
         locationID = eventSystem.createOriginatorId()
         event = events.StatusEvent(locationID, root, filter)
 
@@ -120,8 +121,8 @@ class ComplexDataTestCase(unittest.TestCase):
 
         self.assertIsNotNone(val)
         values = [events.StatusEvent.EVENTTIME, events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID,
-                    events.StatusEvent.ORIG_PROCESSID, events.StatusEvent.PUBTIME, events.StatusEvent.STATUS,
-                    events.StatusEvent.TOPIC, events.StatusEvent.TYPE]
+                  events.StatusEvent.ORIG_PROCESSID, events.StatusEvent.PUBTIME, events.StatusEvent.STATUS,
+                  events.StatusEvent.TOPIC, events.StatusEvent.TYPE]
         customValues = ['logger', 'myname', 'value']
         self.checkValidity(val, values, customValues)
 
@@ -143,7 +144,7 @@ class ComplexDataTestCase(unittest.TestCase):
 
         root = PropertySet()
         root.set(events.StatusEvent.TOPIC, topic)
-        root.set("myname","myname")
+        root.set("myname", "myname")
         root.set(events.StatusEvent.STATUS, "my special status")
 
         filter = PropertySet()
@@ -152,7 +153,7 @@ class ComplexDataTestCase(unittest.TestCase):
         filter.set("PLOVER.FIRST", 1)
         filter.set("PLOVER.SECOND", 2)
 
-        eventSystem = events.EventSystem.getDefaultEventSystem();
+        eventSystem = events.EventSystem.getDefaultEventSystem()
         locationID = eventSystem.createOriginatorId()
         event = events.StatusEvent(locationID, root, filter)
 
@@ -169,7 +170,6 @@ class ComplexDataTestCase(unittest.TestCase):
         for i in range(len(customValues)):
             self.assertTrue(customValues[i] in names)
 
-
         # get custom property set
         ps = val.getCustomPropertySet()
 
@@ -177,7 +177,6 @@ class ComplexDataTestCase(unittest.TestCase):
 
         # ...and that should be "myname"
         self.assertTrue(ps.exists("myname"))
-
 
         # check filterable property names
         names = val.getFilterablePropertyNames()
@@ -200,6 +199,7 @@ class ComplexDataTestCase(unittest.TestCase):
         for x in allValues:
             self.assertTrue(ps.exists(x))
 
+
 def suite():
     """Returns a suite containing all the tests cases in this module."""
     tests.init()
@@ -207,6 +207,7 @@ def suite():
     suites += unittest.makeSuite(ComplexDataTestCase)
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit=False):
     """Run the tests."""

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-# 
+#
 # LSST Data Management System
 #
 # Copyright 2008-2014  AURA/LSST.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -12,14 +12,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -30,6 +30,7 @@ import lsst.ctrl.events as events
 from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
 from testEnvironment import TestEnvironment
+
 
 class StatusEventTestCase(unittest.TestCase):
     """Test StatusEvent"""
@@ -47,15 +48,15 @@ class StatusEventTestCase(unittest.TestCase):
 
     def sendPlainStatusEvent(self, broker, topic, runID=None):
         trans = events.EventTransmitter(broker, topic)
-        
+
         root = PropertySet()
         root.set(events.Event.TOPIC, topic)
-        root.set("myname","myname")
+        root.set("myname", "myname")
         root.set(events.Event.STATUS, "my special status")
         root.set("logger.status", "my logger special status")
         root.set("logger.pid", "1")
-        
-        eventSystem = events.EventSystem.getDefaultEventSystem();
+
+        eventSystem = events.EventSystem.getDefaultEventSystem()
         locationID = eventSystem.createOriginatorId()
         if runID is None:
             event = events.StatusEvent(locationID, root)
@@ -67,18 +68,18 @@ class StatusEventTestCase(unittest.TestCase):
 
     def sendFilterableStatusEvent(self, broker, topic, runID=None):
         trans = events.EventTransmitter(broker, topic)
-        
+
         root = PropertySet()
         root.set(events.Event.TOPIC, topic)
-        root.set("myname","myname")
+        root.set("myname", "myname")
         root.set(events.Event.STATUS, "my special status")
 
         filter = PropertySet()
         filter.set("FOO", "bar")
         filter.set("PLOUGH", 123)
         filter.set("PLOVER", 0.45)
-        
-        eventSystem = events.EventSystem.getDefaultEventSystem();
+
+        eventSystem = events.EventSystem.getDefaultEventSystem()
         locationID = eventSystem.createOriginatorId()
         if runID is None:
             event = events.StatusEvent(locationID, root, filter)
@@ -103,7 +104,8 @@ class StatusEventTestCase(unittest.TestCase):
         val = receiver.receiveEvent()
 
         self.assertIsNotNone(val)
-        values = [events.Event.EVENTTIME, events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID, events.StatusEvent.ORIG_PROCESSID, events.Event.PUBTIME, events.Event.STATUS, events.Event.TOPIC, events.Event.TYPE]
+        values = [events.Event.EVENTTIME, events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID,
+                  events.StatusEvent.ORIG_PROCESSID, events.Event.PUBTIME, events.Event.STATUS, events.Event.TOPIC, events.Event.TYPE]
         customValues = ['myname', 'logger']
         self.assertValid(val, values, customValues)
 
@@ -111,7 +113,6 @@ class StatusEventTestCase(unittest.TestCase):
         self.assertNotEqual(val.getPubTime(), 0)
         self.assertGreater(val.getPubTime(), val.getEventTime())
         self.assertEqual(val.getType(), events.EventTypes.STATUS)
-
 
     @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testStatusEventWithRunID(self):
@@ -126,10 +127,10 @@ class StatusEventTestCase(unittest.TestCase):
         #
         self.sendPlainStatusEvent(broker, topicA, "test_runID_10")
 
-
         val = receiverA.receiveStatusEvent()
         self.assertIsNotNone(val)
-        values = [events.Event.EVENTTIME, events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID, events.StatusEvent.ORIG_PROCESSID, events.Event.PUBTIME, events.Event.STATUS, events.Event.TOPIC, events.Event.TYPE, events.Event.RUNID]
+        values = [events.Event.EVENTTIME, events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID, events.StatusEvent.ORIG_PROCESSID,
+                  events.Event.PUBTIME, events.Event.STATUS, events.Event.TOPIC, events.Event.TYPE, events.Event.RUNID]
         customValues = ['myname', 'logger']
         self.assertValid(val, values, customValues)
 
@@ -152,7 +153,8 @@ class StatusEventTestCase(unittest.TestCase):
 
         self.assertIsNotNone(val)
 
-        values = [events.Event.EVENTTIME, 'FOO', events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID, events.StatusEvent.ORIG_PROCESSID, 'PLOUGH', 'PLOVER', events.Event.PUBTIME, events.Event.STATUS, events.Event.TOPIC, events.Event.TYPE]
+        values = [events.Event.EVENTTIME, 'FOO', events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID,
+                  events.StatusEvent.ORIG_PROCESSID, 'PLOUGH', 'PLOVER', events.Event.PUBTIME, events.Event.STATUS, events.Event.TOPIC, events.Event.TYPE]
         customValues = ['myname']
         self.assertValid(val, values, customValues)
 
@@ -171,10 +173,10 @@ class StatusEventTestCase(unittest.TestCase):
 
         # should receive an event
         self.assertIsNotNone(val)
-        values = [events.Event.EVENTTIME, 'FOO', events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID, events.StatusEvent.ORIG_PROCESSID, 'PLOUGH', 'PLOVER', events.Event.PUBTIME, events.Event.RUNID, events.Event.STATUS, events.Event.TOPIC, events.Event.TYPE]
+        values = [events.Event.EVENTTIME, 'FOO', events.StatusEvent.ORIG_HOSTNAME, events.StatusEvent.ORIG_LOCALID, events.StatusEvent.ORIG_PROCESSID,
+                  'PLOUGH', 'PLOVER', events.Event.PUBTIME, events.Event.RUNID, events.Event.STATUS, events.Event.TOPIC, events.Event.TYPE]
         customValues = ['myname']
         self.assertValid(val, values, customValues)
-
 
     def assertValid(self, val, values, customValues):
         customCount = len(customValues)
@@ -186,7 +188,6 @@ class StatusEventTestCase(unittest.TestCase):
 
         for i in range(len(customValues)):
             self.assertTrue(customValues[i] in names)
-
 
         # get custom property set
         ps = val.getCustomPropertySet()
@@ -215,6 +216,7 @@ class StatusEventTestCase(unittest.TestCase):
         for x in allValues:
             self.assertTrue(ps.exists(x))
 
+
 def suite():
     """Returns a suite containing all the tests cases in this module."""
     tests.init()
@@ -222,6 +224,7 @@ def suite():
     suites += unittest.makeSuite(StatusEventTestCase)
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit=False):
     """Run the tests."""

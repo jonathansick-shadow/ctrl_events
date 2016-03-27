@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-# 
+#
 # LSST Data Management System
 #
 # Copyright 2008-2014  AURA/LSST.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -12,14 +12,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -32,9 +32,10 @@ from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
 from testEnvironment import TestEnvironment
 
+
 class LocationIdTestCase(unittest.TestCase):
     """Test LocationId"""
-        
+
     @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testLocationId(self):
         testEnv = TestEnvironment()
@@ -71,9 +72,8 @@ class LocationIdTestCase(unittest.TestCase):
         processId = locationID2.getProcessID()
         self.assertEqual(processId, os.getpid())
 
-
         root = PropertySet()
-        root.set("myname","myname")
+        root.set("myname", "myname")
         status = "my special status"
         root.set(events.Event.STATUS, status)
 
@@ -86,7 +86,8 @@ class LocationIdTestCase(unittest.TestCase):
         hostname = locationID2.getHostName()
 
         # create a receiver selector with the hostname, process id and local id
-        sel = "%s = '%s' and %s = %d and %s = %d" % (events.StatusEvent.ORIG_HOSTNAME, hostname, events.StatusEvent.ORIG_PROCESSID, os.getpid(), events.StatusEvent.ORIG_LOCALID, 1)
+        sel = "%s = '%s' and %s = %d and %s = %d" % (
+            events.StatusEvent.ORIG_HOSTNAME, hostname, events.StatusEvent.ORIG_PROCESSID, os.getpid(), events.StatusEvent.ORIG_LOCALID, 1)
 
         receiver = events.EventReceiver(broker, topic, sel)
 
@@ -105,7 +106,8 @@ class LocationIdTestCase(unittest.TestCase):
         # the broker
         returnedEvent2 = receiver.receiveEvent(1)
         self.assertIsNone(returnedEvent2)
-        
+
+
 def suite():
     """Returns a suite containing all the tests cases in this module."""
     tests.init()
@@ -113,6 +115,7 @@ def suite():
     suites += unittest.makeSuite(LocationIdTestCase)
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit=False):
     """Run the tests."""

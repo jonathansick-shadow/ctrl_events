@@ -31,6 +31,7 @@ import lsst.daf.base as base
 import lsst.utils.tests as tests
 from testEnvironment import TestEnvironment
 
+
 class EventQueuesTestCase(unittest.TestCase):
     """Test the EventTransmitter using queues"""
 
@@ -49,7 +50,7 @@ class EventQueuesTestCase(unittest.TestCase):
         thisHost = platform.node()
 
         topic = "test_events_queue1_%s_%d" % (thisHost, os.getpid())
-        recv = events.EventDequeuer(broker, topic, port);
+        recv = events.EventDequeuer(broker, topic, port)
 
         # Integer tests
 
@@ -94,7 +95,7 @@ class EventQueuesTestCase(unittest.TestCase):
         self.sendEvent(broker, topic, port, 300)
         self.sendEvent(broker, topic, port, 200)
 
-        recv = events.EventDequeuer(broker, topic, port);
+        recv = events.EventDequeuer(broker, topic, port)
 
         val = recv.receiveEvent()
         self.assertIsNotNone(val)
@@ -122,11 +123,12 @@ class EventQueuesTestCase(unittest.TestCase):
         thisHost = platform.node()
 
         topic = "test_events_queue3_%s_%d" % (thisHost, os.getpid())
-        recv = events.EventDequeuer(broker, topic, port);
-        trans = events.EventDequeuer(broker, topic, port);
+        recv = events.EventDequeuer(broker, topic, port)
+        trans = events.EventDequeuer(broker, topic, port)
 
-        self.assertEqual(events.Event.QUEUE, recv.getDestinationPropertyName());
-        self.assertEqual(events.Event.QUEUE, trans.getDestinationPropertyName());
+        self.assertEqual(events.Event.QUEUE, recv.getDestinationPropertyName())
+        self.assertEqual(events.Event.QUEUE, trans.getDestinationPropertyName())
+
 
 def suite():
     """Returns a suite containing all the tests cases in this module."""
@@ -135,6 +137,7 @@ def suite():
     suites += unittest.makeSuite(EventQueuesTestCase)
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit=False):
     """Run the tests."""

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-# 
+#
 # LSST Data Management System
 #
 # Copyright 2008-2014  AURA/LSST.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -12,14 +12,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -31,23 +31,24 @@ import lsst.daf.base as base
 import lsst.utils.tests as tests
 from testEnvironment import TestEnvironment
 
+
 class EventSystemReceiveTestCase(unittest.TestCase):
     """Test receiving via EventSystem"""
 
     def sendEvent(self, topicName):
         root = base.PropertySet()
-        root.set("DATE","2007-07-01T14:28:32.546012")
-        root.setInt("PID",200)
-        root.set("HOST","lsstcorp.org")
-        root.set("IP","1.2.3.4")
-        root.set("EVNT","test")
-        root.set("misc1","data 1")
-        root.set("misc2","data 2")
+        root.set("DATE", "2007-07-01T14:28:32.546012")
+        root.setInt("PID", 200)
+        root.set("HOST", "lsstcorp.org")
+        root.set("IP", "1.2.3.4")
+        root.set("EVNT", "test")
+        root.set("misc1", "data 1")
+        root.set("misc2", "data 2")
         root.set("value", 3.14)
         root.set("array1", ('a', 'b', 'c', 'd'))
         root.set("array2", (1, 2, 3, 4, 5))
         root.set("array3", (6.1, 6.2, 6.3, 6.4, 6.5))
-        
+
         eventSystem = events.EventSystem.getDefaultEventSystem()
         event = events.Event("runid_es4", root)
         eventSystem.publishEvent(topicName, event)
@@ -59,7 +60,7 @@ class EventSystemReceiveTestCase(unittest.TestCase):
         thisHost = platform.node()
 
         topic = "test_events_%s_%d" % (thisHost, os.getpid())
-    
+
         eventSystem = events.EventSystem.getDefaultEventSystem()
         eventSystem.createTransmitter(broker, topic)
         eventSystem.createReceiver(broker, topic)
@@ -101,6 +102,7 @@ class EventSystemReceiveTestCase(unittest.TestCase):
         val = eventSystem.receiveEvent(topic, 1000)
         self.assertIsNone(val)
 
+
 def suite():
     """Returns a suite containing all the tests cases in this module."""
     tests.init()
@@ -108,6 +110,7 @@ def suite():
     suites += unittest.makeSuite(EventSystemReceiveTestCase)
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit=False):
     """Run the tests."""

@@ -32,6 +32,7 @@ from lsst.daf.base import PropertySet
 import lsst.utils.tests as tests
 from testEnvironment import TestEnvironment
 
+
 class EventSystemTestCase(unittest.TestCase):
     """test EventSystem"""
 
@@ -47,7 +48,7 @@ class EventSystemTestCase(unittest.TestCase):
 
         prop = PropertySet()
         for x in data:
-            prop.set(x[0],x[1])
+            prop.set(x[0], x[1])
 
         return prop
 
@@ -247,6 +248,7 @@ def suite():
     suites += unittest.makeSuite(EventSystemTestCase)
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit=False):
     """Run the tests."""

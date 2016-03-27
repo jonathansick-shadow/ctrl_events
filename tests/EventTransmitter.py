@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-# 
+#
 # LSST Data Management System
 #
 # Copyright 2008-2014  AURA/LSST.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -12,14 +12,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -31,6 +31,7 @@ import lsst.daf.base as base
 import lsst.utils.tests as tests
 from testEnvironment import TestEnvironment
 
+
 class EventTransmitterTestCase(unittest.TestCase):
     """Test the EventTransmitter"""
 
@@ -40,7 +41,7 @@ class EventTransmitterTestCase(unittest.TestCase):
         trans = events.EventTransmitter(broker, topicName)
         event = events.Event("myrunid", root)
         trans.publishEvent(event)
-    
+
     @unittest.skipUnless(TestEnvironment().validTestDomain(), "not within valid domain")
     def testEventTransmitter(self):
         testEnv = TestEnvironment()
@@ -49,16 +50,15 @@ class EventTransmitterTestCase(unittest.TestCase):
 
         topic = "test_events_5_%s_%d" % (thisHost, os.getpid())
         recv = events.EventReceiver(broker, topic)
-    
-    
+
         # Integer tests
-    
+
         #
         # send two test events
         #
         self.sendEvent(broker, topic, 300)
         self.sendEvent(broker, topic, 200)
-        self.sendEvent(broker, topic, ( 6, 7, 8, 9, 6))
+        self.sendEvent(broker, topic, (6, 7, 8, 9, 6))
 
         val = recv.receiveEvent()
         self.assertIsNotNone(val)
@@ -85,6 +85,7 @@ class EventTransmitterTestCase(unittest.TestCase):
         val = recv.receiveEvent(1)
         self.assertIsNone(val)
 
+
 def suite():
     """Returns a suite containing all the tests cases in this module."""
     tests.init()
@@ -92,6 +93,7 @@ def suite():
     suites += unittest.makeSuite(EventTransmitterTestCase)
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit=False):
     """Run the tests."""
